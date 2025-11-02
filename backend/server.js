@@ -2,13 +2,17 @@ import express from "express";
 import dotenv from "dotenv";
 import { connectDB } from "./config/db.js";
 
+import adminRoutes from "./routes/admin.routes.js";
+
 dotenv.config();
 
 connectDB();
 
 const app = express();
 
-app.get("/products", (req, res) => {});
+app.use(express.json());
+
+app.use("/admins", adminRoutes);
 
 app.listen(5000, () => 
     {

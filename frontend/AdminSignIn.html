@@ -40,9 +40,9 @@
         <div style="width: 674px; height: 50px; left: 0px; top: 5px; position: absolute; background: #00550A; border-radius: 10.02px"></div>
 
         <!-- Connect this with Admin Dashboard -->
-        <div style="width: 674px; height: 50px; left: 0px; top: 5px; position: absolute; text-align: center; justify-content: center; display: flex; flex-direction: column; color: white; font-size: 25.04px; font-family: Inter; font-weight: 700; word-wrap: break-word">
+        <button style="width: 674px; height: 50px; left: 0px; top: 5px; position: absolute; text-align: center; justify-content: center; display: flex; flex-direction: column; color: white; font-size: 25.04px; font-family: Inter; font-weight: 700; word-wrap: break-word">
           Sign In As Admin
-        </div>
+        </button>
       </div>
       
       <div style="width: 674px; height: 2px; left: 25px; top: 446px; position: absolute; background: #E6E6E6"></div>
@@ -62,3 +62,14 @@
     </div>
   </div>
 </body>
+
+<script>
+  document.querySelector("button").addEventListener("click", () => {
+  fetch("http://localhost:5000/admins/login")
+    .then(response => response.text())
+    .then(data => console.log(data))
+    .catch(error => console.error("Error:", error));
+  });
+
+</script>
+
