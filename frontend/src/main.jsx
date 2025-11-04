@@ -7,10 +7,10 @@ import App from './App.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <BrowserRouter>
-      <ChakraProvider>
+    <ChakraProvider>
+      <BrowserRouter>
         <App />
-      </ChakraProvider>
-    </BrowserRouter>
-  </StrictMode>,
+      </BrowserRouter>
+    </ChakraProvider>
+  </StrictMode>
 )
