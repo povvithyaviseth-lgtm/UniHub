@@ -1,24 +1,34 @@
-import { Routes, Route } from 'react-router-dom'
-import { Box } from '@chakra-ui/react'
-import Signup from './pages/Signup.jsx'
-import HomePage from './pages/HomePage.jsx'
-import StudentLogin from './pages/StudentLogin.jsx'
-import AdminLogin from './pages/AdminLogin.jsx'
-import AdminConsole from './pages/AdminConsole.jsx'
-import ClubManagement from './pages/ClubManagement.jsx'
+import { useState } from 'react'
+import reactLogo from './assets/react.svg'
+import viteLogo from '/vite.svg'
+import './App.css'
 
 function App() {
+  const [count, setCount] = useState(0)
+
   return (
-    <Box p={4}>
-      <Routes>
-        <Route path="/" element={<Signup />} />              
-        <Route path="/home" element={<HomePage />} />
-        <Route path="/student-login" element={<StudentLogin />} />
-        <Route path="/admin-login" element={<AdminLogin />} />
-        <Route path="/admin-console" element={<AdminConsole />} />
-        <Route path="/club-management" element={<ClubManagement />} />
-      </Routes>
-    </Box>
+    <>
+      <div>
+        <a href="https://vite.dev" target="_blank">
+          <img src={viteLogo} className="logo" alt="Vite logo" />
+        </a>
+        <a href="https://react.dev" target="_blank">
+          <img src={reactLogo} className="logo react" alt="React logo" />
+        </a>
+      </div>
+      <h1>Vite + React</h1>
+      <div className="card">
+        <button onClick={() => setCount((count) => count + 1)}>
+          count is {count}
+        </button>
+        <p>
+          Edit <code>src/App.jsx</code> and save to test HMR
+        </p>
+      </div>
+      <p className="read-the-docs">
+        Click on the Vite and React logos to learn more
+      </p>
+    </>
   )
 }
 
