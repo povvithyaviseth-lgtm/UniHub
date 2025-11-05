@@ -1,11 +1,11 @@
-import { Button } from '@chakra-ui/react'
+import { Route, Routes } from "react-router-dom"
+import AdminLogin from "./pages/AdminLogin.jsx"
 
 function App() {
-  console.log("Chakra button rendered")
   return (
-    <>
-      <Button>Hello!</Button>
-    </>
+    <Routes>
+      <Route path="/admin" element={<AdminLogin/>} />
+    </Routes>
   )
 }
 
