@@ -1,4 +1,3 @@
-// src/pages/ClubManagement.jsx
 export default function ClubManagement() {
   return (
     <div style={{ padding: "2rem", textAlign: "center" }}>
