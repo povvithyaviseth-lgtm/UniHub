@@ -5,6 +5,7 @@ function App() {
   return (
     <Routes>
       <Route path="/admin" element={<AdminLogin/>} />
+      {/* Add more routes here */}
     </Routes>
   )
 }

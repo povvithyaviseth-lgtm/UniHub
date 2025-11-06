@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import Admin from "../models/admin.models.js";
+import Admin from "../models/User.models.js";
 
 
 // Controller to login admin
