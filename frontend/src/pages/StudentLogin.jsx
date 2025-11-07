@@ -16,15 +16,15 @@ const StudentLogin = () => {
 
   const handleAdminClick = () => {
     //console.log('Navigate to admin login');
-    navigate('/admin-login');
+    navigate('/admin');
   };
   
 
 
   const handleSignUpClick = () => {
     console.log('Navigate to sign up');
-
-  navigate("/admin-login");
+  {/*  Rename this */}
+  navigate("/");
   };
 
   const handleForgotPasswordClick = () => {
