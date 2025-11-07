@@ -1,0 +1,125 @@
+/* styles.css */
+
+/* Base reset-ish bits */
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; }
+body { margin: 0; background: #F8FAFC; font-family: Inter, system-ui, sans-serif; }
+
+/* Reusable button styles */
+button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: filter .2s ease, background-color .2s ease, transform .06s ease;
+}
+
+/* Universal hover: darken slightly regardless of color */
+button:hover { filter: brightness(0.92); }
+button:active { transform: translateY(1px); }
+button:disabled { opacity: .6; cursor: not-allowed; }
+
+/* Primary button (Student/Admin submit) */
+.btn-primary {
+  height: 52px;
+  padding: 0 16px;
+  background: #00550A;      /* base color */
+  color: #fff;
+}
+
+/* Link-like button (e.g., “Forgot password?”) */
+.btn-link {
+  background: transparent;
+  color: #007D99;
+  font-weight: 600;
+  text-decoration: underline;
+  border-radius: 6px;
+  height: auto;
+  padding: 0;
+}
+
+/* Divider */
+.hr {
+  height: 1px;
+  border: 0;
+  background: #E6E6E6;
+  margin: 18px 0;
+}
+
+/* “Go to Admin” panel button */
+.panel-cta {
+  width: 100%;
+  padding: 18px 24px;
+  border-radius: 15px;
+  background: #E9F0FF;            /* base */
+  transition: background-color .2s ease;
+}
+
+/* Slightly darker on hover (this stacks with the brightness filter too) */
+.panel-cta:hover {
+  background: #DCE8FF;
+}
+
+
+
+/* Small text helpers */
+.text-muted { color: #707070; }
+.text-link  { color: #007D99; }
+
+/* —— Search bar hover & focus —— */
+.search-input-wrap {
+  transition: border-color .2s ease, box-shadow .2s ease;
+}
+.search-input-wrap:hover {
+  border-color: #00700E; /* slightly brighter green */
+  box-shadow: 0 0 0 3px rgba(0, 85, 10, 0.12);
+}
+.search-input-wrap:focus-within {
+  border-color: #00550A; /* main green */
+  box-shadow: 0 0 0 3px rgba(0, 85, 10, 0.22);
+}
+
+/* —— Header icons (bell, etc.) —— */
+.icon-button {
+  cursor: pointer;
+  transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+}
+.icon-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 12px rgba(0,0,0,.12);
+  background: #EAEAEA; /* subtle lift */
+}
+.icon-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(0,0,0,.12);
+}
+
+/* Masked icon tint/feedback (both bell & profile use .icon-mask) */
+.icon-button .icon-mask,
+.profile-chip .icon-mask {
+  transition: opacity .15s ease, filter .15s ease;
+}
+.icon-button:hover .icon-mask,
+.profile-chip:hover .icon-mask {
+  opacity: 0.9;
+  filter: contrast(1.05);
+}
+
+/* —— "My Profile" chip —— */
+.profile-chip {
+  cursor: pointer;
+  transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+}
+.profile-chip:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(0,0,0,.14);
+  background: #EAEAEA;
+}
+.profile-chip:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 10px rgba(0,0,0,.12);
+}
+
