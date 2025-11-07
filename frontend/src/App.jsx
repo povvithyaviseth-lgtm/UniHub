@@ -7,7 +7,7 @@ function App() {
   return (
     <Routes>
       <Route path="/admin" element={<AdminLogin />} />
-      <Route path="/student" element={<StudentLogin />} />   {/* 👈 new route */}
+      <Route path="/" element={<StudentLogin />} />   {/* 👈 new route */}
       <Route path="/home" element={<HomePage />} />
       {/* Add more routes here */}
     </Routes>

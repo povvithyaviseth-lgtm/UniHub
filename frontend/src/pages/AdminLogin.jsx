@@ -34,7 +34,7 @@ export default function AdminLogin() {
     
     try {
       const userData = await userLogin(email, password);
-      window.location.href = "/dashboard"; // or use navigate("/dashboard") if you have react-router's useNavigate
+      window.location.href = "/adminDashboard"; // Dashboard for admin after login
     } catch (err) {
       setError(err.message || "Login failed. Please check your credentials.");
     } finally {
@@ -111,7 +111,7 @@ export default function AdminLogin() {
             <div style={studentBox}>
               <div style={studentText}>Are you a Student?</div>
 
-              <Link to="/student" style={studentLink}>
+              <Link to="/" style={studentLink}>
                 Click to go to Student Login
               </Link>
             </div>
