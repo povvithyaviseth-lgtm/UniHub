@@ -111,8 +111,7 @@ export default function AdminLogin() {
             <div style={studentBox}>
               <div style={studentText}>Are you a Student?</div>
 
-              {/* Rename the File */}
-              <Link to="/StudentLogin" style={studentLink}>
+              <Link to="/student" style={studentLink}>
                 Click to go to Student Login
               </Link>
             </div>
