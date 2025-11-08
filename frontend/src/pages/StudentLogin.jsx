@@ -11,6 +11,8 @@ const StudentLogin = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    // Remove this later and implement actual login logic
+    navigate('/home');
     console.log('Login attempt:', { email, password });
   };
 
@@ -20,10 +22,8 @@ const StudentLogin = () => {
   };
   
 
-
   const handleSignUpClick = () => {
     console.log('Navigate to sign up');
-  {/*  Rename this */}
   navigate("/");
   };
 

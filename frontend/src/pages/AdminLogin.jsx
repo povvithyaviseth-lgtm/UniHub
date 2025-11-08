@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { userLogin } from "../functions/authService.js";
+import { authentication } from "../functions/authService.js";
 import {
   containerStyle,
   cardWrapper,
@@ -21,26 +21,40 @@ import {
 } from "../Style/AdminLoginPageStyle.jsx";
 
 
-export default function AdminLogin() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  
-  const [error, setError] = useState("");
+const AdminLogin = () => {
+  const [loginCredentials, setLoginCredentials] = useState({
+    email: "",
+    password: "",
+    isAdmin : true
+  });
 
-  async function handleSignIn() {
-    setError(""); // Clear any previous errors
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const { login } = authentication()
+
+  const handleSignIn = async () => {
     setLoading(true);
-    
+    setError("");
     try {
-      const userData = await userLogin(email, password);
-      window.location.href = "/adminDashboard"; // Dashboard for admin after login
+      const response = await login(loginCredentials);
+      if (!response) {
+        setError("Login service returned no response");
+        return;
+      }
+      const { success, message } = response;
+      if (!success) {
+        setError(message || "Login failed");
+      } else {
+        // Redirect to admin dashboard or another page upon successful login
+        window.location.href = "/admin/dashboard"; // Example redirect
+      }
     } catch (err) {
-      setError(err.message || "Login failed. Please check your credentials.");
+      console.error("Login error:", err);
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   return (
     <div style={containerStyle}>
@@ -53,8 +67,8 @@ export default function AdminLogin() {
             <input
               type="email"
               placeholder="Enter your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={loginCredentials.email}
+              onChange={(e) => setLoginCredentials({ ...loginCredentials, email: e.target.value })}
               style={inputStyle}
             />
           </div>
@@ -63,8 +77,8 @@ export default function AdminLogin() {
             <input
               type="password"
               placeholder="Enter your password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={loginCredentials.password}
+              onChange={(e) => setLoginCredentials({ ...loginCredentials, password: e.target.value })}
               style={inputStyle}
             />
           </div>
@@ -121,3 +135,5 @@ export default function AdminLogin() {
     </div>
   );
 }
+
+export default AdminLogin;

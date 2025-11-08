@@ -9,7 +9,7 @@ export const connectDB = async () => {
     catch (error) 
     {
         console.error(`Error: ${error.message}`);
-        process.exit(1); // process code 1 code means exit with failure, 0 means
-        success
+        // Exit the process with failure code. Do not continue when DB connection fails.
+        process.exit(1);
     }
 };
