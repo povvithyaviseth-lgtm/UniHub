@@ -83,7 +83,7 @@ export default function SignUp() {
     >
       <div
         style={{
-          width: "400px",
+          width: "600px",
           backgroundColor: "white",
           borderRadius: "20px",
           padding: "40px",
@@ -91,7 +91,7 @@ export default function SignUp() {
           textAlign: "center",
         }}
       >
-        <h1 style={{ fontSize: "32px", marginBottom: "10px" }}>Sign Up</h1>
+        <h1 style={{ fontSize: "52px", marginBottom: "10px" }}>Sign Up</h1>
         <p style={{ color: "#707070", marginBottom: "20px" }}>
           Signup to discover and join the perfect club for you!
         </p>
