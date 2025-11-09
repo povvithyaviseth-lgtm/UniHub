@@ -7,6 +7,7 @@ const SignUp = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isAdminHovered, setIsAdminHovered] = useState(false);
+  const [confirmPassword, setConfirmPassword] = useState('');
   const navigate = useNavigate();   // 👈 this enables navigation between pages
 
   const handleSubmit = (e) => {
@@ -74,7 +75,56 @@ const SignUp = () => {
                   />
                 </div>
 
-                <button type="submit" style={{ position: 'absolute', backgroundColor: '#00550a', height: '59px', left: '25px', top: '372px', width: '674px', cursor: 'pointer', border: 'none' }}>
+                <p style={{ position: 'absolute', fontFamily: 'Inter, sans-serif', fontWeight: 'normal', lineHeight: 'normal', left: '25px', right: '25px',
+                            fontSize: '20px',
+                            color: '#404040',
+                            top: '362px', // adjust top position accordingly
+                            margin: 0
+                          }}>Confirm Password</p>
+
+                <div style={{ position: 'absolute', height: '59px', left: '25px', right: '25px', top: '386px' }}>
+                <div style={{
+                  position: 'absolute',
+                  backgroundColor: 'rgba(30,64,175,0)',
+                  height: '50px',
+                  left: 0,
+                  borderRadius: '10.015px',
+                  top: '5px',
+                  width: '674px'
+                }}>
+                <div aria-hidden="true" style={{
+                  position: 'absolute',
+                  border: '1.5px solid #eeeeee',
+                  inset: 0,
+                  pointerEvents: 'none',
+                  borderRadius: '10.015px'
+                }} />
+              </div>
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              style={{
+                position: 'absolute',
+                backgroundColor: 'transparent',
+                height: '50px',
+                left: '13px',
+                right: '13px',
+                top: '34px',
+                transform: 'translateY(-50%)',
+                fontFamily: 'Inter, sans-serif',
+                fontWeight: 'bold',
+                color: '#707070',
+                fontSize: '17px',
+                border: 'none',
+                outline: 'none',
+                width: '648px'
+              }}
+                placeholder="Re-enter your password"
+              />
+              </div>
+
+                <button type="submit" style={{ position: 'absolute', backgroundColor: '#00550a', height: '59px', left: '25px', top: '450px', width: '674px', cursor: 'pointer', border: 'none' }}>
                   <div style={{ position: 'absolute', backgroundColor: '#00550a', height: '50px', left: 0, borderRadius: '10.015px', top: '5px', width: '674px' }} />
                   <div style={{ position: 'absolute', display: 'flex', flexDirection: 'column', fontFamily: 'Inter, sans-serif', fontWeight: 'bold', height: '50px', justifyContent: 'center', lineHeight: '0', left: '337px', fontStyle: 'normal', fontSize: '25.038px', textAlign: 'center', color: 'white', top: '30px', transform: 'translate(-50%, -50%)', width: '674px' }}>
                     <p style={{ lineHeight: 'normal', margin: 0 }}>Sign up</p>
@@ -88,14 +138,14 @@ const SignUp = () => {
                 </div>
               </div>
 
-              <div style={{ position: 'absolute', backgroundColor: '#83a0ff', height: '108px', left: '25px', borderRadius: '15px', top: '515px', width: '674px' }} />
+              <div style={{ position: 'absolute', backgroundColor: '#83a0ff', height: '108px', left: '25px', borderRadius: '15px', top: '525px', width: '674px' }} />
 
               <button
                 type="button"
                 onClick={handleAdminClick}
                 onMouseEnter={() => setIsAdminHovered(true)}
                 onMouseLeave={() => setIsAdminHovered(false)}
-                style={{ position: 'absolute', backgroundColor: isAdminHovered ? '#d9e5ff' : '#e9f0ff', height: '108px', left: '38px', overflow: 'clip', borderRadius: '15px', top: '515px', width: '674px', cursor: 'pointer', transition: 'background-color 0.3s', border: 'none' }}
+                style={{ position: 'absolute', backgroundColor: isAdminHovered ? '#d9e5ff' : '#e9f0ff', height: '108px', left: '38px', overflow: 'clip', borderRadius: '15px', top: '525px', width: '674px', cursor: 'pointer', transition: 'background-color 0.3s', border: 'none' }}
               >
                 <div style={{ position: 'absolute', fontFamily: 'Inter, sans-serif', fontWeight: 'normal', height: '72px', lineHeight: 'normal', left: '208px', fontStyle: 'normal', fontSize: '20px', top: '18px', width: '258px' }}>
                   <p style={{ position: 'absolute', left: '9px', right: '9px', color: '#707070', top: 0, margin: 0 }}>Already have an account?</p>
