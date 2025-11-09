@@ -1,18 +1,4 @@
 import React, { useState } from "react";
-import {
-  Box,
-  Button,
-  Input,
-  InputGroup,
-  InputRightElement,
-  VStack,
-  Heading,
-  Text,
-  useToast,
-  FormControl,
-  FormLabel,
-  Flex,
-} from "@chakra-ui/react";
 import { Eye, EyeOff } from "lucide-react";
 
 const REGISTERED_EMAILS = [
@@ -22,169 +8,180 @@ const REGISTERED_EMAILS = [
 ];
 
 export default function SignUp() {
-  const toast = useToast();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [message, setMessage] = useState(null);
 
   const handleSignup = () => {
     if (!email || !password || !confirmPassword) {
-      toast({
-        title: "Missing fields",
-        description: "Please fill in all fields.",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
+      setMessage({ type: "error", text: "Please fill in all fields." });
       return;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      toast({
-        title: "Invalid email format",
-        description: "Please enter a valid email like user@example.com.",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
+      setMessage({ type: "error", text: "Invalid email format." });
       return;
     }
 
     if (REGISTERED_EMAILS.includes(email.toLowerCase())) {
-      toast({
-        title: "Account exists",
-        description: "An account with this email already exists.",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
+      setMessage({ type: "error", text: "Account already exists." });
       return;
     }
 
     if (password !== confirmPassword) {
-      toast({
-        title: "Password mismatch",
-        description: "Password and Confirm Password do not match.",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
+      setMessage({ type: "error", text: "Passwords do not match." });
       return;
     }
 
-    toast({
-      title: "Account created!",
-      description: `Welcome, ${email}`,
-      status: "success",
-      duration: 3000,
-      isClosable: true,
-    });
-
+    setMessage({ type: "success", text: `Account created! Welcome ${email}` });
     setEmail("");
     setPassword("");
     setConfirmPassword("");
   };
 
+  const inputStyle = {
+    width: "100%",
+    padding: "12px",
+    marginBottom: "10px",
+    borderRadius: "8px",
+    border: "1px solid #ccc",
+    fontSize: "16px",
+  };
+
+  const buttonStyle = {
+    width: "100%",
+    padding: "12px",
+    backgroundColor: "#00550A",
+    color: "white",
+    fontSize: "18px",
+    fontWeight: "bold",
+    border: "none",
+    borderRadius: "8px",
+    cursor: "pointer",
+  };
+
+  const toggleButtonStyle = {
+    background: "none",
+    border: "none",
+    cursor: "pointer",
+  };
+
   return (
-    <Flex bg="#f3f3f3" align="center" justify="center" minH="100vh" p={6}>
-      <Box
-        bg="white"
-        boxShadow="xl"
-        borderRadius="2xl"
-        w={["90%", "500px"]}
-        p={10}
-        textAlign="center"
+    <div
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "#f3f3f3",
+        padding: "50px",
+      }}
+    >
+      <div
+        style={{
+          width: "400px",
+          backgroundColor: "white",
+          borderRadius: "20px",
+          padding: "40px",
+          boxShadow: "0px 10px 30px rgba(0,0,0,0.2)",
+          textAlign: "center",
+        }}
       >
-        <Heading mb={2}>Sign Up</Heading>
-        <Text mb={8} color="gray.600">
-          Sign up to discover and join the perfect club for you!
-        </Text>
+        <h1 style={{ fontSize: "32px", marginBottom: "10px" }}>Sign Up</h1>
+        <p style={{ color: "#707070", marginBottom: "20px" }}>
+          Signup to discover and join the perfect club for you!
+        </p>
 
-        <VStack spacing={5}>
-          <FormControl id="email" isRequired>
-            <FormLabel>Email</FormLabel>
-            <Input
-              type="email"
-              value={email}
-              placeholder="Enter your email"
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </FormControl>
-
-          <FormControl id="password" isRequired>
-            <FormLabel>Password</FormLabel>
-            <InputGroup>
-              <Input
-                type={showPassword ? "text" : "password"}
-                value={password}
-                placeholder="Enter your password"
-                onChange={(e) => setPassword(e.target.value)}
-              />
-              <InputRightElement>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </Button>
-              </InputRightElement>
-            </InputGroup>
-          </FormControl>
-
-          <FormControl id="confirmPassword" isRequired>
-            <FormLabel>Confirm Password</FormLabel>
-            <InputGroup>
-              <Input
-                type={showConfirmPassword ? "text" : "password"}
-                value={confirmPassword}
-                placeholder="Re-enter your password"
-                onChange={(e) => setConfirmPassword(e.target.value)}
-              />
-              <InputRightElement>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() =>
-                    setShowConfirmPassword(!showConfirmPassword)
-                  }
-                >
-                  {showConfirmPassword ? (
-                    <EyeOff size={18} />
-                  ) : (
-                    <Eye size={18} />
-                  )}
-                </Button>
-              </InputRightElement>
-            </InputGroup>
-          </FormControl>
-
-          <Button
-            colorScheme="green"
-            w="100%"
-            onClick={handleSignup}
-            fontWeight="bold"
+        {message && (
+          <div
+            style={{
+              marginBottom: "10px",
+              color: message.type === "error" ? "red" : "green",
+            }}
           >
-            Sign Up
-          </Button>
+            {message.text}
+          </div>
+        )}
 
-          <Box borderTop="1px" borderColor="gray.200" pt={4}>
-            <Text color="gray.600">
-              Already have an account?{" "}
-              <Button
-                variant="link"
-                colorScheme="blue"
-                onClick={() => alert("Navigate to Student Login")}
-              >
-                Go to Login
-              </Button>
-            </Text>
-          </Box>
-        </VStack>
-      </Box>
-    </Flex>
+        <div style={{ marginBottom: "15px", textAlign: "left" }}>
+          <label>Email</label>
+          <input
+            type="email"
+            style={inputStyle}
+            placeholder="Enter your email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
+
+        <div style={{ marginBottom: "15px", textAlign: "left" }}>
+          <label>Password</label>
+          <div style={{ position: "relative" }}>
+            <input
+              type={showPassword ? "text" : "password"}
+              style={{ ...inputStyle, paddingRight: "40px" }}
+              placeholder="Enter your password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <button
+              style={{
+                ...toggleButtonStyle,
+                position: "absolute",
+                right: "10px",
+                top: "50%",
+                transform: "translateY(-50%)",
+              }}
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+          </div>
+        </div>
+
+        <div style={{ marginBottom: "20px", textAlign: "left" }}>
+          <label>Confirm Password</label>
+          <div style={{ position: "relative" }}>
+            <input
+              type={showConfirmPassword ? "text" : "password"}
+              style={{ ...inputStyle, paddingRight: "40px" }}
+              placeholder="Re-enter your password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
+            <button
+              style={{
+                ...toggleButtonStyle,
+                position: "absolute",
+                right: "10px",
+                top: "50%",
+                transform: "translateY(-50%)",
+              }}
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+            >
+              {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+          </div>
+        </div>
+
+        <button style={buttonStyle} onClick={handleSignup}>
+          Sign Up
+        </button>
+
+        <p style={{ marginTop: "20px", color: "#707070" }}>
+          Already have an account?{" "}
+          <button
+            onClick={() => alert("Navigate to Student Login")}
+            style={{ background: "none", border: "none", color: "#007d99", cursor: "pointer", textDecoration: "underline" }}
+          >
+            Go to Login
+          </button>
+        </p>
+      </div>
+    </div>
   );
 }
