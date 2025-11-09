@@ -18,7 +18,7 @@ const SignUp = () => {
 
   const handleAdminClick = () => {
     //console.log('Navigate to admin login');
-    navigate('/admin');
+    navigate('/');
   };
   
 
@@ -77,7 +77,7 @@ const SignUp = () => {
                 <button type="submit" style={{ position: 'absolute', backgroundColor: '#00550a', height: '59px', left: '25px', top: '372px', width: '674px', cursor: 'pointer', border: 'none' }}>
                   <div style={{ position: 'absolute', backgroundColor: '#00550a', height: '50px', left: 0, borderRadius: '10.015px', top: '5px', width: '674px' }} />
                   <div style={{ position: 'absolute', display: 'flex', flexDirection: 'column', fontFamily: 'Inter, sans-serif', fontWeight: 'bold', height: '50px', justifyContent: 'center', lineHeight: '0', left: '337px', fontStyle: 'normal', fontSize: '25.038px', textAlign: 'center', color: 'white', top: '30px', transform: 'translate(-50%, -50%)', width: '674px' }}>
-                    <p style={{ lineHeight: 'normal', margin: 0 }}>Sign In As Student</p>
+                    <p style={{ lineHeight: 'normal', margin: 0 }}>Sign up</p>
                   </div>
                 </button>
               </form>
@@ -87,26 +87,6 @@ const SignUp = () => {
                   <div style={{ backgroundColor: '#e6e6e6', height: '2px', width: '674px' }} />
                 </div>
               </div>
-
-              <button
-                type="button"
-                onClick={handleForgotPasswordClick}
-                style={{ position: 'absolute', fontFamily: 'Inter, sans-serif', fontWeight: 'normal', lineHeight: 'normal', left: '25px', right: '524px', color: '#007d99', fontSize: '20px', top: '461px', cursor: 'pointer', backgroundColor: 'transparent', border: 'none', textDecoration: 'none' }}
-                onMouseEnter={(e) => (e.currentTarget.style.textDecoration = 'underline')}
-                onMouseLeave={(e) => (e.currentTarget.style.textDecoration = 'none')}
-              >
-                Forgot Password?
-              </button>
-
-              <button
-                type="button"
-                onClick={handleSignUpClick}
-                style={{ position: 'absolute', fontFamily: 'Inter, sans-serif', fontWeight: 'normal', lineHeight: 'normal', left: '469px', right: '25px', color: '#007d99', fontSize: '20px', top: '456px', cursor: 'pointer', backgroundColor: 'transparent', border: 'none', textDecoration: 'none' }}
-                onMouseEnter={(e) => (e.currentTarget.style.textDecoration = 'underline')}
-                onMouseLeave={(e) => (e.currentTarget.style.textDecoration = 'none')}
-              >
-                Don't Have an Account?
-              </button>
 
               <div style={{ position: 'absolute', backgroundColor: '#83a0ff', height: '108px', left: '25px', borderRadius: '15px', top: '515px', width: '674px' }} />
 
@@ -118,8 +98,8 @@ const SignUp = () => {
                 style={{ position: 'absolute', backgroundColor: isAdminHovered ? '#d9e5ff' : '#e9f0ff', height: '108px', left: '38px', overflow: 'clip', borderRadius: '15px', top: '515px', width: '674px', cursor: 'pointer', transition: 'background-color 0.3s', border: 'none' }}
               >
                 <div style={{ position: 'absolute', fontFamily: 'Inter, sans-serif', fontWeight: 'normal', height: '72px', lineHeight: 'normal', left: '208px', fontStyle: 'normal', fontSize: '20px', top: '18px', width: '258px' }}>
-                  <p style={{ position: 'absolute', left: '9px', right: '9px', color: '#707070', top: 0, margin: 0 }}>Are you an Administrator?</p>
-                  <p style={{ position: 'absolute', left: 0, right: 0, color: '#007d99', top: '48px', margin: 0 }}>Click to go to Admin Login</p>
+                  <p style={{ position: 'absolute', left: '9px', right: '9px', color: '#707070', top: 0, margin: 0 }}>Already have an account?</p>
+                  <p style={{ position: 'absolute', left: 0, right: 0, color: '#007d99', top: '48px', margin: 0 }}>Click to go to Student Login</p>
                 </div>
               </button>
             </div>

@@ -24,7 +24,7 @@ const StudentLogin = () => {
 
   const handleSignUpClick = () => {
     console.log('Navigate to sign up');
-  navigate("/");
+  navigate("/signup");
   };
 
   const handleForgotPasswordClick = () => {
