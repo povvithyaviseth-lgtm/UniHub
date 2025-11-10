@@ -1,14 +1,12 @@
-
-//jackfrontend/src/pages/StudentLogin.jsx11
 import { useState } from 'react';
 import { useNavigate } from "react-router-dom";
 
 const SignUp = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isAdminHovered, setIsAdminHovered] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState('');
-  const navigate = useNavigate();   // 👈 this enables navigation between pages
+  const [isAdminHovered, setIsLoginHovered] = useState(false);
+  const navigate = useNavigate();   
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -17,19 +15,8 @@ const SignUp = () => {
     console.log('Login attempt:', { email, password });
   };
 
-  const handleAdminClick = () => {
-    //console.log('Navigate to admin login');
+  const handleLoginClick = () => {
     navigate('/');
-  };
-  
-
-  const handleSignUpClick = () => {
-    console.log('Navigate to sign up');
-  navigate("/");
-  };
-
-  const handleForgotPasswordClick = () => {
-    console.log('Navigate to forgot password');
   };
 
   return (
@@ -46,9 +33,9 @@ const SignUp = () => {
               </div>
 
               <form onSubmit={handleSubmit}>
-                <p style={{ position: 'absolute', fontFamily: 'Inter, sans-serif', fontWeight: 'normal', lineHeight: 'normal', left: '25px', right: '25px', fontSize: '20px', color: 'black', top: '176px', margin: 0 }}>Email</p>
+                <p style={{ position: 'absolute', fontFamily: 'Inter, sans-serif', fontWeight: 'normal', lineHeight: 'normal', left: '25px', right: '25px', fontSize: '20px', color: 'black', top: '156px', margin: 0 }}>Email</p>
 
-                <div style={{ position: 'absolute', height: '59px', left: '25px', right: '25px', top: '200px' }}>
+                <div style={{ position: 'absolute', height: '59px', left: '25px', right: '25px', top: '180px' }}>
                   <div style={{ position: 'absolute', backgroundColor: 'rgba(30,64,175,0)', height: '50px', left: 0, borderRadius: '10.015px', top: '5px', width: '674px' }}>
                     <div aria-hidden="true" style={{ position: 'absolute', border: '1.5px solid #eeeeee', inset: 0, pointerEvents: 'none', borderRadius: '10.015px' }} />
                   </div>
@@ -57,13 +44,13 @@ const SignUp = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="Enter your email"
-                    style={{ position: 'absolute', backgroundColor: 'transparent', height: '50px', left: '12px', right: '17px', top: '30px', transform: 'translateY(-50%)', fontFamily: 'Inter, sans-serif', fontWeight: 'bold', color: '#707070', fontSize: '17px', border: 'none', outline: 'none', width: '645px' }}
+                    style={{ position: 'absolute', backgroundColor: 'transparent', height: '50px', left: '12px', right: '17px', top: '30px', transform: 'translateY(-50%)', fontFamily: 'Inter, sans-serif', fontWeight: 'normal', color: '#707070', fontSize: '17px', border: 'none', outline: 'none', width: '645px' }}
                   />
                 </div>
 
-                <p style={{ position: 'absolute', fontFamily: 'Inter, sans-serif', fontWeight: 'normal', lineHeight: 'normal', left: '25px', right: '25px', fontSize: '20px', color: '#404040', top: '274px', margin: 0 }}>Password</p>
+                <p style={{ position: 'absolute', fontFamily: 'Inter, sans-serif', fontWeight: 'normal', lineHeight: 'normal', left: '25px', right: '25px', fontSize: '20px', color: '#404040', top: '254px', margin: 0 }}>Password</p>
 
-                <div style={{ position: 'absolute', height: '59px', left: '25px', right: '25px', top: '298px' }}>
+                <div style={{ position: 'absolute', height: '59px', left: '25px', right: '25px', top: '278px' }}>
                   <div style={{ position: 'absolute', backgroundColor: 'rgba(30,64,175,0)', height: '50px', left: 0, borderRadius: '10.015px', top: '5px', width: '674px' }}>
                     <div aria-hidden="true" style={{ position: 'absolute', border: '1.5px solid #eeeeee', inset: 0, pointerEvents: 'none', borderRadius: '10.015px' }} />
                   </div>
@@ -71,18 +58,19 @@ const SignUp = () => {
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    style={{ position: 'absolute', backgroundColor: 'transparent', height: '50px', left: '13px', right: '13px', top: '34px', transform: 'translateY(-50%)', fontFamily: 'Inter, sans-serif', fontWeight: 'bold', color: '#707070', fontSize: '17px', border: 'none', outline: 'none', width: '648px' }}
+                    placeholder="Enter your password"
+                    style={{ position: 'absolute', backgroundColor: 'transparent', height: '50px', left: '13px', right: '13px', top: '34px', transform: 'translateY(-50%)', fontFamily: 'Inter, sans-serif', fontWeight: 'normal', color: '#707070', fontSize: '17px', border: 'none', outline: 'none', width: '648px' }}
                   />
                 </div>
 
                 <p style={{ position: 'absolute', fontFamily: 'Inter, sans-serif', fontWeight: 'normal', lineHeight: 'normal', left: '25px', right: '25px',
                             fontSize: '20px',
                             color: '#404040',
-                            top: '362px', // adjust top position accordingly
+                            top: '352px', // adjust top position accordingly
                             margin: 0
                           }}>Confirm Password</p>
 
-                <div style={{ position: 'absolute', height: '59px', left: '25px', right: '25px', top: '386px' }}>
+                <div style={{ position: 'absolute', height: '59px', left: '25px', right: '25px', top: '376px' }}>
                 <div style={{
                   position: 'absolute',
                   backgroundColor: 'rgba(30,64,175,0)',
@@ -113,7 +101,7 @@ const SignUp = () => {
                 top: '34px',
                 transform: 'translateY(-50%)',
                 fontFamily: 'Inter, sans-serif',
-                fontWeight: 'bold',
+                fontWeight: 'normal',
                 color: '#707070',
                 fontSize: '17px',
                 border: 'none',
@@ -142,9 +130,9 @@ const SignUp = () => {
 
               <button
                 type="button"
-                onClick={handleAdminClick}
-                onMouseEnter={() => setIsAdminHovered(true)}
-                onMouseLeave={() => setIsAdminHovered(false)}
+                onClick={handleLoginClick}
+                onMouseEnter={() => setIsLoginHovered(true)}
+                onMouseLeave={() => setIsLoginHovered(false)}
                 style={{ position: 'absolute', backgroundColor: isAdminHovered ? '#d9e5ff' : '#e9f0ff', height: '108px', left: '38px', overflow: 'clip', borderRadius: '15px', top: '525px', width: '674px', cursor: 'pointer', transition: 'background-color 0.3s', border: 'none' }}
               >
                 <div style={{ position: 'absolute', fontFamily: 'Inter, sans-serif', fontWeight: 'normal', height: '72px', lineHeight: 'normal', left: '208px', fontStyle: 'normal', fontSize: '20px', top: '18px', width: '258px' }}>
