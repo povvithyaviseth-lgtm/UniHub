@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';  // Hashing library
 
 // Buisness Logic for Sign Up page 
 export const registerStudent = async (req, res) => {
+    //DELETEME: next line for debugging purposes
     console.log("Request body:", req.body);
     const { email, password } = req.body; 
 
