@@ -5,16 +5,49 @@ const SignUp = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [isAdminHovered, setIsLoginHovered] = useState(false);
+  const [isLoginHovered, setIsLoginHovered] = useState(false);
   const navigate = useNavigate();   
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Remove this later and implement actual login logic
-    navigate('/home');
-    console.log('Login attempt:', { email, password });
-  };
+// Handles creating a user and submitting
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
+  if (password !== confirmPassword) {
+    alert("Passwords do not match!");
+    return;
+  }
+
+  try {
+    // If you configured Vite proxy, this relative URL is correct
+    const response = await fetch('/api/students/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      // add credentials if you plan to use cookies/sessions:
+      // credentials: 'include',
+      body: JSON.stringify({ email, password }),
+    });
+
+    // Attempt to parse JSON safely
+    let data;
+    try {
+      data = await response.json();
+    } catch {
+      data = {};
+    }
+
+    if (response.ok) {
+      alert(data.message || 'Signed up!');
+      navigate('/home');
+    } else {
+      alert(data.message || `Signup failed (status ${response.status})`);
+    }
+  } catch (err) {
+    console.error('Error signing up:', err);
+    alert('Network/server error. Please try again.');
+  }
+};
+
+// Handles navigating to Student Login
   const handleLoginClick = () => {
     navigate('/');
   };
@@ -133,7 +166,7 @@ const SignUp = () => {
                 onClick={handleLoginClick}
                 onMouseEnter={() => setIsLoginHovered(true)}
                 onMouseLeave={() => setIsLoginHovered(false)}
-                style={{ position: 'absolute', backgroundColor: isAdminHovered ? '#d9e5ff' : '#e9f0ff', height: '108px', left: '38px', overflow: 'clip', borderRadius: '15px', top: '525px', width: '674px', cursor: 'pointer', transition: 'background-color 0.3s', border: 'none' }}
+                style={{ position: 'absolute', backgroundColor: isLoginHovered ? '#d9e5ff' : '#e9f0ff', height: '108px', left: '38px', overflow: 'clip', borderRadius: '15px', top: '525px', width: '674px', cursor: 'pointer', transition: 'background-color 0.3s', border: 'none' }}
               >
                 <div style={{ position: 'absolute', fontFamily: 'Inter, sans-serif', fontWeight: 'normal', height: '72px', lineHeight: 'normal', left: '208px', fontStyle: 'normal', fontSize: '20px', top: '18px', width: '258px' }}>
                   <p style={{ position: 'absolute', left: '9px', right: '9px', color: '#707070', top: 0, margin: 0 }}>Already have an account?</p>
