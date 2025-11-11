@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { authentication } from "../functions/authService.js";
+import { authentication } from "../../../functions/authService.js";
 import {
   containerStyle,
   cardWrapper,
