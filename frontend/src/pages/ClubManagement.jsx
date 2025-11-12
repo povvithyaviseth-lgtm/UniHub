@@ -1,16 +1,26 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import ClubCard from "../component/ClubCard.jsx";
 
 const ClubManagement = () => {
   const navigate = useNavigate();
 
-  // Create button (kept from earlier UI)
-  const [creating, setCreating] = useState(false);
-
-  // Loaded clubs for the currently signed-in student
+  // Clubs for the signed-in student
   const [clubs, setClubs] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // Create Club modal state
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [successBanner, setSuccessBanner] = useState("");
+
+  // Form fields
+  const [clubName, setClubName] = useState("");
+  const [clubLocation, setClubLocation] = useState("");
+  const [clubTime, setClubTime] = useState("");
+  const [clubDesc, setClubDesc] = useState("");
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState("");
 
   // Placeholder: wire to your real auth/user context
   const getCurrentStudentId = () => {
@@ -30,10 +40,9 @@ const ClubManagement = () => {
 
         // Stub for now: simulate network + empty/no clubs result
         await new Promise((r) => setTimeout(r, 500));
-        setClubs([]); // set to [] when no clubs; or an array of club objects when present
+        setClubs([]); // [] when no clubs; otherwise array of club objects
       } catch (err) {
         console.error("Failed to load clubs", err);
-        // Intentionally not showing an error UI to keep the page blank if nothing shows
         setClubs([]);
       } finally {
         setLoading(false);
@@ -43,20 +52,88 @@ const ClubManagement = () => {
     fetchClubsForStudent(getCurrentStudentId());
   }, []);
 
-  // Optional: keep a create flow (admin/adviser). You can remove if not needed.
-  const handleCreateClub = async (e) => {
-    e?.preventDefault();
-    setCreating(true);
-    try {
-      // TODO: POST to your backend to create a new club
-      await new Promise((resolve) => setTimeout(resolve, 600));
-      alert("Club created (stub). Replace with real API.");
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setCreating(false);
+  // Open/close modal helpers
+  const openCreate = useCallback(() => {
+    setIsCreateOpen(true);
+  }, []);
+
+  const closeCreate = useCallback(() => {
+    setIsCreateOpen(false);
+    setSubmitting(false);
+    // Keep fields so users don't lose progress if they clicked outside by accident
+  }, []);
+
+  // Image handling
+  const onPickImage = (file) => {
+    setImageFile(file);
+    if (file) {
+      const url = URL.createObjectURL(file);
+      setImagePreview(url);
+    } else {
+      setImagePreview("");
     }
   };
+
+  // Submit new club request
+  const handleCreateSubmit = async (e) => {
+    e?.preventDefault();
+
+    // Basic validation
+    if (!clubName.trim()) {
+      alert("Please enter a club name.");
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      // Prepare form data if you need to upload an image
+      const body = new FormData();
+      body.append("name", clubName.trim());
+      body.append("location", clubLocation.trim());
+      body.append("time", clubTime.trim());
+      body.append("description", clubDesc.trim());
+      if (imageFile) body.append("image", imageFile);
+
+      // TODO: Replace with your real API endpoint.
+      // Example:
+      // const res = await fetch(`/api/clubs/requests`, { method: 'POST', body });
+      // if (!res.ok) throw new Error('Failed to submit');
+      // const created = await res.json();
+
+      // Simulate network
+      await new Promise((r) => setTimeout(r, 900));
+
+      // Clear modal + show success banner
+      setIsCreateOpen(false);
+      setSuccessBanner("Club sent to admin for approval!");
+      // Optionally clear form after success
+      setClubName("");
+      setClubLocation("");
+      setClubTime("");
+      setClubDesc("");
+      setImageFile(null);
+      setImagePreview("");
+
+      // Hide banner after 4s
+      setTimeout(() => setSuccessBanner("") , 4000);
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong submitting your club. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // Close modal on Escape
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === "Escape") {
+        closeCreate();
+      }
+    };
+    if (isCreateOpen) window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [isCreateOpen, closeCreate]);
 
   return (
     <div
@@ -68,6 +145,30 @@ const ClubManagement = () => {
         overflow: "hidden",
       }}
     >
+      {/* Success Banner */}
+      {successBanner && (
+        <div
+          role="status"
+          aria-live="polite"
+          style={{
+            position: "absolute",
+            right: 24,
+            top: 24,
+            background: "#E8F5E9",
+            color: "#1B5E20",
+            border: "1px solid #C8E6C9",
+            borderRadius: 10,
+            padding: "10px 14px",
+            fontFamily: "Inter, sans-serif",
+            fontWeight: 600,
+            boxShadow: "0 6px 20px rgba(0,0,0,0.08)",
+            zIndex: 50,
+          }}
+        >
+          {successBanner}
+        </div>
+      )}
+
       {/* Sidebar */}
       <div
         style={{
@@ -316,7 +417,7 @@ const ClubManagement = () => {
         Club Management Console
       </div>
 
-      {/* Create New Club button */}
+      {/* Create New Club button (opens modal) */}
       <div style={{ width: 244, height: 41, left: 1118, top: 84, position: "absolute" }}>
         <div
           style={{
@@ -330,8 +431,8 @@ const ClubManagement = () => {
           }}
         />
         <button
-          onClick={handleCreateClub}
-          disabled={creating}
+          onClick={openCreate}
+          disabled={submitting}
           style={{
             width: 244,
             height: 41,
@@ -349,11 +450,11 @@ const ClubManagement = () => {
             wordWrap: "break-word",
             background: "transparent",
             border: "none",
-            cursor: creating ? "not-allowed" : "pointer",
-            opacity: creating ? 0.7 : 1,
+            cursor: submitting ? "not-allowed" : "pointer",
+            opacity: submitting ? 0.7 : 1,
           }}
         >
-          {creating ? "Creating…" : "Create New Club"}
+          Create New Club
         </button>
       </div>
 
@@ -369,7 +470,6 @@ const ClubManagement = () => {
           padding: 16,
         }}
       >
-        {/* If loading or no clubs, render nothing to keep it blank as requested */}
         {!loading && clubs.length > 0 && (
           <div
             style={{
@@ -384,6 +484,222 @@ const ClubManagement = () => {
           </div>
         )}
       </div>
+
+      {/* Create Club Modal */}
+      {isCreateOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="create-club-title"
+          onClick={(e) => {
+            // Close if clicking the dark overlay, not the modal content
+            if (e.target === e.currentTarget) closeCreate();
+          }}
+          style={{
+            position: "absolute",
+            inset: 0,
+            background: "rgba(0,0,0,0.4)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 40,
+          }}
+        >
+          <div
+            style={{
+              width: 640,
+              maxWidth: "92vw",
+              background: "#fff",
+              borderRadius: 12,
+              boxShadow: "0 20px 60px rgba(0,0,0,0.25)",
+              padding: 20,
+              position: "relative",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div id="create-club-title" style={{ fontFamily: "Inter, sans-serif", fontWeight: 800, fontSize: 20, marginBottom: 12 }}>
+              Create a Club
+            </div>
+
+            <form onSubmit={handleCreateSubmit} style={{ display: "grid", gap: 12 }}>
+              <label style={{ fontFamily: "Inter, sans-serif", fontSize: 14, color: "#333" }}>
+                Club Name
+                <input
+                  value={clubName}
+                  onChange={(e) => setClubName(e.target.value)}
+                  placeholder="e.g., Robotics Club"
+                  aria-label="Club Name"
+                  style={{
+                    marginTop: 6,
+                    width: "100%",
+                    height: 40,
+                    borderRadius: 8,
+                    border: "1px solid #e6e6e6",
+                    padding: "0 12px",
+                    outline: "none",
+                  }}
+                />
+              </label>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                <label style={{ fontFamily: "Inter, sans-serif", fontSize: 14, color: "#333" }}>
+                  Location
+                  <input
+                    value={clubLocation}
+                    onChange={(e) => setClubLocation(e.target.value)}
+                    placeholder="e.g., Room 204"
+                    aria-label="Club Location"
+                    style={{
+                      marginTop: 6,
+                      width: "100%",
+                      height: 40,
+                      borderRadius: 8,
+                      border: "1px solid #e6e6e6",
+                      padding: "0 12px",
+                      outline: "none",
+                    }}
+                  />
+                </label>
+
+                <label style={{ fontFamily: "Inter, sans-serif", fontSize: 14, color: "#333" }}>
+                  Time
+                  <input
+                    value={clubTime}
+                    onChange={(e) => setClubTime(e.target.value)}
+                    placeholder="e.g., Fridays 3:30–4:30pm"
+                    aria-label="Club Time"
+                    style={{
+                      marginTop: 6,
+                      width: "100%",
+                      height: 40,
+                      borderRadius: 8,
+                      border: "1px solid #e6e6e6",
+                      padding: "0 12px",
+                      outline: "none",
+                    }}
+                  />
+                </label>
+              </div>
+
+              <label style={{ fontFamily: "Inter, sans-serif", fontSize: 14, color: "#333" }}>
+                Description
+                <textarea
+                  value={clubDesc}
+                  onChange={(e) => setClubDesc(e.target.value)}
+                  placeholder="What is this club about?"
+                  rows={4}
+                  aria-label="Club Description"
+                  style={{
+                    marginTop: 6,
+                    width: "100%",
+                    borderRadius: 8,
+                    border: "1px solid #e6e6e6",
+                    padding: "10px 12px",
+                    outline: "none",
+                    resize: "vertical",
+                  }}
+                />
+              </label>
+
+              <div style={{ display: "grid", gap: 8 }}>
+                <div style={{ fontFamily: "Inter, sans-serif", fontSize: 14, color: "#333" }}>Club Image</div>
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <label
+                    htmlFor="club-image-input"
+                    style={{
+                      background: "#00550A",
+                      color: "#fff",
+                      padding: "8px 12px",
+                      borderRadius: 8,
+                      fontFamily: "Inter, sans-serif",
+                      fontWeight: 700,
+                      cursor: "pointer",
+                      userSelect: "none",
+                    }}
+                  >
+                    Choose Image
+                  </label>
+                  <input
+                    id="club-image-input"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => onPickImage(e.target.files?.[0] || null)}
+                    style={{ display: "none" }}
+                  />
+                  {imageFile && (
+                    <span style={{ fontFamily: "Inter, sans-serif", fontSize: 13, color: "#444" }}>
+                      {imageFile.name}
+                    </span>
+                  )}
+                </div>
+                {imagePreview && (
+                  <img
+                    src={imagePreview}
+                    alt="Club preview"
+                    style={{ width: 160, height: 100, objectFit: "cover", borderRadius: 8, border: "1px solid #e6e6e6" }}
+                  />
+                )}
+              </div>
+
+              <div style={{ display: "flex", gap: 12, marginTop: 4, justifyContent: "flex-end" }}>
+                <button
+                  type="button"
+                  onClick={closeCreate}
+                  style={{
+                    background: "white",
+                    color: "#333",
+                    border: "1px solid #e6e6e6",
+                    borderRadius: 10,
+                    padding: "10px 16px",
+                    cursor: "pointer",
+                    fontFamily: "Inter, sans-serif",
+                    fontWeight: 600,
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  style={{
+                    background: "#00550A",
+                    color: "white",
+                    border: "none",
+                    borderRadius: 10,
+                    padding: "10px 16px",
+                    cursor: submitting ? "not-allowed" : "pointer",
+                    opacity: submitting ? 0.7 : 1,
+                    fontFamily: "Inter, sans-serif",
+                    fontWeight: 700,
+                  }}
+                >
+                  {submitting ? "Sending…" : "Create"}
+                </button>
+              </div>
+            </form>
+
+            {/* Close (X) */}
+            <button
+              aria-label="Close"
+              onClick={closeCreate}
+              style={{
+                position: "absolute",
+                right: 10,
+                top: 10,
+                width: 36,
+                height: 36,
+                borderRadius: 8,
+                border: "1px solid #eee",
+                background: "white",
+                cursor: "pointer",
+                fontWeight: 800,
+              }}
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
