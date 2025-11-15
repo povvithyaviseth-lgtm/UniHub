@@ -1,4 +1,4 @@
-import AuthService from '../services/authServices.js';
+import AuthService from '../services/auth.service.js';
 
 export const registerStudent = async (req, res) => {
   console.log("Request body:", req.body);

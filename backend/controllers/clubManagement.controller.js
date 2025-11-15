@@ -1,5 +1,5 @@
-// controller/clubmanagementController.js
-import { createClub as createClubSvc } from '../services/clubServices.js';
+// controller/clubManagementController.js
+import { createClub as createClubSvc } from '../services/club.service.js';
 
 /**
  * POST /api/clubs/requests

@@ -1,4 +1,4 @@
-import admin from '../models/admin.models.js';
+import admin from '../models/admin.model.js';
 
 export const adminData = async (req, res) => {
   const admins = await admin.find({});
