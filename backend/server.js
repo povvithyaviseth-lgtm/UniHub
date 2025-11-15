@@ -4,28 +4,25 @@ import cors from "cors";
 import { connectDB } from "./config/db.js";
 
 import adminRoutes from "./routes/admin.routes.js";
+import studentRoutes from "./routes/studentRoutes.js";
 
 dotenv.config();
-
 connectDB();
 
 const app = express();
 
 // Enable CORS for frontend requests
 app.use(cors({
-    origin: 'http://localhost:5173', // Vite's default port
-    credentials: true
+    // CHANGE ME TO: origin: 'http://localhost:5173', // Vite's default port 
+    // credentials: true
+    origin: '*'
 }));
 
 app.use(express.json());
 
 // Add Your Routes Here
 app.use("/api/admins", adminRoutes);
-
-
-
-
-
+app.use("/api/students", studentRoutes);
 
 
 // End of Your Routes Here

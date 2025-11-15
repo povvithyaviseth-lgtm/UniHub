@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { adminLogin} from './adminLoginFunction';
+import { adminLogin} from '../../frontend/src/function/adminLoginFunction';
 
 export const authentication = create((set) => ({
     login: async (credentials) => {
