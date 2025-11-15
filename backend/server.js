@@ -2,9 +2,9 @@ import express from 'express';
 import dotenv from 'dotenv';
 import { connectDB } from './config/db.js';
 
-import clubsRouter from './routes/clubs.routes.js';
-import studentRoutes from './routes/studentRoutes.js';
-import adminRoutes from './routes/admin.routes.js';
+import clubsRouter from './routes/club.route.js';
+import studentRoutes from './routes/student.route.js';
+import adminRoutes from './routes/admin.route.js';
 
 dotenv.config();
 connectDB();
