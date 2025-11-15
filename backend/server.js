@@ -13,8 +13,6 @@ const app = express();
 
 // Enable CORS for frontend requests
 app.use(cors({
-    // CHANGE ME TO: origin: 'http://localhost:5173', // Vite's default port 
-    // credentials: true
     origin: '*'
 }));
 

@@ -1,33 +1,21 @@
-import Student from '../models/studentModels.js'
-import bcrypt from 'bcryptjs';  // Hashing library 
-
-// Buisness Logic for Sign Up page 
 export const registerStudent = async (req, res) => {
-    //DELETEME: next line for debugging purposes
-    console.log("Request body:", req.body);
-    const { email, password } = req.body; 
+  console.log("Request body:", req.body);
+  const { email, password } = req.body;
 
-    try {
-        // Check if the user already exists
-        const existingStudent = await Student.findOne({ email }); 
-        if (existingStudent) {
-            return res.status(400).json({ message: 'Email already registered'
-            });
-        }
+  if (!email || !password) {
+    return res.status(400).json({ message: 'Email and password are required' });
+  }
 
-        // Hash the password 
-        const hashedPassword = await bcrypt.hash(password, 10); 
+  try {
+    await AuthService.userSignUp(email, password);
+    res.status(201).json({ message: 'Student registered successfully' });
+  } catch (error) {
+    console.error('Error in registerStudent:', error.message);
 
-        // Create student 
-        const newStudent = new Student ({
-            email,
-            password: hashedPassword, 
-        }); 
-
-        await newStudent.save(); 
-        res.status(201).json({ message: 'Student registered successfully' }); 
-    }   catch (error) {
-        console.error(error); 
-        res.status(500).json({ message: 'Server erro' });
+    if (error.message === 'User already exists') {
+      return res.status(400).json({ message: 'Email already registered' });
     }
+
+    res.status(500).json({ message: 'Server error. Please try again later.' });
+  }
 };
