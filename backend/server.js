@@ -2,6 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import { connectDB } from './config/db.js';
 
+import clubsRouter from './routes/clubs.routes.js';
 import studentRoutes from './routes/studentRoutes.js';
 import adminRoutes from './routes/admin.routes.js';
 
@@ -61,9 +62,10 @@ app.use((req, res, next) => {
 // Routes
 app.use('/api/students', studentRoutes);
 app.use('/api/admins', adminRoutes);
+app.use('/api', clubsRouter);
 
 // 404
 app.use((req, res) => res.status(404).json({ message: 'Route not found' }));
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5050;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

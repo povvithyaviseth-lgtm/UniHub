@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import ClubCard from "../component/ClubCard.jsx";
+import ClubCard from "../component/ClubCard.jsx";  //<--- reusable component from component
 
 const ClubManagement = () => {
   const navigate = useNavigate();
@@ -24,33 +24,8 @@ const ClubManagement = () => {
 
   // Placeholder: wire to your real auth/user context
   const getCurrentStudentId = () => {
-    // e.g., return auth.user.id or from context
     return "CURRENT_STUDENT_ID";
   };
-
-  // Fetch the clubs this student belongs to
-  useEffect(() => {
-    const fetchClubsForStudent = async (studentId) => {
-      setLoading(true);
-      try {
-        // TODO: Replace with your real API call, e.g.:
-        // const res = await fetch(`/api/students/${studentId}/clubs`);
-        // const data = await res.json();
-        // setClubs(data);
-
-        // Stub for now: simulate network + empty/no clubs result
-        await new Promise((r) => setTimeout(r, 500));
-        setClubs([]); // [] when no clubs; otherwise array of club objects
-      } catch (err) {
-        console.error("Failed to load clubs", err);
-        setClubs([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchClubsForStudent(getCurrentStudentId());
-  }, []);
 
   // Open/close modal helpers
   const openCreate = useCallback(() => {
@@ -74,55 +49,56 @@ const ClubManagement = () => {
     }
   };
 
-  // Submit new club request
   const handleCreateSubmit = async (e) => {
-    e?.preventDefault();
+  e?.preventDefault();
 
-    // Basic validation
-    if (!clubName.trim()) {
-      alert("Please enter a club name.");
-      return;
-    }
+  // Basic validation
+  if (!clubName.trim()) {
+    alert("Please enter a club name.");
+    return;
+  }
 
-    setSubmitting(true);
-    try {
-      // Prepare form data if you need to upload an image
-      const body = new FormData();
-      body.append("name", clubName.trim());
-      body.append("location", clubLocation.trim());
-      body.append("time", clubTime.trim());
-      body.append("description", clubDesc.trim());
-      if (imageFile) body.append("image", imageFile);
+  setSubmitting(true);
+  try {
+    const body = {
+      name: clubName.trim(),
+      location: clubLocation.trim(),
+      time: clubTime.trim(),
+      description: clubDesc.trim(),
+      ownerId: getCurrentStudentId(), // use your placeholder or auth
+      imageUrl: "", // optional placeholder, backend accepts this
+    };
 
-      // TODO: Replace with your real API endpoint.
-      // Example:
-      // const res = await fetch(`/api/clubs/requests`, { method: 'POST', body });
-      // if (!res.ok) throw new Error('Failed to submit');
-      // const created = await res.json();
+    const res = await fetch('/api/clubs/requests', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
 
-      // Simulate network
-      await new Promise((r) => setTimeout(r, 900));
+    if (!res.ok) throw new Error('Failed to submit');
+    const created = await res.json();
 
-      // Clear modal + show success banner
-      setIsCreateOpen(false);
-      setSuccessBanner("Club sent to admin for approval!");
-      // Optionally clear form after success
-      setClubName("");
-      setClubLocation("");
-      setClubTime("");
-      setClubDesc("");
-      setImageFile(null);
-      setImagePreview("");
+    // Show success and reset modal
+    setIsCreateOpen(false);
+    setSuccessBanner(created.message || 'Club sent to admin for approval!');
 
-      // Hide banner after 4s
-      setTimeout(() => setSuccessBanner("") , 4000);
-    } catch (err) {
-      console.error(err);
-      alert("Something went wrong submitting your club. Please try again.");
-    } finally {
-      setSubmitting(false);
-    }
-  };
+    // Clear form fields
+    setClubName("");
+    setClubLocation("");
+    setClubTime("");
+    setClubDesc("");
+    setImageFile(null);
+    setImagePreview("");
+
+    // Hide banner after 4s
+    setTimeout(() => setSuccessBanner(""), 4000);
+  } catch (err) {
+    console.error(err);
+    alert("Something went wrong submitting your club. Please try again.");
+  } finally {
+    setSubmitting(false);
+  }
+};
 
   // Close modal on Escape
   useEffect(() => {

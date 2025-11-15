@@ -24,6 +24,8 @@ class AuthService {
     await newUser.save();
     return true;
   }
+
+  
 }
 
 export default AuthService;
