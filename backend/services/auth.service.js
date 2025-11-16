@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import Student from '../models/studentModels.js';
+import Student from '../models/student.model.js';
 
 class AuthService {
   static async #hashPassword(password) {
