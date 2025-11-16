@@ -1,56 +1,18 @@
 import { useState } from 'react';
 import { useNavigate } from "react-router-dom";
+import { useStudentStore } from '../store/student';
 
 const SignUp = () => {
-
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [isLoginHovered, setIsLoginHovered] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState(''); 
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();   
-
-// Handles creating a user and submitting
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setError(""); 
-  setSuccess(""); 
-
-  if (password !== confirmPassword) {
-    setError("Passwords do not match!");
-    return;
-  }
-
-  try {
-    setLoading(true); 
-    // If you configured Vite proxy, this relative URL is correct
-    const response = await fetch('/api/students/signup', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      // add credentials if you plan to use cookies/sessions:
-      // credentials: 'include',
-      body: JSON.stringify({ email, password }),
-    });
-
-    // Attempt to parse JSON safely
-    let data = {}; 
-    try { data = await response.json(); } catch {}
-
-    if (response.ok) {
-      setSuccess(data.message || 'Signed up!');
-      navigate('/home');
-    } else {
-      setError(data.message || `Signup failed (status ${response.status})`);
-    }
-  } catch (err) {
-    console.error('Error signing up:', err);
-    setError('Network/server error. Please try again.');
-  } finally {
-    setLoading(false); 
-  }
-};
+  const {
+    credentials,
+    setCredentials,
+    isLoginHovered,
+    setIsLoginHovered,
+    error,
+    success,
+    loading,
+    handleSubmit,
+  } = useStudentStore();
 
 // Handles navigating to Student Login
   const handleLoginClick = () => {
@@ -132,8 +94,8 @@ const handleSubmit = async (e) => {
                 </div>
                 <input
                   type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={credentials.email}
+                  onChange={(e) => setCredentials({...credentials, email: e.target.value})}
                   placeholder="Enter your email"
                   style={{ position: 'absolute', backgroundColor: 'transparent', height: '50px', left: '12px', right: '17px', top: '30px', transform: 'translateY(-50%)', fontFamily: 'Inter, sans-serif', fontWeight: 'normal', color: '#707070', fontSize: '17px', border: 'none', outline: 'none', width: '645px' }}
                 />
@@ -147,8 +109,8 @@ const handleSubmit = async (e) => {
                 </div>
                 <input
                   type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  value={credentials.password}
+                  onChange={(e) => setCredentials({...credentials, password: e.target.value})}
                   placeholder="Enter your password"
                   style={{ position: 'absolute', backgroundColor: 'transparent', height: '50px', left: '13px', right: '13px', top: '34px', transform: 'translateY(-50%)', fontFamily: 'Inter, sans-serif', fontWeight: 'normal', color: '#707070', fontSize: '17px', border: 'none', outline: 'none', width: '648px' }}
                 />
@@ -176,8 +138,8 @@ const handleSubmit = async (e) => {
                 </div>
                 <input
                   type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  value={credentials.confirmPassword}
+                  onChange={(e) => setCredentials({...credentials, confirmPassword: e.target.value})}
                   style={{
                     position: 'absolute',
                     backgroundColor: 'transparent',

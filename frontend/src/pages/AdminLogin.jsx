@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { authentication } from "../store/admin.store.js";
+import { useAdminStore } from "../store/admin.js";
 import {
   containerStyle,
   cardWrapper,
@@ -22,39 +22,41 @@ import {
 
 
 const AdminLogin = () => {
-  const [loginCredentials, setLoginCredentials] = useState({
-    email: "",
-    password: "",
-    isAdmin : true
-  });
-
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  const { login } = authentication()
+  const {
+    credentials,
+    setCredentials,
+    error,
+    setError,
+    loading,
+    setLoading,
+    login,
+  } = useAdminStore();
 
   const handleSignIn = async () => {
+    setError('');
     setLoading(true);
-    setError("");
+
     try {
-      const response = await login(loginCredentials);
+      const response = await login();
       if (!response) {
-        setError("Login service returned no response");
+        setError('Login service returned no response');
         return;
       }
+
       const { success, message } = response;
       if (!success) {
-        setError(message || "Login failed");
+        setError(message || 'Login failed');
       } else {
-        // Redirect to admin dashboard or another page upon successful login
-        window.location.href = "/admin/dashboard"; // Example redirect
+        window.location.href = '/admin/dashboard';
       }
     } catch (err) {
-      console.error("Login error:", err);
+      console.error('Login error:', err);
+      setError('Unexpected error occurred.');
     } finally {
       setLoading(false);
     }
   };
+
 
   return (
     <div style={containerStyle}>
@@ -67,8 +69,8 @@ const AdminLogin = () => {
             <input
               type="email"
               placeholder="Enter your email"
-              value={loginCredentials.email}
-              onChange={(e) => setLoginCredentials({ ...loginCredentials, email: e.target.value })}
+              value={credentials.email}
+              onChange={(e) => setCredentials({ ...credentials, email: e.target.value })}
               style={inputStyle}
             />
           </div>
@@ -77,8 +79,8 @@ const AdminLogin = () => {
             <input
               type="password"
               placeholder="Enter your password"
-              value={loginCredentials.password}
-              onChange={(e) => setLoginCredentials({ ...loginCredentials, password: e.target.value })}
+              value={credentials.password}
+              onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
               style={inputStyle}
             />
           </div>
