@@ -1,5 +1,8 @@
-export async function adminLogin(credentials) {
-    const response = await fetch('/api/admins/data');
+import { create } from 'zustand';
+
+export const authentication = create((set) => ({
+    login: async (credentials) => {
+     const response = await fetch('/api/admins/data');
     const data = await response.json();
     
     const {email, password} = credentials;
@@ -12,4 +15,6 @@ export async function adminLogin(credentials) {
     ? { success: true, message: "Login successful" } : { success: false, message: "Invalid email or password" };
 
     return admin;
-}
+    }
+
+}));
