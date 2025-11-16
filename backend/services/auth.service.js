@@ -11,7 +11,7 @@ class AuthService {
   static async #checkUserExists(email) {
     const user = await Student.findOne({ email });
     return !!user;
-  }
+  } 
 
   static async userSignUp(email, password) {
     const exists = await this.#checkUserExists(email);
@@ -25,15 +25,23 @@ class AuthService {
     return true;
   }
 
-  
 }
 
 export default AuthService;
 
 
-    /*  othere static functions we can implement ->
-    static async userLogin(username, password) {}
-    static async userLogout() {} 
-    static async forgetPassword(email) {}
-    static async updatePassword(email, newPassword) {}
-    */ 
+/* 
+TODO: Change this into standalone functions
+call them using AuthService.functionName
+
+export async function signUp({ email, password }) {}
+export async function login({ email, password }) {}
+export async function adminLogin({ email, password }) {}
+export async function logout({ userId, sessionId }) {}
+export async function requestPasswordReset({ email }) {}
+export async function resetPassword({ token, newPassword }) {}
+export async function checkUserExists({ email }) {}
+export async function hashPassword(plain) {}
+export async function verifyPassword({ plain, hash }) {}
+
+*/ 
