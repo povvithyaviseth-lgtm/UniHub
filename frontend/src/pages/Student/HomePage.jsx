@@ -1,8 +1,8 @@
 import React, { useMemo, useState } from "react";
-import siteLogo from "../images/UniHubLogo.png";
-import bellIcon from "../images/Bell.png";
-import profileIcon from "../images/Profile.png";
-import searchIcon from "../images/Search.png";
+import siteLogo from "../../images/UniHubLogo.png";
+import bellIcon from "../../images/Bell.png";
+import profileIcon from "../../images/Profile.png";
+import searchIcon from "../../images/Search.png";
 
 /** ----------------------------------------------------------------
  * Mock Data (replace with real API later)

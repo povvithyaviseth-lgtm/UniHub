@@ -1,5 +1,3 @@
-
-//jackfrontend/src/pages/StudentLogin.jsx11
 import { useState } from 'react';
 import { useNavigate } from "react-router-dom";
 

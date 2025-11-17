@@ -1,9 +1,9 @@
 import { Route, Routes } from "react-router-dom"
-import AdminLogin from "./pages/AdminLogin.jsx"
-import StudentLogin from "./pages/StudentLogin.jsx"   
-import HomePage from "./pages/HomePage.jsx"
-import SignUp from "./pages/SignUp.jsx"
-import ClubManagement from "./pages/ClubManagement.jsx"
+import AdminLogin from "./pages/Admin/AdminLogin.jsx"
+import StudentLogin from "./pages/Student/StudentLogin.jsx"   
+import HomePage from "./pages/Student/HomePage.jsx"
+import SignUp from "./pages/Student/SignUp.jsx"
+import ClubManagement from "./pages/ClubOwner/ClubOwnerDashboard.jsx"
 
 
 function App() {

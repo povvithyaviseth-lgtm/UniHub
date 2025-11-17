@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import ClubCard from "../component/ClubCard.jsx";  //<--- reusable component from component
+import ClubCard from "../../component/ClubCard.jsx";  //<--- reusable component from component
 
 const ClubManagement = () => {
   const navigate = useNavigate();

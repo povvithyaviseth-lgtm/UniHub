@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useAdminStore } from "../store/admin.js";
+import { useAdminStore } from "../../store/admin.js";
 import {
   containerStyle,
   cardWrapper,
@@ -18,7 +18,7 @@ import {
   studentBox,
   studentText,
   studentLink,
-} from "../Style/AdminLoginPageStyle.jsx";
+} from "../../Style/AdminLoginPageStyle.jsx";
 
 
 const AdminLogin = () => {
