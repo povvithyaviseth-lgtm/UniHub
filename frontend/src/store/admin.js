@@ -16,6 +16,7 @@ export const useAdminStore = create((set) => ({
   setError: (msg) => set({ error: msg }),
   setLoading: (state) => set({ loading: state }),
 
+  // Function will return JSON file
   login: async () => {
     const { credentials, setError, setLoading } = useAdminStore.getState();
 

@@ -18,7 +18,7 @@ import {
   studentBox,
   studentText,
   studentLink,
-} from "../../Style/AdminLoginPageStyle.jsx";
+} from "../../style/AdminLoginPageStyle.jsx";
 
 
 const AdminLogin = () => {
