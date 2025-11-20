@@ -89,7 +89,7 @@ const AdminLogin = () => {
           <div style={labelStyle(25, 274)}>Password</div>
 
           {/* Rename the File */}
-          <Link to="/ForgetPassword" style={forgotStyle}>
+          <Link to="/PasswordRecovery" style={forgotStyle}>
             Forgot Password?
           </Link>
 

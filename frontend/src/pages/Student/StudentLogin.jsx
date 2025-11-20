@@ -26,7 +26,7 @@ const StudentLogin = () => {
   };
 
   const handleForgotPasswordClick = () => {
-    console.log('Navigate to forgot password');
+    navigate("/PasswordRecovery");
   };
 
   return (

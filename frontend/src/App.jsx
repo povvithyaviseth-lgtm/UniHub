@@ -4,6 +4,7 @@ import StudentLogin from "./pages/Student/StudentLogin.jsx"
 import HomePage from "./pages/Student/HomePage.jsx"
 import SignUp from "./pages/Student/SignUp.jsx"
 import ClubManagement from "./pages/ClubOwner/ClubOwnerDashboard.jsx"
+import PasswordRecovery from "./component/PasswordRecovery.jsx"
 
 
 function App() {
@@ -14,6 +15,7 @@ function App() {
       <Route path="/home" element={<HomePage />} />
       <Route path="/signup" element={<SignUp />} />
       <Route path="/clubmanagement" element={<ClubManagement />} />
+      <Route path="/PasswordRecovery" element={<PasswordRecovery />} />
       {/* Add more routes here */}
     </Routes>
   )

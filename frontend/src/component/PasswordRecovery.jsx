@@ -1,153 +1,165 @@
-import * as React from "react";
-// External dependencies
-import { Slot } from "@radix-ui/react-slot";
-import { cva } from "class-variance-authority";
-import { twMerge } from "tailwind-merge";
-import clsx from "clsx";
-import * as LabelPrimitive from "@radix-ui/react-label";
+import { useNavigate } from 'react-router-dom';
+import { useState } from "react";
 
+export default function Index() {
+  const [email, setEmail] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-// --- Shared Utility Function ---
-/**
- * Utility function to conditionally join class names and safely merge Tailwind classes.
- * Requires 'clsx' and 'tailwind-merge' to be installed.
- */
-function cn() {
-  // Use arguments directly since we don't have the rest spread type restriction
-  return twMerge(clsx(arguments));
-}
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    // Simulate API call
+    setTimeout(() => {
+      setIsSubmitting(false);
+      alert(`Password recovery email sent to: ${email}`);
+      setEmail("");
+      // In a real app, you'd likely close the modal here or show a success message
+    }, 1000);
+  };
 
+  const handleClose = () => {
+    navigate("/");
+  };
 
-// ------------------------------------
-// --- INTEGRATED RADIX LABEL COMPONENT ---
-// ------------------------------------
+    const navigate = useNavigate();
 
-const labelVariants = cva(
-  "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70",
-);
-
-// Removed TypeScript annotations from props and ref
-const Label = React.forwardRef(({ className, ...props }, ref) => (
-  <LabelPrimitive.Root
-    ref={ref}
-    className={cn(labelVariants(), className)}
-    {...props}
-  />
-));
-Label.displayName = LabelPrimitive.Root.displayName;
-
-
-// ------------------------------------
-// --- INTEGRATED BUTTON COMPONENT ---
-// ------------------------------------
-
-// 1. Button Variants
-const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
-  {
-    variants: {
-      variant: {
-        default:
-          "bg-primary text-primary-foreground shadow hover:bg-primary/90",
-        destructive:
-          "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
-        outline:
-          "border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
-        secondary:
-          "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
-      },
-      size: {
-        default: "h-9 px-4 py-2",
-        sm: "h-8 rounded-md px-3 text-xs",
-        lg: "h-10 rounded-md px-8",
-        icon: "h-9 w-9",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
-      size: "default",
-    },
-  },
-);
-
-// 2. Button Component (Props interface is removed)
-const Button = React.forwardRef(({ className, variant, size, asChild = false, ...props }, ref) => {
-    const Comp = asChild ? Slot : "button";
-    return (
-      <Comp
-        className={cn(buttonVariants({ variant, size, className }))}
-        ref={ref}
-        {...props}
-      />
-    );
-  },
-);
-Button.displayName = "Button";
-
-// ------------------------------------
-// --- INTEGRATED INPUT COMPONENT ---
-// ------------------------------------
-
-// Removed TypeScript annotations from props and ref
-const Input = React.forwardRef(({ className, type, ...props }, ref) => {
-    return (
-      <input
-        type={type}
-        className={cn(
-          "flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
-          className,
-        )}
-        ref={ref}
-        {...props}
-      />
-    );
-  },
-);
-Input.displayName = "Input";
-
-
-// ------------------------------------
-// --- MAIN PASSWORD RECOVERY COMPONENT ---
-// ------------------------------------
-
-// Removed TypeScript return type annotation
-export const PasswordRecovery = () => {
   return (
-    <div className="bg-white w-full max-w-4xl mx-auto p-10 space-y-8 rounded-xl shadow-lg">
-      <h1 className="text-4xl sm:text-5xl font-extrabold text-gray-900 text-center">
-        Password Recovery
-      </h1>
+    <div
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "#F8FAFC", // A light background color
+        padding: "20px", // Some padding around the modal
+      }}
+    >
+      <div
+        style={{
+          width: "100%",
+          maxWidth: "600px", // Adjusted max-width to better fit the image proportions
+          background: "white",
+          borderRadius: "15px", // Match image border radius
+          padding: "50px", // Match image padding
+          boxShadow: "0px 10px 30px rgba(0, 0, 0, 0.25)", // Subtle shadow
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "flex-start", // Align items to start for the label/input
+          gap: "40px", // Spacing between title, input group, and buttons
+          boxSizing: "border-box", // Ensure padding doesn't add to total width
+        }}
+      >
+        {/* Title */}
+        <h1
+          style={{
+            fontSize: "65px", // Larger font size for the title as per image
+            fontFamily: "Inter, sans-serif", // Using Inter as in HomePage
+            fontWeight: 700,
+            color: "black",
+            margin: "0", // Reset default margin
+            alignSelf: "center", // Center the title explicitly
+            textAlign: "center", // Ensure text is centered
+            width: "100%", // Take full width for centering
+          }}
+        >
+          Password Recovery
+        </h1>
 
-      <div className="w-full space-y-2">
-        <Label
-          htmlFor="email-input"
-          className="text-lg font-medium text-gray-700"
-        >
-          Enter Your Email
-        </Label>
-        <Input
-          id="email-input"
-          type="email"
-          placeholder="Enter your email address"
-          className="h-12 text-lg"
-        />
-      </div>
+        <form onSubmit={handleSubmit} style={{ width: "100%", display: "flex", flexDirection: "column", gap: "30px" }}>
+          {/* Email Input Group */}
+          <div>
+            <label
+              htmlFor="recovery-email"
+              style={{
+                display: "block",
+                color: "black",
+                fontSize: "24px", // Label font size
+                fontFamily: "Inter, sans-serif",
+                fontWeight: 500,
+                marginBottom: "15px", // Space between label and input
+              }}
+            >
+              Enter Your Email
+            </label>
+            <input
+              id="recovery-email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email"
+              required
+              style={{
+                width: "100%",
+                padding: "18px 20px", // Larger padding for input
+                fontSize: "22px", // Input text size
+                fontFamily: "Inter, sans-serif",
+                fontWeight: 400,
+                borderRadius: "8px", // Input border radius
+                border: "2px #ccc solid", // Light gray border
+                boxSizing: "border-box",
+                outline: "none", // Remove default outline
+                // Focus styles (can be added with a pseudo-class or JavaScript for inline styles)
+                // For a simpler inline approach, we'll keep it as is, but consider CSS classes for focus
+              }}
+            />
+          </div>
 
-      <div className="w-full flex gap-4 pt-2">
-        <Button
-          variant="outline"
-          className="flex-1 h-16 text-xl font-bold rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-700 transition-colors"
-        >
-          Close
-        </Button>
-        <Button
-          className="flex-1 h-16 text-xl font-bold rounded-lg"
-        >
-          Submit
-        </Button>
+          {/* Buttons Row */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              gap: "30px", // Space between buttons
+              paddingTop: "20px", // Space above buttons
+            }}
+          >
+            {/* Close Button */}
+            <button
+              type="button"
+              onClick={handleClose}
+              style={{
+                flex: 1, // Allow buttons to grow and take equal space
+                height: "70px", // Button height
+                borderRadius: "8px", // Button border radius
+                background: "#E1E1E3", // Light gray background
+                color: "#6B6767", // Dark gray text
+                fontSize: "32px", // Button text size
+                fontFamily: "Inter, sans-serif",
+                fontWeight: 700,
+                border: "none",
+                cursor: "pointer",
+                transition: "background-color 0.2s ease", // Smooth transition for hover
+                // Hover effect (inline styles don't directly support :hover, usually done with CSS classes or JS event listeners)
+                // For simplicity, we'll omit dynamic hover in inline styles, but a real app would have it.
+              }}
+            >
+              Close
+            </button>
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={isSubmitting} // Keep disabled state from previous code
+              style={{
+                flex: 1,
+                height: "70px",
+                borderRadius: "8px",
+                background: "#2E550A", // Dark green background
+                color: "white",
+                fontSize: "32px",
+                fontFamily: "Inter, sans-serif",
+                fontWeight: 700,
+                border: "none",
+                cursor: isSubmitting ? "not-allowed" : "pointer", // Change cursor when disabled
+                opacity: isSubmitting ? 0.7 : 1, // Reduce opacity when submitting
+                transition: "background-color 0.2s ease, opacity 0.2s ease",
+              }}
+            >
+              {isSubmitting ? "Submitting..." : "Submit"}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );
-};
+}
