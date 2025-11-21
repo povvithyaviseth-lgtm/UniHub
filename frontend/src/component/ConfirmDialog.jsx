@@ -1,4 +1,4 @@
-// src/components/ConfirmDialog.jsx
+// src/component/ConfirmDialog.jsx
 import React from "react";
 
 /**

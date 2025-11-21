@@ -3,10 +3,10 @@ import AdminLogin from "./pages/Admin/AdminLogin.jsx"
 import StudentLogin from "./pages/Student/StudentLogin.jsx"   
 import HomePage from "./pages/Student/HomePage.jsx"
 import SignUp from "./pages/Student/SignUp.jsx"
-import ClubManagement from "./pages/ClubOwner/ClubOwnerDashboard.jsx"
 
-import ClubManagement from "./pages/ClubManagementPage.jsx"
-import AdminPage from "./pages/AdminPage.jsx"
+import ClubManagement from "./pages/ClubOwner/ClubManagementPage.jsx"
+import AdminPage from "./pages/Admin/AdminPage.jsx"
+import ClubManagmentEventsPage from "./pages/ClubOwner/ClubManagmentEventsPage.jsx"
 
 
 function App() {
@@ -16,8 +16,13 @@ function App() {
       <Route path="/" element={<StudentLogin />} />   
       <Route path="/home" element={<HomePage />} />
       <Route path="/signup" element={<SignUp />} />
-      <Route path="/clubmanagement" element={<ClubManagement />} />
+      
       <Route path="/clubManage" element={<ClubManagement />} />
+      <Route path="/clubManageEvents" element={<ClubManagmentEventsPage />} />
+      
+      
+
+
       <Route path="/adminManage" element={<AdminPage />} />
       
       {/* Add more routes here */}

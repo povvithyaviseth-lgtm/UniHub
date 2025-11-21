@@ -1,5 +1,5 @@
 import React from "react";
-import PopUpModals from "./PopUpModals";
+import PopUpModals from "../PopUpModals";
 
 /**
  * ApproveClubModal

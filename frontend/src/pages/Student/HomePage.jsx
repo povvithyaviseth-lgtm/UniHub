@@ -1,4 +1,4 @@
-// src/pages/HomePage.jsx
+// src/pages/Student/HomePage.jsx
 import React, { useEffect, useMemo, useState, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import siteLogo from "../../images/UniHubLogo.png";
@@ -6,11 +6,14 @@ import bellIcon from "../../images/Bell.png";
 import profileIcon from "../../images/Profile.png";
 import searchIcon from "../../images/Search.png";
 
+// ✅ make sure the stylesheet is loaded for this page
+import "../../index.css"; // if your file is named index.css instead, use: import "../../index.css";
+
 // Popups + bodies
-import PopUpModals from "../components/PopUpModals.jsx";
-import ConfirmDialog from "../components/ConfirmDialog.jsx";
-import Profile from "./Profile.jsx";
-import EditProfile from "./EditProfile.jsx"; // make sure this file exists
+import PopUpModals from "../../component/PopUpModals.jsx";
+import ConfirmDialog from "../../component/ConfirmDialog.jsx";
+import Profile from "../../component/StudentComponent/Profile.jsx";
+import EditProfile from "../../component/StudentComponent/EditProfile.jsx"; // make sure this file exists
 
 /* ----------------------------- Scale helper ----------------------------- */
 /** Scales fixed-width children to fit the container width (<= maxScale). */
@@ -186,7 +189,8 @@ const ClubModal = ({ club, onClose }) => {
             <span style={{ color: "black", fontSize: 20, fontFamily: "Inter", fontWeight: 700 }}>Contact:</span>
             <a
               href={`mailto:${email}`}
-              style={{ color: "#0091A1", fontSize: 20, fontFamily: "Inter", fontWeight: 400, textDecoration: "underline" }}
+              className="text-link"
+              style={{ color: "#007D99", fontSize: 20, fontFamily: "Inter", fontWeight: 400, textDecoration: "underline" }}
             >
               {email}
             </a>
@@ -849,7 +853,7 @@ const HomePage = () => {
 
           {/* Upcoming Events Header */}
           <div style={{ width: "100%", maxWidth: 1220, padding: 10, display: "flex", alignItems: "center", gap: 10 }}>
-            <div style={{ color: "black", fontSize: 40, fontFamily: "Inter", fontWeight: 700 }}>Upcoming Club Events</div>
+            <div style={{ color: "black", fontFamily: "Inter", fontSize: 40, fontWeight: 700 }}>Upcoming Club Events</div>
           </div>
 
           {/* Events List (each scales to width) */}
@@ -873,13 +877,13 @@ const HomePage = () => {
         baseW={598.92}
         baseH={814}
       >
-      // onManageClub navigates to /clubManage
-      <Profile
-        onClose={() => setProfileOpen(false)}
-        onEditProfile={handleOpenEditFromProfile}
-        onLeaveClub={handleProfileLeaveClub}
-        onManageClub={handleManageClub}
-      />
+        {/* onManageClub navigates to /clubManage */}
+        <Profile
+          onClose={() => setProfileOpen(false)}
+          onEditProfile={handleOpenEditFromProfile}
+          onLeaveClub={handleProfileLeaveClub}
+          onManageClub={handleManageClub}
+        />
       </PopUpModals>
 
       {/* EDIT PROFILE popup */}

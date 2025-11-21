@@ -1,6 +1,6 @@
-// src/pages/AdminPage.jsx
+// src/pages/Admin/AdminPage.jsx
 import React, { useState, useCallback } from "react";
-import ClubApprovalModal from "../components/ClubApprovalModal";
+import ClubApprovalModal from "../../component/AdminComponent/ClubApprovalPopUp";
 
 export default function AdminPage() {
   const clubs = [

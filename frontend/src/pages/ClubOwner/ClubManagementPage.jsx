@@ -1,7 +1,8 @@
 // src/pages/ClubManagement.jsx
 import React from "react";
-import PopUpModals from "../components/PopUpModals.jsx";
-import CreateClubDialog from "../components/CreateClubDialog.jsx";
+import { useNavigate } from "react-router-dom"; // ⬅️ added
+import PopUpModals from "../../component/PopUpModals.jsx";
+import CreateClubPopUp from "../../component/ClubOwnerComponent/CreateClubPopUp.jsx";
 
 /**
  * ClubManagement (responsive)
@@ -9,6 +10,8 @@ import CreateClubDialog from "../components/CreateClubDialog.jsx";
  * - Placeholder club shown; DB-wire later.
  */
 export default function ClubManagement() {
+  const navigate = useNavigate(); // ⬅️ added
+
   // Placeholder club — swap to DB data later
   const club = {
     id: "esports",
@@ -24,16 +27,12 @@ export default function ClubManagement() {
 
   // Create handler
   const handleCreate = (payload) => {
-    // TODO: call your API to create the club with payload
-    // e.g., await api.createClub(payload)
     console.log("CREATE club payload:", payload);
     setShowCreate(false);
   };
 
   // Edit handler
   const handleEdit = (payload) => {
-    // TODO: call your API to update this club with payload
-    // e.g., await api.updateClub(club.id, payload)
     console.log("EDIT club payload for", club.id, ":", payload);
     setShowEdit(false);
   };
@@ -171,6 +170,7 @@ export default function ClubManagement() {
                   fontWeight: 700,
                   fontSize: 17,
                 }}
+                onClick={() => navigate("/clubManageEvents")} // ⬅️ added
               >
                 Events &nbsp; &gt;
               </button>
@@ -374,7 +374,7 @@ export default function ClubManagement() {
 
       {/* ====== CREATE DIALOG ====== */}
       <PopUpModals open={showCreate} onClose={() => setShowCreate(false)}>
-        <CreateClubDialog
+        <CreateClubPopUp
           title="Club Creation"
           confirmText="Create Club"
           cancelText="Cancel"
@@ -385,7 +385,7 @@ export default function ClubManagement() {
 
       {/* ====== EDIT DIALOG (same component, different text) ====== */}
       <PopUpModals open={showEdit} onClose={() => setShowEdit(false)}>
-        <CreateClubDialog
+        <CreateClubPopUp
           title="Edit Club"
           confirmText="Save Changes"
           cancelText="Cancel"
