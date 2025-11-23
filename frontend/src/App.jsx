@@ -4,7 +4,7 @@ import StudentLogin from "./pages/Student/StudentLogin.jsx"
 import HomePage from "./pages/Student/HomePage.jsx"
 import SignUp from "./pages/Student/SignUp.jsx"
 import ClubManagement from "./pages/ClubOwner/ClubOwnerDashboard.jsx"
-
+import AdminDashboard from "./pages/Admin/AdminDashboard.jsx"
 
 function App() {
   return (
@@ -14,6 +14,7 @@ function App() {
       <Route path="/home" element={<HomePage />} />
       <Route path="/signup" element={<SignUp />} />
       <Route path="/clubmanagement" element={<ClubManagement />} />
+      <Route path="/admin/dashboard" element={<AdminDashboard />} />
       {/* Add more routes here */}
     </Routes>
   )
