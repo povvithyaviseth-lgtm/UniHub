@@ -49,27 +49,6 @@ export const buttonBase = {
   cursor: "pointer",
 };
 
-export const approveBtn = {
-  ...buttonBase,
-  background: "#00550A",
-};
-
-export const deleteBtn = {
-  ...buttonBase,
-  background: "rgba(0, 85, 10, 0.56)",
-};
-
-export const manageBtn = {
-  ...buttonBase,
-  background: "rgba(0, 85, 10, 0.56)",
-};
-
-export const signoutBtn = {
-  ...buttonBase,
-  background: "#A60000",
-  fontSize: 27,
-};
-
 export const mainStyle = {
   flex: 1,
   padding: 30,
