@@ -1,17 +1,28 @@
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 import Student from '../models/student.model.js';
 
 class AuthService {
   static async #hashPassword(password) {
     const saltRounds = 10;
-    const hashed = await bcrypt.hash(password, saltRounds);
-    return hashed;
+    return bcrypt.hash(password, saltRounds);
+  }
+
+  static async #comparePassword(plain, hashed) {
+    return bcrypt.compare(plain, hashed);
   }
 
   static async #checkUserExists(email) {
-    const user = await Student.findOne({ email });
-    return !!user;
+    return Student.findOne({ email });
   } 
+
+  static #generateToken(userId) { 
+    return jwt.sign(
+      { id: userId }, 
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+  }
 
   static async userSignUp(email, password) {
     const exists = await this.#checkUserExists(email);
@@ -22,11 +33,17 @@ class AuthService {
     const hashedPassword = await this.#hashPassword(password);
     const newUser = new Student({ email, password: hashedPassword });
     await newUser.save();
-    return true;
+    return {
+      message: "Signup successful. Please log in.", 
+      user: {
+        id: newUser._id, 
+        email: newUser.email, 
+        role: newUser.role,
+      },
+    };
   }
 
 }
-
 export default AuthService;
 
 

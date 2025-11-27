@@ -10,7 +10,7 @@ export const registerStudent = async (req, res) => {
 
   try {
     await AuthService.userSignUp(email, password);
-    res.status(201).json({ message: 'Student registered successfully' });
+    res.status(201).json({ message: 'Student registered successfully! Please Log In.' });
   } catch (error) {
     console.error('Error in registerStudent:', error.message);
 
