@@ -24,7 +24,7 @@ class AuthService {
     );
   }
 
-  static async userSignUp(email, password) {
+  static async studentSignUp(email, password) {
     const exists = await this.#checkUserExists(email);
     if (exists) {
       throw new Error('User already exists');
@@ -43,6 +43,33 @@ class AuthService {
     };
   }
 
+  static async userSignUp(email, password) {
+    return this.studentSignUp(email, password);
+  }
+
+  static async studentLogin(email, password) {
+    const user = await this.#checkUserExists(email); 
+    if (!user) {
+      throw new Error("Invalid email"); 
+    }
+
+    const passwordMatch = await this.#comparePassword(password, user.password); 
+    if (!passwordMatch) {
+      throw new Error("Invalid password");
+    }
+
+    const token = this.#generateToken(user._id); 
+
+    return {
+      message: "Login successful", 
+      token,
+      user: {
+        id: user._id, 
+        email: user.email,
+        role: user.role,
+      },
+    };
+  }
 }
 export default AuthService;
 
@@ -51,14 +78,8 @@ export default AuthService;
 TODO: Change this into standalone functions
 call them using AuthService.functionName
 
-export async function signUp({ email, password }) {}
-export async function login({ email, password }) {}
 export async function adminLogin({ email, password }) {}
 export async function logout({ userId, sessionId }) {}
 export async function requestPasswordReset({ email }) {}
 export async function resetPassword({ token, newPassword }) {}
-export async function checkUserExists({ email }) {}
-export async function hashPassword(plain) {}
-export async function verifyPassword({ plain, hash }) {}
-
 */ 
