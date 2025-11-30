@@ -1,16 +1,10 @@
-// src/pages/ClubManagement.jsx
 import React from "react";
-import { useNavigate } from "react-router-dom"; // ⬅️ added
+import { useNavigate } from "react-router-dom";
 import PopUpModals from "../../component/PopUpModals.jsx";
 import CreateClubPopUp from "../../component/ClubOwnerComponent/CreateClubPopUp.jsx";
 
-/**
- * ClubManagement (responsive)
- * - Uses ONLY your index.css for hover/active (e.g., .btn-primary).
- * - Placeholder club shown; DB-wire later.
- */
 export default function ClubManagement() {
-  const navigate = useNavigate(); // ⬅️ added
+  const navigate = useNavigate();
 
   // Placeholder club — swap to DB data later
   const club = {
@@ -27,7 +21,7 @@ export default function ClubManagement() {
   const [error, setError] = React.useState("");
   const [success, setSuccess] = React.useState("");
 
-   // Create handler (talks to backend)
+  // Create handler (talks to backend)
   const handleCreate = async (payload) => {
     console.log("CREATE club payload:", payload);
     setError("");
@@ -42,8 +36,7 @@ export default function ClubManagement() {
     }
 
     try {
-      // For now, fake an image path based on slug.
-      // Later: actually upload `imageFile` to your backend or Cloudinary.
+      // Fake image path for now
       const imagePath = imageFile ? `/images/clubs/${draft.slug}.png` : "";
 
       const res = await fetch("http://localhost:5050/api/clubs", {
@@ -70,22 +63,47 @@ export default function ClubManagement() {
       setShowCreate(false);
 
       console.log("New club from backend:", data.club);
-      // later: refresh club list or push into state/store here
+
+      // Auto-hide banner after 4 seconds
+      setTimeout(() => setSuccess(""), 4000);
     } catch (err) {
       console.error(err);
       setError(err.message);
     }
   };
 
-  // Edit handler
   const handleEdit = (payload) => {
     console.log("EDIT club payload for", club.id, ":", payload);
     setShowEdit(false);
   };
 
+  /* ======================================================
+     SUCCESS BANNER (appears after creation)
+  ====================================================== */
+  const successBanner = success && (
+    <div
+      style={{
+        position: "fixed",
+        top: 20,
+        right: 20,
+        background: "#ffffffff",
+        padding: "16px 22px",
+        borderRadius: 12,
+        boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
+        color: "#00550A",
+        fontSize: 18,
+        fontWeight: 700,
+        zIndex: 9999,
+        maxWidth: "330px",
+      }}
+    >
+      Your club has been successfully sent to admin for approval! <br />
+      We will get back to you once it’s reviewed.
+    </div>
+  );
+
   return (
     <div
-      /* Page shell */
       style={{
         width: "100%",
         minHeight: "100vh",
@@ -94,8 +112,9 @@ export default function ClubManagement() {
         justifyContent: "center",
       }}
     >
+      {successBanner}
+
       <div
-        /* Responsive wrapper: sidebar + main, stacks on small screens via flex-wrap */
         style={{
           width: "100%",
           maxWidth: 1440,
@@ -120,7 +139,6 @@ export default function ClubManagement() {
           }}
         >
           <div style={{ padding: 16 }}>
-            {/* “Welcome” title */}
             <div
               style={{
                 textAlign: "center",
@@ -133,7 +151,6 @@ export default function ClubManagement() {
               Welcome
             </div>
 
-            {/* Kicker */}
             <div
               style={{
                 color: "#707070",
@@ -147,7 +164,6 @@ export default function ClubManagement() {
               Manage your club
             </div>
 
-            {/* Section: Navigation */}
             <div
               style={{
                 color: "#707070",
@@ -175,7 +191,6 @@ export default function ClubManagement() {
               </button>
             </div>
 
-            {/* Section: Events & Notifications */}
             <div
               style={{
                 color: "#707070",
@@ -216,13 +231,12 @@ export default function ClubManagement() {
                   fontWeight: 700,
                   fontSize: 17,
                 }}
-                onClick={() => navigate("/clubManageEvents")} // ⬅️ added
+                onClick={() => navigate("/clubManageEvents")}
               >
                 Events &nbsp; &gt;
               </button>
             </div>
 
-            {/* Back link */}
             <button
               type="button"
               onClick={() => window.history.back()}
@@ -251,7 +265,6 @@ export default function ClubManagement() {
           }}
           aria-label="Main content"
         >
-          {/* Header row: title + Create button */}
           <header
             style={{
               display: "flex",
@@ -303,7 +316,7 @@ export default function ClubManagement() {
             </div>
           </header>
 
-          {/* Single placeholder card (Esports) */}
+          {/* Single placeholder card */}
           <div
             style={{
               display: "grid",
@@ -322,9 +335,7 @@ export default function ClubManagement() {
                 display: "flex",
                 flexDirection: "column",
               }}
-              aria-label={`${club.name} card`}
             >
-              {/* Image */}
               <div
                 style={{
                   position: "relative",
@@ -347,12 +358,10 @@ export default function ClubManagement() {
                       height: "100%",
                       objectFit: "cover",
                     }}
-                    loading="lazy"
                   />
                 )}
               </div>
 
-              {/* Body */}
               <div
                 style={{
                   padding: "0 20px 12px 20px",
@@ -382,9 +391,7 @@ export default function ClubManagement() {
                 <div style={{ color: "#000", fontSize: 16 }}>{club.description}</div>
               </div>
 
-              {/* Divider */}
               <div
-                aria-hidden
                 style={{
                   height: 2,
                   background: "#B7B7B7",
@@ -392,7 +399,6 @@ export default function ClubManagement() {
                 }}
               />
 
-              {/* Actions */}
               <div
                 style={{
                   display: "flex",
@@ -404,6 +410,7 @@ export default function ClubManagement() {
                 <button type="button" className="btn-primary" style={{ flex: "1 0 160px" }}>
                   View Members
                 </button>
+
                 <button
                   type="button"
                   className="btn-primary"
@@ -418,28 +425,6 @@ export default function ClubManagement() {
         </section>
       </div>
 
-      {success && (
-        <div
-          style={{
-            position: "fixed",
-            top: 20,
-            right: 20,
-            background: "#AEFFD2",
-            padding: "16px 22px",
-            borderRadius: 12,
-            boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
-            color: "#00550A",
-            fontSize: 18,
-            fontWeight: 700,
-            zIndex: 9999,
-            maxWidth: "320px",
-          }}
-        >
-          Your club has been successfully sent to admin for approval! <br />
-          We will get back to you once it’s reviewed.
-        </div>
-        )}
-
       {/* ====== CREATE DIALOG ====== */}
       <PopUpModals open={showCreate} onClose={() => setShowCreate(false)}>
         <CreateClubPopUp
@@ -451,7 +436,7 @@ export default function ClubManagement() {
         />
       </PopUpModals>
 
-      {/* ====== EDIT DIALOG (same component, different text) ====== */}
+      {/* ====== EDIT DIALOG ====== */}
       <PopUpModals open={showEdit} onClose={() => setShowEdit(false)}>
         <CreateClubPopUp
           title="Edit Club"
