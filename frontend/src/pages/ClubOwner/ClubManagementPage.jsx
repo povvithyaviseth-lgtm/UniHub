@@ -69,6 +69,9 @@ export default function ClubManagement() {
     } catch (err) {
       console.error(err);
       setError(err.message);
+
+      // Auto-hide error banner after 4 seconds
+      setTimeout(() => setError(""), 4000);
     }
   };
 
@@ -102,6 +105,27 @@ export default function ClubManagement() {
     </div>
   );
 
+  const errorBanner = error && (
+  <div
+    style={{
+      position: "fixed",
+      top: 20,
+      right: 20,
+      background: "#FFB3B3",
+      padding: "16px 22px",
+      borderRadius: 12,
+      boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
+      color: "#7A0000",
+      fontSize: 18,
+      fontWeight: 700,
+      zIndex: 9999,
+      maxWidth: "330px",
+    }}
+  >
+   {error}
+  </div>
+);
+
   return (
     <div
       style={{
@@ -112,6 +136,7 @@ export default function ClubManagement() {
         justifyContent: "center",
       }}
     >
+      {errorBanner}
       {successBanner}
 
       <div
