@@ -1,43 +1,36 @@
-// controller/clubManagementController.js
-import { createClub as createClubSvc } from '../services/club.service.js';
+// controllers/club.controller.js
+import { createClubService } from '../services/club.service.js';
 
-/**
- * POST /api/clubs/requests
- * Accepts JSON: { name, description?, location?, time?, imageUrl?, ownerId }
- * Creates a club with status 'pending' and returns it.
- */
-export async function createClub(req, res) {
+export const createClub = async (req, res) => {
+  const { name, description, tag, image } = req.body;
+
   try {
-    const { name = '', description = '', location = '', time = '', ownerId, imageUrl = '' } = req.body;
+    const ownerId = req.user.id; // from auth middleware
 
-    if (!name.trim()) {
-      return res.status(400).json({ error: 'Club name is required' });
-    }
-
-    const clubDto = await createClubSvc(
-      { name, description, location, time, imageUrl },
-      ownerId
-    );
+    // Call the service layer
+    const club = await createClubService({
+      ownerId,
+      name,
+      description,
+      tag,
+      image,
+    });
 
     return res.status(201).json({
-      ...clubDto,
-      message: 'Club created successfully!',
+      message: 'Club created successfully',
+      club,
     });
   } catch (err) {
-    return handleError(res, err);
-  }
-}
+    console.error('Error creating club:', err);
 
-/* ---------------- helpers ---------------- */
+    if (err.message === 'Club name is required') {
+      return res.status(400).json({ message: err.message });
+    }
 
-function handleError(res, err) {
-  if (err?.code === 11000) {
-    return res.status(409).json({ error: 'Club name already exists' });
+    if (err.code === 11000) {
+      return res.status(400).json({ message: "A club with that name already exists." });
+    }
+
+    return res.status(500).json({ message: 'Server error creating club' });
   }
-  if (err?.name === 'CastError') {
-    return res.status(400).json({ error: 'Invalid ID' });
-  }
-  const msg = err?.message || 'Server error';
-  const status = /not found|invalid/i.test(msg) ? 404 : 400;
-  return res.status(status).json({ error: msg });
-}
+};

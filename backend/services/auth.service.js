@@ -16,6 +16,25 @@ class AuthService {
     return Student.findOne({ email });
   } 
 
+/* 
+How Login Tokens Work 
+
+When a user logs in, the server needs a way to know who they are.
+
+HTTP is stateless, meaning:
+Every request is treated like a brand-new stranger
+
+The server does not remember past requests automatically
+So we need something that lets the server remember:
+"This request was made by Student #123."
+
+A token is just a long string that proves who the user is.
+
+The token is created when the student logs in and is stored in the browser’s localStorage.
+When the user makes a request, the middleware verifies the token and extracts the user ID from it, 
+so the server knows exactly which student is making the request.
+*/ 
+
   static #generateToken(userId) { 
     return jwt.sign(
       { id: userId }, 
@@ -75,9 +94,6 @@ export default AuthService;
 
 
 /* 
-TODO: Change this into standalone functions
-call them using AuthService.functionName
-
 export async function adminLogin({ email, password }) {}
 export async function logout({ userId, sessionId }) {}
 export async function requestPasswordReset({ email }) {}

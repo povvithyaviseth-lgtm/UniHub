@@ -1,8 +1,11 @@
-import { Router } from 'express';
+// routes/club.route.js
+import express from 'express';
 import { createClub } from '../controllers/club.controller.js';
+import { auth } from '../middleware/auth.middleware.js';
 
-const router = Router();
+const router = express.Router();
 
-router.post('/clubs/requests', createClub);
+// POST /api/clubs
+router.post('/', auth, createClub);
 
 export default router;

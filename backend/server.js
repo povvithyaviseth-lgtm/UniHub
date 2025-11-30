@@ -62,7 +62,7 @@ app.use((req, res, next) => {
 // Routes
 app.use('/api/students', studentRoutes);
 app.use('/api/admins', adminRoutes);
-app.use('/api', clubsRoutes);
+app.use('/api/clubs', clubsRoutes);
 
 // 404
 app.use((req, res) => res.status(404).json({ message: 'Route not found' }));
