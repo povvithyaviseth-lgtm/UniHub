@@ -24,11 +24,57 @@ export default function ClubManagement() {
 
   const [showCreate, setShowCreate] = React.useState(false);
   const [showEdit, setShowEdit] = React.useState(false);
+  const [error, setError] = React.useState("");
+  const [success, setSuccess] = React.useState("");
 
-  // Create handler
-  const handleCreate = (payload) => {
+   // Create handler (talks to backend)
+  const handleCreate = async (payload) => {
     console.log("CREATE club payload:", payload);
-    setShowCreate(false);
+    setError("");
+    setSuccess("");
+
+    const { name, tag, description, imageFile, draft } = payload;
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setError("You must be logged in to create a club.");
+      return;
+    }
+
+    try {
+      // For now, fake an image path based on slug.
+      // Later: actually upload `imageFile` to your backend or Cloudinary.
+      const imagePath = imageFile ? `/images/clubs/${draft.slug}.png` : "";
+
+      const res = await fetch("http://localhost:5050/api/clubs", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name,
+          tag,
+          description,
+          image: imagePath,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Failed to create club");
+      }
+
+      setSuccess("Club created successfully!");
+      setShowCreate(false);
+
+      console.log("New club from backend:", data.club);
+      // later: refresh club list or push into state/store here
+    } catch (err) {
+      console.error(err);
+      setError(err.message);
+    }
   };
 
   // Edit handler
@@ -371,6 +417,28 @@ export default function ClubManagement() {
           </div>
         </section>
       </div>
+
+      {success && (
+        <div
+          style={{
+            position: "fixed",
+            top: 20,
+            right: 20,
+            background: "#AEFFD2",
+            padding: "16px 22px",
+            borderRadius: 12,
+            boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
+            color: "#00550A",
+            fontSize: 18,
+            fontWeight: 700,
+            zIndex: 9999,
+            maxWidth: "320px",
+          }}
+        >
+          Your club has been successfully sent to admin for approval! <br />
+          We will get back to you once it’s reviewed.
+        </div>
+        )}
 
       {/* ====== CREATE DIALOG ====== */}
       <PopUpModals open={showCreate} onClose={() => setShowCreate(false)}>
