@@ -25,11 +25,11 @@ const slugify = (s) =>
 const TAG_OPTIONS = [
   "Academic",
   "Arts",
-  "Sports",
   "Culture",
   "Career",
   "Service",
   "Social",
+  "Sports",
   "Technology",
   "Wellness",
   "Leadership",
@@ -53,7 +53,7 @@ const buildClubDraft = ({ name, tag, description, imageFile }) => ({
 export default function CreateClubPopUp({
   onCancel = () => {},
   onCreate = () => {},
-  title = "Club Creation",
+  title = "Create Club",
   confirmText = "Create Club",
   cancelText = "Cancel",
 }) {

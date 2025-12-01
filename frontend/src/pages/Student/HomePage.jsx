@@ -424,17 +424,17 @@ const EventCard = ({ event }) => {
 const CATEGORIES = [
   "All Clubs",
   "Academic",
-  "Sports",
-  "Creative",
+  "Arts",
+  "Culture",
+  "Career",
+  "Service",
   "Social",
-  "Volunteering",
-  "Tech",
-  "Casual",
-  "Competitive",
-  "Coding",
-  "Fun",
-  "Art",
-  "Fitness",
+  "Sports",
+  "Technology",
+  "Wellness",
+  "Leadership",
+  "Environmental",
+  "Hobbies",
 ];
 
 /** --------------------------------- Page --------------------------------- */

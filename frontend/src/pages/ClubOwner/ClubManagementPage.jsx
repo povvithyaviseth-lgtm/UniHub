@@ -608,8 +608,8 @@ export default function ClubManagement() {
       {/* ====== CREATE DIALOG ====== */}
       <PopUpModals open={showCreate} onClose={() => setShowCreate(false)}>
         <CreateClubPopUp
-          title="Club Creation"
-          confirmText="Create Club"
+          title="Create Club"
+          confirmText="Submit"
           cancelText="Cancel"
           onCancel={() => setShowCreate(false)}
           onCreate={handleCreate}

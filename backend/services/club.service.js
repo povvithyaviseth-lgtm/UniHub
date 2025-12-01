@@ -32,3 +32,26 @@ export async function deleteClub(clubId, ownerId) {
 
   return club;
 }
+
+export async function updateClubService(clubId, ownerId, data) {
+  const { name, description, tag, image } = data;
+
+  if (name !== undefined && name.trim() === '') {
+    throw new Error('Club name cannot be empty');
+  }
+
+  const updateFields = {};
+  if (name !== undefined) updateFields.name = name;
+  if (description !== undefined) updateFields.description = description;
+  if (tag !== undefined) updateFields.tag = tag;
+  if (image !== undefined) updateFields.image = image;
+
+  const club = await Club.findOneAndUpdate(
+    { _id: clubId, owner: ownerId }, // ensures only owner can edit
+    { $set: updateFields },
+    { new: true, runValidators: true }
+  );
+
+  // If club is null, either it doesn't exist or the user isn't the owner
+  return club;
+}

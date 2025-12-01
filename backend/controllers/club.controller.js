@@ -1,7 +1,8 @@
 // controllers/club.controller.js
 import { 
   createClubService, 
-  getClubsByOwner
+  getClubsByOwner, 
+  updateClubService
 } from '../services/club.service.js';
 
 export const createClub = async (req, res) => {
@@ -13,7 +14,7 @@ export const createClub = async (req, res) => {
     if (!ownerId) {
       return res.status(401).json({ message: 'Not authorized' });
     }
-    
+
     // Call the service layer
     const club = await createClubService({
       ownerId,
@@ -58,3 +59,24 @@ export const getMyClubs = async (req, res) => {
     return res.status(500).json({ message: 'Failed to fetch your clubs' });
   }
 };
+
+export const updateClub = async (req, res)  => {
+  try {
+    const ownerId = req.user.id;
+    const clubId = req.params.id;
+    const data = req.body; // { name, description, tag, image }
+
+    const updatedClub = await updateClubService(clubId, ownerId, data);
+
+    if (!updatedClub) {
+      // club not found or user is not the owner
+      return res
+        .status(403)
+        .json({ message: 'Not allowed to edit this club' });
+    }
+
+    res.json(updatedClub);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+}
