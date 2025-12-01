@@ -3,6 +3,210 @@ import { useNavigate } from "react-router-dom";
 import PopUpModals from "../../component/PopUpModals.jsx";
 import CreateClubPopUp from "../../component/ClubOwnerComponent/CreateClubPopUp.jsx";
 
+// Card component for each club
+function ClubCard({ club, onEdit }) {
+  const [hovered, setHovered] = React.useState(false);
+  const isPending = club.status === "pending";
+
+  return (
+    <article
+      style={{
+        position: "relative",
+        background: "#fff",
+        borderRadius: 16,
+        boxShadow: hovered
+          ? "0 12px 26px rgba(15, 23, 42, 0.16)"
+          : "0 6px 16px rgba(15, 23, 42, 0.08)",
+        overflow: "hidden",
+        display: "flex",
+        flexDirection: "column",
+        cursor: "pointer",
+        transition: "transform 0.18s ease, box-shadow 0.18s ease",
+        transform: hovered ? "translateY(-3px)" : "translateY(0)",
+        minHeight: 260,
+      }}
+      aria-label={`${club.name} card`}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      {/* Base content: image + name (rectangle-style card like before) */}
+      <div>
+        <div
+          style={{
+            position: "relative",
+            margin: 20,
+            marginBottom: 12,
+            borderRadius: 15,
+            overflow: "hidden",
+            background: "#AEFFD2",
+            aspectRatio: "16 / 10",
+          }}
+        >
+          {club.image && (
+            <img
+              src={club.image}
+              alt={`${club.name} cover`}
+              style={{
+                position: "absolute",
+                inset: 0,
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+              }}
+              loading="lazy"
+            />
+          )}
+        </div>
+
+        <div
+          style={{
+            padding: "0 20px 20px 20px",
+          }}
+        >
+          <div
+            style={{
+              color: "#000",
+              fontSize: 22,
+              fontWeight: 700,
+              lineHeight: 1.2,
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
+          >
+            {club.name}
+          </div>
+        </div>
+      </div>
+
+      {/* Hover overlay: fills the card, white background */}
+      {hovered && (
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background: "#FFFFFF",
+            color: "#0F172A",
+            display: "flex",
+            flexDirection: "column",
+            padding: 20,
+            boxSizing: "border-box",
+            borderRadius: 16,
+            border: "1px solid #E5E7EB",
+          }}
+        >
+          {/* No club name here (per request) */}
+
+          {/* Tag + Status row */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+              flexWrap: "wrap",
+              marginBottom: 10,
+            }}
+          >
+            <div style={{ fontSize: 13, color: "#6B7280" }}>Tag</div>
+            <div
+              style={{
+                fontSize: 13,
+                fontWeight: 600,
+                padding: "2px 10px",
+                borderRadius: 999,
+                background: "#ECFDF3",
+                color: "#166534",
+                maxWidth: "50%",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
+              {club.tag || "No tag"}
+            </div>
+
+            <div
+              style={{
+                marginLeft: "auto",
+                padding: "2px 10px",
+                borderRadius: 999,
+                fontSize: 11,
+                fontWeight: 700,
+                backgroundColor: isPending ? "#F3F4F6" : "#DCFCE7",
+                color: isPending ? "#4B5563" : "#166534",
+                textTransform: "uppercase",
+                letterSpacing: 0.5,
+              }}
+            >
+              {isPending ? "Pending approval" : "Approved"}
+            </div>
+          </div>
+
+          {/* Description */}
+          <div
+            style={{
+              fontSize: 13,
+              lineHeight: 1.4,
+              color: "#4B5563",
+              marginBottom: 16,
+              flex: 1,
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
+          >
+            {club.description}
+          </div>
+
+          {/* Actions */}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 8,
+              marginTop: "auto",
+            }}
+          >
+            <button
+              type="button"
+              className="btn-primary"
+              disabled={isPending}
+              style={{
+                width: "100%",
+                height: 40,
+                borderRadius: 999,
+                fontSize: 14,
+                fontWeight: 600,
+                opacity: isPending ? 0.5 : 1,
+                cursor: isPending ? "not-allowed" : "pointer",
+              }}
+            >
+              View Members
+            </button>
+
+            <button
+              type="button"
+              className="btn-primary"
+              style={{
+                width: "100%",
+                height: 40,
+                borderRadius: 999,
+                fontSize: 14,
+                fontWeight: 600,
+              }}
+              onClick={onEdit}
+            >
+              Edit Club
+            </button>
+          </div>
+        </div>
+      )}
+    </article>
+  );
+}
+
+
+
+
 export default function ClubManagement() {
   const navigate = useNavigate();
 
@@ -66,7 +270,6 @@ export default function ClubManagement() {
     }
 
     try {
-      // Fake image path for now
       const imagePath = imageFile ? `/images/clubs/${draft.slug}.png` : "";
 
       const res = await fetch("http://localhost:5050/api/clubs", {
@@ -94,16 +297,13 @@ export default function ClubManagement() {
 
       console.log("New club from backend:", data.club);
 
-      // Add the new club to the top of the list
+      // Newly created club (likely status: "pending") still appears in list
       setClubs((prev) => [data.club, ...prev]);
 
-      // Auto-hide banner after 4 seconds
       setTimeout(() => setSuccess(""), 4000);
     } catch (err) {
       console.error(err);
       setError(err.message);
-
-      // Auto-hide error banner after 4 seconds
       setTimeout(() => setError(""), 2000);
     }
   };
@@ -330,7 +530,7 @@ export default function ClubManagement() {
               alignItems: "center",
               justifyContent: "space-between",
               gap: 12,
-              padding: "8px 8px 0",
+              padding: "10px 10px 0",
             }}
           >
             <div>
@@ -396,123 +596,11 @@ export default function ClubManagement() {
 
             {!loadingClubs &&
               clubs.map((club) => (
-                <article
+                <ClubCard
                   key={club._id}
-                  style={{
-                    background: "#fff",
-                    borderRadius: 16,
-                    boxShadow: "0px 21.49px 29.6px rgba(0,0,0,0.17)",
-                    overflow: "hidden",
-                    display: "flex",
-                    flexDirection: "column",
-                  }}
-                  aria-label={`${club.name} card`}
-                >
-                  <div
-                    style={{
-                      position: "relative",
-                      margin: 20,
-                      marginBottom: 12,
-                      borderRadius: 15,
-                      overflow: "hidden",
-                      background: "#AEFFD2",
-                      aspectRatio: "16 / 10",
-                    }}
-                  >
-                    {club.image && (
-                      <img
-                        src={club.image}
-                        alt={`${club.name} cover`}
-                        style={{
-                          position: "absolute",
-                          inset: 0,
-                          width: "100%",
-                          height: "100%",
-                          objectFit: "cover",
-                        }}
-                        loading="lazy"
-                      />
-                    )}
-                  </div>
-
-                  <div
-                    style={{
-                      padding: "0 20px 12px 20px",
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: 6,
-                    }}
-                  >
-                    <div
-                      style={{
-                        color: "#000",
-                        fontSize: 32,
-                        fontWeight: 700,
-                        lineHeight: 1.1,
-                      }}
-                    >
-                      {club.name}
-                    </div>
-
-                    <div
-                      style={{
-                        display: "inline-flex",
-                        gap: 6,
-                        alignItems: "center",
-                      }}
-                    >
-                      <div style={{ color: "#707070", fontSize: 16 }}>Tag:</div>
-                      <div
-                        style={{
-                          color: "#00550A",
-                          fontSize: 16,
-                          fontWeight: 700,
-                        }}
-                      >
-                        {club.tag || "No tag"}
-                      </div>
-                    </div>
-
-                    <div style={{ color: "#000", fontSize: 16 }}>
-                      {club.description}
-                    </div>
-                  </div>
-
-                  <div
-                    aria-hidden
-                    style={{
-                      height: 2,
-                      background: "#B7B7B7",
-                      margin: "8px 20px 0 20px",
-                    }}
-                  />
-
-                  <div
-                    style={{
-                      display: "flex",
-                      flexWrap: "wrap",
-                      gap: 8,
-                      padding: "12px 20px 20px 20px",
-                    }}
-                  >
-                    <button
-                      type="button"
-                      className="btn-primary"
-                      style={{ flex: "1 0 160px" }}
-                    >
-                      View Members
-                    </button>
-
-                    <button
-                      type="button"
-                      className="btn-primary"
-                      style={{ flex: "1 0 160px" }}
-                      onClick={() => setShowEdit(true)}
-                    >
-                      Edit Club
-                    </button>
-                  </div>
-                </article>
+                  club={club}
+                  onEdit={() => setShowEdit(true)}
+                />
               ))}
           </div>
         </section>
