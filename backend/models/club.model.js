@@ -32,6 +32,13 @@ const clubSchema = new mongoose.Schema(
       ref: 'Student',
       required: true,
     },
+
+    status: {
+      type: String,
+      enum: ['pending', 'approved'],
+      default: 'pending',
+      required: true,
+    },
   },
   {
     timestamps: true, // createdAt / updatedAt
