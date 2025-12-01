@@ -80,10 +80,10 @@ export default function ClubManagmentEventsPage() {
           <header style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: "8px 8px 0" }}>
             <div>
               <div style={{ color: "black", fontSize: 48, fontWeight: 700, lineHeight: 1.15 }}>Club Management Console</div>
-              <div style={{ color: "#707070", fontSize: 40, fontWeight: 700, marginTop: 10 }}>Your Events</div>
+              <div style={{ color: "#707070", fontSize: 40, fontWeight: 700, marginTop: 10 }}></div>
             </div>
             <button type="button" className="btn-primary" style={{ width: 244, height: 41, borderRadius: 6, fontSize: 17 }} onClick={() => setShowPost(true)}>
-              Create New Event
+              Create New A Event
             </button>
           </header>
 

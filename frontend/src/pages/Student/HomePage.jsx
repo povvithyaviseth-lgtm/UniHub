@@ -707,7 +707,6 @@ const HomePage = () => {
                     fontWeight: 700,
                   }}
                 >
-                  Search Clubs
                 </div>
 
                 {/* Input */}
@@ -760,7 +759,7 @@ const HomePage = () => {
                     type="text"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Search for clubs by name"
+                    placeholder="Search for clubs"
                     style={{
                       position: "absolute",
                       left: 75,
@@ -783,8 +782,7 @@ const HomePage = () => {
 
           {/* ===== Explore by Category ===== */}
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 13, width: "100%" }}>
-            <div style={{ height: 74, textAlign: "center", display: "flex", alignItems: "flex-end", color: "black", fontSize: 40, fontFamily: "Inter", fontWeight: 700 }}>
-              Explore by Category
+            <div style={{ height: 14, textAlign: "center", display: "flex", alignItems: "flex-end", color: "black", fontSize: 40, fontFamily: "Inter", fontWeight: 700 }}>
             </div>
 
             <div

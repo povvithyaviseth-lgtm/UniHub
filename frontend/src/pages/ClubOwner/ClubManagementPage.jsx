@@ -107,7 +107,7 @@ function ClubCard({ club, onEdit }) {
               marginBottom: 10,
             }}
           >
-            <div style={{ fontSize: 13, color: "#6B7280" }}>Tag</div>
+            <div style={{ fontSize: 13, color: "#6B7280" }}></div>
             <div
               style={{
                 fontSize: 13,
@@ -204,9 +204,6 @@ function ClubCard({ club, onEdit }) {
   );
 }
 
-
-
-
 export default function ClubManagement() {
   const navigate = useNavigate();
 
@@ -217,6 +214,7 @@ export default function ClubManagement() {
 
   const [clubs, setClubs] = React.useState([]);
   const [loadingClubs, setLoadingClubs] = React.useState(true);
+   const [editingClub, setEditingClub] = React.useState(null);
 
   // Fetch clubs owned by the logged-in user
   React.useEffect(() => {
@@ -308,11 +306,66 @@ export default function ClubManagement() {
     }
   };
 
-  const handleEdit = (payload) => {
-    console.log("EDIT club payload:", payload);
-    setShowEdit(false);
-  };
+  const handleEdit = async (payload) => {
+    if (!editingClub) return;
 
+    console.log("EDIT club payload:", payload);
+    setError("");
+    setSuccess("");
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setError("You must be logged in to edit a club.");
+      return;
+    }
+
+    try {
+      const { name, tag, description, imageFile, draft } = payload;
+
+      // If image is being changed, adjust path; otherwise keep existing
+      const imagePath = imageFile
+        ? `/images/clubs/${draft?.slug || editingClub._id}.png`
+        : editingClub.image || "";
+
+      const res = await fetch(
+        `http://localhost:5050/api/clubs/${editingClub._id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            name: name ?? editingClub.name,
+            tag: tag ?? editingClub.tag,
+            description: description ?? editingClub.description,
+            image: imagePath,
+          }),
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Failed to update club");
+      }
+
+      console.log("Updated club from backend:", data);
+
+      setClubs((prev) =>
+        prev.map((c) => (c._id === data._id ? data : c))
+      );
+
+      setSuccess("Club updated successfully!");
+      setShowEdit(false);
+      setEditingClub(null);
+      setTimeout(() => setSuccess(""), 4000);
+    } catch (err) {
+      console.error(err);
+      setError(err.message);
+      setTimeout(() => setError(""), 2000);
+    }
+  };
   /* ======================================================
      SUCCESS BANNER (appears after creation)
   ====================================================== */
@@ -567,7 +620,7 @@ export default function ClubManagement() {
                 }}
                 onClick={() => setShowCreate(true)}
               >
-                Create New Club
+                Create New A Club
               </button>
             </div>
           </header>
@@ -617,13 +670,27 @@ export default function ClubManagement() {
       </PopUpModals>
 
       {/* ====== EDIT DIALOG ====== */}
-      <PopUpModals open={showEdit} onClose={() => setShowEdit(false)}>
+      <PopUpModals
+        open={showEdit}
+        onClose={() => {
+          setShowEdit(false);
+          setEditingClub(null);
+        }}
+      >
         <CreateClubPopUp
           title="Edit Club"
           confirmText="Save Changes"
           cancelText="Cancel"
-          onCancel={() => setShowEdit(false)}
+          onCancel={() => {
+            setShowEdit(false);
+            setEditingClub(null);
+          }}
           onCreate={handleEdit}
+          // Optional: if you update CreateClubPopUp to accept initial values
+          initialName={editingClub?.name}
+          initialTag={editingClub?.tag}
+          initialDescription={editingClub?.description}
+          initialImage={editingClub?.image}
         />
       </PopUpModals>
     </div>
