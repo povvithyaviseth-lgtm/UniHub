@@ -37,7 +37,6 @@ export default function ClubManagmentEventsPage() {
         <aside style={{ flex: "0 1 280px", minWidth: 260, background: "#fff", borderRadius: 12, boxShadow: "0 1px 0 rgba(0,0,0,.04)", overflow: "hidden" }}>
           <div style={{ padding: 16 }}>
             <div style={{ textAlign: "center", color: "#000", fontSize: 36, fontWeight: 700, marginBottom: 8 }}>Welcome</div>
-            <div style={{ color: "#707070", fontSize: 20, fontWeight: 400, marginTop: 8, marginBottom: 20, paddingLeft: 8 }}>Manage your club</div>
 
             <div style={{ color: "#707070", fontSize: 20, fontWeight: 700, paddingLeft: 8, marginBottom: 8 }}>Navigation</div>
             <div style={{ display: "grid", gap: 8 }}>

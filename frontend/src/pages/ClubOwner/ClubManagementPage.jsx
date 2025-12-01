@@ -419,7 +419,6 @@ export default function ClubManagement() {
                 paddingLeft: 8,
               }}
             >
-              Manage your club
             </div>
 
             <div

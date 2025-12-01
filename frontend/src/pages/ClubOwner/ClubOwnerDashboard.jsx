@@ -198,7 +198,6 @@ const ClubManagement = () => {
               wordWrap: "break-word",
             }}
           >
-            Manage your club
           </div>
 
           <div
