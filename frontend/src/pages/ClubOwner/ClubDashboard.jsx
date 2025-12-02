@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import PopUpModals from "../../component/PopUpModals.jsx";
+import CreateClubPopUp from "../../component/ClubOwnerComponent/CreateClubPopUp.jsx";
 
 const API_BASE_URL = "http://localhost:5050";
 
@@ -14,6 +15,15 @@ export default function ClubDashboard() {
   const [activeTab, setActiveTab] = React.useState("events"); // "events" | "announcements"
   const [showMembersModal, setShowMembersModal] = React.useState(false);
   const [showEditModal, setShowEditModal] = React.useState(false);
+
+  // minimal mock members list
+  const [members, setMembers] = React.useState([
+    { id: 1, email: "student1@example.edu" },
+    { id: 2, email: "student2@example.edu" },
+    { id: 3, email: "student3@example.edu" },
+  ]);
+
+  const [confirmKickId, setConfirmKickId] = React.useState(null);
 
   React.useEffect(() => {
     const fetchClub = async () => {
@@ -29,6 +39,9 @@ export default function ClubDashboard() {
           _id: clubId,
           name: "Sample Club Name",
           status: "approved", // or "pending"
+          description: "This is a sample description for the club.",
+          tag: "Academic, Social",
+          imageUrl: "", // if you have one later
         });
       } catch (err) {
         console.error(err);
@@ -45,6 +58,45 @@ export default function ClubDashboard() {
   };
 
   const isPending = club?.status === "pending";
+
+  const handleEditSave = (payload) => {
+    // payload contains { name, tag, imageUrl, imageFile, description, draft }
+    // Here we just update local state; later you can call your backend.
+    setClub((prev) =>
+      prev
+        ? {
+            ...prev,
+            name: payload.name || prev.name,
+            tag: payload.tag ?? prev.tag,
+            description: payload.description ?? prev.description,
+            imageUrl: payload.imageUrl ?? prev.imageUrl,
+          }
+        : prev
+    );
+    setShowEditModal(false);
+    console.log("Edited club payload:", payload);
+  };
+
+  const handleKickClick = (memberId) => {
+    setConfirmKickId(memberId);
+  };
+
+  const handleCancelKick = () => {
+    setConfirmKickId(null);
+  };
+
+  const handleConfirmKick = (memberId) => {
+    // Later: hit backend to remove member
+    setMembers((prev) => prev.filter((m) => m.id !== memberId));
+    setConfirmKickId(null);
+  };
+
+  const initialTags = club?.tag
+    ? club.tag
+        .split(",")
+        .map((t) => t.trim())
+        .filter(Boolean)
+    : [];
 
   return (
     <div
@@ -68,30 +120,13 @@ export default function ClubDashboard() {
           marginBottom: 24,
         }}
       >
-        {/* Left: Back, Club name, Badge */}
+        {/* Left: Club name + badge (no back here anymore) */}
         <div>
-          <button
-            type="button"
-            onClick={handleGoBack}
-            style={{
-              marginBottom: 8,
-              fontSize: 13,
-              color: "#6B7280",
-              background: "transparent",
-              border: "none",
-              cursor: "pointer",
-              textDecoration: "underline",
-              padding: 0,
-            }}
-          >
-            ← Back to clubs
-          </button>
-
           <div
             style={{
               color: "#111827",
-              fontSize: 28,
-              fontWeight: 800,
+              fontSize: 40,
+              fontWeight: 700,
               lineHeight: 1.2,
               marginBottom: 6,
             }}
@@ -122,7 +157,7 @@ export default function ClubDashboard() {
               >
               </span>
               <span style={{ color: isPending ? "#4B5563" : "#16A34A" }}>
-                {isPending ? "Pending approval" : "Approved"}
+                {isPending ? "Pending approval" : "Approved club"}
               </span>
             </div>
           )}
@@ -140,10 +175,10 @@ export default function ClubDashboard() {
             type="button"
             className="btn-primary"
             style={{
-              minWidth: 190,
-              height: 56,
-              fontSize: 24,
-              borderRadius: 999,
+              width: "100%",
+              minWidth: 220,
+              height: 41,
+              fontSize: 17,
             }}
             onClick={() => setShowMembersModal(true)}
           >
@@ -154,10 +189,10 @@ export default function ClubDashboard() {
             type="button"
             className="btn-primary"
             style={{
-              minWidth: 190,
-              height: 56,
-              fontSize: 24,
-              borderRadius: 999,
+              width: "100%",
+              minWidth: 220,
+              height: 41,
+              fontSize: 17,
             }}
             onClick={() => setShowEditModal(true)}
           >
@@ -256,57 +291,193 @@ export default function ClubDashboard() {
         </section>
       </main>
 
-      {/* ======= VIEW MEMBERS MODAL ======= */}
+      {/* ======= BOTTOM RIGHT BACK BUTTON ======= */}
+      <div
+        style={{
+          marginTop: 24,
+          display: "flex",
+          justifyContent: "flex-end",
+        }}
+      >
+         <button
+            type="button"
+            className="btn-primary"
+            style={{
+              minWidth: 220,
+              height: 41,
+              fontSize: 17,
+            }}
+            onClick={handleGoBack}
+          >
+            Back
+          </button>
+      </div>
+
+
+      {/* ======= VIEW MEMBERS MODAL (minimal style + kick confirm) ======= */}
       <PopUpModals
         open={showMembersModal}
-        onClose={() => setShowMembersModal(false)}
+        onClose={() => {
+          setShowMembersModal(false);
+          setConfirmKickId(null);
+        }}
       >
         <div
           style={{
-            padding: 20,
-            minWidth: 320,
+            width: "min(92vw, 500px)",
+            maxHeight: "min(92vh, 600px)",
+            background: "white",
+            borderRadius: 15,
+            overflow: "hidden",
+            display: "flex",
+            flexDirection: "column",
+            boxShadow: "0 25px 60px rgba(0,0,0,.25)",
           }}
         >
-          <h2
+          {/* Header strip similar in feel to CreateClubPopUp */}
+          <div
             style={{
-              fontSize: 22,
-              fontWeight: 700,
-              marginBottom: 12,
+              background: "#00550A",
+              minHeight: 56,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "12px 16px",
             }}
           >
-            Members
-          </h2>
-          <p style={{ fontSize: 15, color: "#4B5563" }}>
-            Members list will go here (name, email, role, remove button, etc.).
-          </p>
+            <h2
+              style={{
+                margin: 0,
+                color: "white",
+                fontWeight: 700,
+                fontSize: 24,
+              }}
+            >
+              Members
+            </h2>
+          </div>
+
+          <div
+            style={{
+              padding: 20,
+              display: "flex",
+              flexDirection: "column",
+              gap: 12,
+            }}
+          >
+            {members.length === 0 ? (
+              <p style={{ fontSize: 14, color: "#4B5563" }}>
+                No members in this club yet.
+              </p>
+            ) : (
+              members.map((member) => {
+                const isConfirming = confirmKickId === member.id;
+                return (
+                  <div
+                    key={member.id}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      padding: "8px 10px",
+                      borderRadius: 10,
+                      border: "1px solid #E5E7EB",
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontSize: 14,
+                        color: "#111827",
+                        wordBreak: "break-all",
+                      }}
+                    >
+                      {member.email}
+                    </span>
+
+                    {!isConfirming ? (
+                      <button
+                        type="button"
+                        onClick={() => handleKickClick(member.id)}
+                        style={{
+                          borderRadius: 8,
+                          border: "1px solid #F97373",
+                          background: "#FEF2F2",
+                          color: "#B91C1C",
+                          fontSize: 13,
+                          fontWeight: 600,
+                          padding: "6px 10px",
+                          cursor: "pointer",
+                        }}
+                      >
+                        Kick
+                      </button>
+                    ) : (
+                      <div
+                        style={{
+                          display: "flex",
+                          gap: 6,
+                        }}
+                      >
+                        <button
+                          type="button"
+                          onClick={handleCancelKick}
+                          style={{
+                            borderRadius: 8,
+                            border: "1px solid #D1D5DB",
+                            background: "#FFFFFF",
+                            color: "#374151",
+                            fontSize: 12,
+                            fontWeight: 600,
+                            padding: "6px 10px",
+                            cursor: "pointer",
+                          }}
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleConfirmKick(member.id)}
+                          style={{
+                            borderRadius: 8,
+                            border: "1px solid #B91C1C",
+                            background: "#B91C1C",
+                            color: "#FFFFFF",
+                            fontSize: 12,
+                            fontWeight: 600,
+                            padding: "6px 10px",
+                            cursor: "pointer",
+                          }}
+                        >
+                          Kick them out!
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                );
+              })
+            )}
+          </div>
         </div>
       </PopUpModals>
 
-      {/* ======= EDIT CLUB MODAL ======= */}
+      {/* ======= EDIT CLUB MODAL (uses CreateClubPopUp in edit mode) ======= */}
       <PopUpModals
         open={showEditModal}
         onClose={() => setShowEditModal(false)}
       >
-        <div
-          style={{
-            padding: 20,
-            minWidth: 320,
-          }}
-        >
-          <h2
-            style={{
-              fontSize: 22,
-              fontWeight: 700,
-              marginBottom: 12,
-            }}
-          >
-            Edit Club
-          </h2>
-          <p style={{ fontSize: 15, color: "#4B5563" }}>
-            A simple form to edit club name, description, tags, etc. will go
-            here.
-          </p>
-        </div>
+        {club && (
+          <CreateClubPopUp
+            title="Edit Club"
+            confirmText="Save Changes"
+            cancelText="Cancel"
+            onCancel={() => setShowEditModal(false)}
+            onCreate={handleEditSave}
+            initialName={club.name || ""}
+            initialDescription={club.description || ""}
+            initialTags={initialTags}
+            initialImageUrl={club.imageUrl || ""}
+          />
+        )}
       </PopUpModals>
     </div>
   );

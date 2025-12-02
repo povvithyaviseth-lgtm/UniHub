@@ -1,4 +1,3 @@
-// src/component/CreateClubPopUp.jsx
 import React from "react";
 
 /**
@@ -56,19 +55,42 @@ export default function CreateClubPopUp({
   title = "Create Club",
   confirmText = "Create Club",
   cancelText = "Cancel",
+  // NEW: initial values for edit mode
+  initialName = "",
+  initialDescription = "",
+  initialTags = [],
+  initialImageUrl = "",
 }) {
   // raw = what user types (for display/title-style feel)
-  const [nameRaw, setNameRaw] = React.useState("");
+  const [nameRaw, setNameRaw] = React.useState(initialName);
   // name = normalized lowercase for backend/slug
-  const [name, setName] = React.useState("");
+  const [name, setName] = React.useState(
+    initialName ? initialName.toLowerCase() : ""
+  );
   const [nameWarning, setNameWarning] = React.useState("");
-  const [selectedTags, setSelectedTags] = React.useState([]);
+  const [selectedTags, setSelectedTags] = React.useState(initialTags || []);
   const [tagWarning, setTagWarning] = React.useState("");
-  const [imageUrl, setImageUrl] = React.useState("");
+  const [imageUrl, setImageUrl] = React.useState(initialImageUrl || "");
   const [imageFile, setImageFile] = React.useState(null);
-  const [description, setDescription] = React.useState("");
+  const [description, setDescription] = React.useState(
+    initialDescription || ""
+  );
 
   const prevUrlRef = React.useRef(null);
+
+  // keep state in sync if initial props change (e.g. edit mode)
+  React.useEffect(() => {
+    setNameRaw(initialName);
+    setName(initialName ? initialName.toLowerCase() : "");
+  }, [initialName]);
+
+  React.useEffect(() => {
+    setDescription(initialDescription || "");
+  }, [initialDescription]);
+
+  React.useEffect(() => {
+    setImageUrl(initialImageUrl || "");
+  }, [initialImageUrl]);
 
   React.useEffect(() => {
     if (prevUrlRef.current && prevUrlRef.current !== imageUrl) {
@@ -84,7 +106,7 @@ export default function CreateClubPopUp({
     const file = e.target.files && e.target.files[0];
     if (!file) {
       setImageFile(null);
-      setImageUrl("");
+      setImageUrl(initialImageUrl || "");
       return;
     }
     if (file.type !== "image/png") {
@@ -199,7 +221,7 @@ export default function CreateClubPopUp({
             textAlign: "center",
           }}
         >
-          {title} {/* title is NOT lowercased anywhere */}
+          {title}
         </h1>
       </div>
 
@@ -224,7 +246,7 @@ export default function CreateClubPopUp({
             >
               <input
                 type="text"
-                value={nameRaw} // show what user typed (not forced lowercase)
+                value={nameRaw}
                 onChange={handleNameChange}
                 style={{
                   width: "100%",
