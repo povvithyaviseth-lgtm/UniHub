@@ -1,11 +1,15 @@
 import express from 'express';
 import path from "path";
 import dotenv from 'dotenv';
+import { fileURLToPath } from 'url';  
 import { connectDB } from './config/db.js';
 
 import clubsRoutes from './routes/club.route.js';
 import studentRoutes from './routes/student.route.js';
 import adminRoutes from './routes/admin.route.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 dotenv.config();
 connectDB();
@@ -60,10 +64,7 @@ app.use((req, res, next) => {
 });
 // ------------------------------------------------------------
 
-app.use(
-  '/images/club',
-  express.static(path.join(process.cwd(), 'public', 'images'))
-);
+app.use("/images", express.static(path.join(__dirname, "images")));
 
 // Routes
 app.use('/api/students', studentRoutes);
