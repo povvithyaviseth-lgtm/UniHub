@@ -488,7 +488,7 @@ const HomePage = () => {
   // Navigate to Club Management (parent controls routing)
   const handleManageClub = useCallback(() => {
     setProfileOpen(false);
-    navigate("/clubManage");
+    navigate("/console/clubs");
   }, [navigate]);
 
   return (

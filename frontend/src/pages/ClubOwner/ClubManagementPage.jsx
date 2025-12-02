@@ -32,13 +32,15 @@ function resolveImageSrc(image) {
 }
 
 // Card component for each club
-function ClubCard({ club, onEdit }) {
+function ClubCard({ club }) {
   const [hovered, setHovered] = React.useState(false);
   const isPending = club.status === "pending";
   const imageSrc = resolveImageSrc(club.image);
   const navigate = useNavigate();
 
   const handleGoToConsole = () => {
+    // This connects directly to ClubDashboard via your route:
+    // <Route path="/console/clubs/:clubId" element={<ClubDashboard />} />
     navigate(`/console/clubs/${club._id}`);
   };
 
@@ -64,7 +66,7 @@ function ClubCard({ club, onEdit }) {
         cursor: "pointer",
         transition: "transform 0.18s ease, box-shadow 0.18s ease",
         transform: hovered ? "translateY(-3px)" : "translateY(0)",
-        minHeight: 340, // make the card longer
+        minHeight: 340,
       }}
       aria-label={`${club.name} card`}
       onMouseEnter={() => setHovered(true)}
@@ -100,7 +102,6 @@ function ClubCard({ club, onEdit }) {
               }}
               loading="lazy"
               onError={(e) => {
-                // hide broken images so you don’t get the broken-icon
                 e.currentTarget.style.display = "none";
               }}
             />
@@ -155,8 +156,7 @@ function ClubCard({ club, onEdit }) {
             borderRadius: 16,
             border: "1px solid #E5E7EB",
           }}
-          // stop clicks on inner content from re-triggering card click if needed
-          onClick={(e) => e.stopPropagation()}
+          onClick={(e) => e.stopPropagation()} // keep card click from firing if you click inside
         >
           {/* Tag + Status row */}
           <div
@@ -273,8 +273,7 @@ export default function ClubManagement() {
 
   // Handlers for header buttons
   const handleGoHome = () => {
-    // Change "/" to whatever your actual home route is
-    navigate("/home");
+    navigate("/home"); // matches your <Route path="/home" element={<HomePage />} />
   };
 
   const handleOpenCreate = () => {
@@ -348,7 +347,6 @@ export default function ClubManagement() {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
-          // DO NOT set Content-Type when sending FormData
         },
         body: formData,
       });
@@ -400,7 +398,6 @@ export default function ClubManagement() {
           name: name ?? editingClub.name,
           tag: tag ?? editingClub.tag,
           description: description ?? editingClub.description,
-          // not touching `image` here; file updates should go through multer upload
         }),
       });
 
@@ -526,14 +523,6 @@ export default function ClubManagement() {
               >
                 Club Management Console
               </div>
-              <div
-                style={{
-                  color: "#707070",
-                  fontSize: 18,
-                  fontWeight: 400,
-                  marginTop: 6,
-                }}
-              ></div>
             </div>
 
             <div
@@ -586,22 +575,13 @@ export default function ClubManagement() {
 
             {!loadingClubs && clubs.length === 0 && (
               <div style={{ fontSize: 18, color: "#707070" }}>
-                You don’t manage any clubs yet. Click “Create New Club” to start
-                one!
+                You don’t manage any clubs yet. Click “Create New Club” to
+                start one!
               </div>
             )}
 
             {!loadingClubs &&
-              clubs.map((club) => (
-                <ClubCard
-                  key={club._id}
-                  club={club}
-                  onEdit={() => {
-                    setEditingClub(club);
-                    setShowEdit(true);
-                  }}
-                />
-              ))}
+              clubs.map((club) => <ClubCard key={club._id} club={club} />)}
           </div>
         </section>
       </div>
