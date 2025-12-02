@@ -35,8 +35,19 @@ function resolveImageSrc(image) {
 function ClubCard({ club, onEdit }) {
   const [hovered, setHovered] = React.useState(false);
   const isPending = club.status === "pending";
-
   const imageSrc = resolveImageSrc(club.image);
+  const navigate = useNavigate();
+
+  const handleGoToConsole = () => {
+    navigate(`/console/clubs/${club._id}`);
+  };
+
+  // Split tags by comma and put each on its own line
+  const rawTag = club.tag || "No tag";
+  const tagLines = rawTag
+    .split(",")
+    .map((t) => t.trim())
+    .filter(Boolean);
 
   return (
     <article
@@ -53,11 +64,12 @@ function ClubCard({ club, onEdit }) {
         cursor: "pointer",
         transition: "transform 0.18s ease, box-shadow 0.18s ease",
         transform: hovered ? "translateY(-3px)" : "translateY(0)",
-        minHeight: 260,
+        minHeight: 340, // make the card longer
       }}
       aria-label={`${club.name} card`}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      onClick={handleGoToConsole}
     >
       {/* Base content: image + name */}
       <div>
@@ -114,12 +126,13 @@ function ClubCard({ club, onEdit }) {
           <div
             style={{
               color: "#000",
-              fontSize: 22,
-              fontWeight: 700,
-              lineHeight: 1.2,
+              fontSize: 32,
+              fontWeight: 800,
+              lineHeight: 3.2,
               whiteSpace: "nowrap",
               overflow: "hidden",
               textOverflow: "ellipsis",
+              textAlign: "center",
             }}
           >
             {club.name}
@@ -142,39 +155,52 @@ function ClubCard({ club, onEdit }) {
             borderRadius: 16,
             border: "1px solid #E5E7EB",
           }}
+          // stop clicks on inner content from re-triggering card click if needed
+          onClick={(e) => e.stopPropagation()}
         >
           {/* Tag + Status row */}
           <div
             style={{
               display: "flex",
-              alignItems: "center",
+              alignItems: "flex-start",
               gap: 8,
               flexWrap: "wrap",
               marginBottom: 10,
+              width: "100%",
             }}
           >
-            <div style={{ fontSize: 13, color: "#6B7280" }}></div>
+            {/* Tags stacked vertically */}
             <div
               style={{
                 fontSize: 13,
                 fontWeight: 600,
-                padding: "2px 10px",
-                borderRadius: 999,
+                padding: "4px 10px",
+                borderRadius: 10,
                 background: "#ECFDF3",
                 color: "#166534",
-                maxWidth: "50%",
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
+                maxWidth: "60%",
+                display: "flex",
+                flexDirection: "column",
+                lineHeight: 1.3,
               }}
             >
-              {club.tag || "No tag"}
+              {tagLines.length > 0 ? (
+                tagLines.map((tag, idx) => (
+                  <span key={idx}>
+                    {tag}
+                    {idx < tagLines.length - 1 ? "," : ""}
+                  </span>
+                ))
+              ) : (
+                <span>No tag</span>
+              )}
             </div>
 
+            {/* Status pill */}
             <div
               style={{
                 marginLeft: "auto",
-                padding: "2px 10px",
+                padding: "4px 10px",
                 borderRadius: 999,
                 fontSize: 11,
                 fontWeight: 700,
@@ -182,66 +208,49 @@ function ClubCard({ club, onEdit }) {
                 color: isPending ? "#4B5563" : "#166534",
                 textTransform: "uppercase",
                 letterSpacing: 0.5,
+                whiteSpace: "nowrap",
               }}
             >
               {isPending ? "Pending approval" : "Approved"}
             </div>
           </div>
 
-          {/* Description */}
+          {/* Scrollable description */}
           <div
             style={{
-              fontSize: 13,
+              fontSize: 17,
               lineHeight: 1.4,
               color: "#4B5563",
               marginBottom: 16,
               flex: 1,
-              overflow: "hidden",
-              textOverflow: "ellipsis",
+              maxHeight: 150,
+              overflowY: "auto",
             }}
           >
-            {club.description}
+            {club.description || "No description provided."}
           </div>
 
-          {/* Actions */}
+          {/* Single "More" button to go to that club's console */}
           <div
             style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: 8,
               marginTop: "auto",
+              display: "flex",
+              justifyContent: "flex-end",
             }}
           >
             <button
               type="button"
               className="btn-primary"
-              disabled={isPending}
               style={{
-                width: "100%",
-                height: 40,
+                minWidth: 285,
+                height: 60,
                 borderRadius: 999,
-                fontSize: 14,
-                fontWeight: 600,
-                opacity: isPending ? 0.5 : 1,
-                cursor: isPending ? "not-allowed" : "pointer",
-              }}
-            >
-              View Members
-            </button>
-
-            <button
-              type="button"
-              className="btn-primary"
-              style={{
-                width: "100%",
-                height: 40,
-                borderRadius: 999,
-                fontSize: 14,
+                fontSize: 24,
                 fontWeight: 600,
               }}
-              onClick={onEdit}
+              onClick={handleGoToConsole}
             >
-              Edit Club
+              More
             </button>
           </div>
         </div>
@@ -261,6 +270,16 @@ export default function ClubManagement() {
   const [clubs, setClubs] = React.useState([]);
   const [loadingClubs, setLoadingClubs] = React.useState(true);
   const [editingClub, setEditingClub] = React.useState(null);
+
+  // Handlers for header buttons
+  const handleGoHome = () => {
+    // Change "/" to whatever your actual home route is
+    navigate("/home");
+  };
+
+  const handleOpenCreate = () => {
+    setShowCreate(true);
+  };
 
   // Fetch clubs owned by the logged-in user
   React.useEffect(() => {
@@ -477,134 +496,6 @@ export default function ClubManagement() {
           alignItems: "stretch",
         }}
       >
-        {/* ================= Sidebar ================= */}
-        <aside
-          aria-label="Sidebar navigation"
-          style={{
-            flex: "0 1 280px",
-            minWidth: 260,
-            background: "#fff",
-            borderRadius: 12,
-            boxShadow: "0 1px 0 rgba(0,0,0,.04)",
-            overflow: "hidden",
-          }}
-        >
-          <div style={{ padding: 16 }}>
-            <div
-              style={{
-                textAlign: "center",
-                color: "#000",
-                fontSize: 36,
-                fontWeight: 700,
-                marginBottom: 8,
-              }}
-            >
-              Welcome
-            </div>
-
-            <div
-              style={{
-                color: "#707070",
-                fontSize: 20,
-                fontWeight: 400,
-                marginTop: 8,
-                marginBottom: 20,
-                paddingLeft: 8,
-              }}
-            ></div>
-
-            <div
-              style={{
-                color: "#707070",
-                fontSize: 20,
-                fontWeight: 700,
-                paddingLeft: 8,
-                marginBottom: 8,
-              }}
-            >
-              Navigation
-            </div>
-
-            <div style={{ display: "grid", gap: 8 }}>
-              <button
-                type="button"
-                className="btn-primary"
-                style={{
-                  width: "100%",
-                  height: 41,
-                  borderRadius: 6,
-                  fontSize: 17,
-                }}
-              >
-                Manage Club &nbsp; &gt;
-              </button>
-            </div>
-
-            <div
-              style={{
-                color: "#707070",
-                fontSize: 20,
-                fontWeight: 700,
-                paddingLeft: 8,
-                marginTop: 20,
-                marginBottom: 8,
-              }}
-            >
-              Events and Notification
-            </div>
-
-            <div style={{ display: "grid", gap: 8 }}>
-              <button
-                type="button"
-                style={{
-                  width: "100%",
-                  height: 41,
-                  borderRadius: 6,
-                  background: "rgba(0,85,10,0.56)",
-                  color: "#fff",
-                  fontWeight: 700,
-                  fontSize: 17,
-                }}
-              >
-                Announcements &nbsp; &gt;
-              </button>
-
-              <button
-                type="button"
-                style={{
-                  width: "100%",
-                  height: 41,
-                  borderRadius: 6,
-                  background: "rgba(0,85,10,0.56)",
-                  color: "#fff",
-                  fontWeight: 700,
-                  fontSize: 17,
-                }}
-                onClick={() => navigate("/clubManageEvents")}
-              >
-                Events &nbsp; &gt;
-              </button>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => window.history.back()}
-              style={{
-                display: "block",
-                margin: "14px auto 0",
-                textAlign: "center",
-                color: "#707070",
-                fontSize: 18,
-                background: "transparent",
-                borderRadius: 6,
-                padding: "10px 12px",
-              }}
-            >
-              &lt; Back to Website
-            </button>
-          </div>
-        </aside>
-
         {/* ================= Main ================= */}
         <section
           style={{
@@ -628,7 +519,7 @@ export default function ClubManagement() {
               <div
                 style={{
                   color: "black",
-                  fontSize: 48,
+                  fontSize: 40,
                   fontWeight: 700,
                   lineHeight: 1.15,
                 }}
@@ -638,14 +529,16 @@ export default function ClubManagement() {
               <div
                 style={{
                   color: "#707070",
-                  fontSize: 32,
-                  fontWeight: 700,
+                  fontSize: 18,
+                  fontWeight: 400,
                   marginTop: 6,
                 }}
               ></div>
             </div>
 
-            <div>
+            <div
+              style={{ display: "flex", flexDirection: "column", gap: "6px" }}
+            >
               <button
                 type="button"
                 className="btn-primary"
@@ -653,12 +546,25 @@ export default function ClubManagement() {
                   width: "100%",
                   minWidth: 220,
                   height: 41,
-                  borderRadius: 6,
                   fontSize: 17,
                 }}
-                onClick={() => setShowCreate(true)}
+                onClick={handleGoHome}
               >
-                Create New A Club
+                Home
+              </button>
+
+              <button
+                type="button"
+                className="btn-primary"
+                style={{
+                  width: "100%",
+                  minWidth: 220,
+                  height: 41,
+                  fontSize: 17,
+                }}
+                onClick={handleOpenCreate}
+              >
+                Create A New Club
               </button>
             </div>
           </header>
@@ -680,8 +586,8 @@ export default function ClubManagement() {
 
             {!loadingClubs && clubs.length === 0 && (
               <div style={{ fontSize: 18, color: "#707070" }}>
-                You don’t manage any clubs yet. Click “Create A New Club” to
-                start one!
+                You don’t manage any clubs yet. Click “Create New Club” to start
+                one!
               </div>
             )}
 

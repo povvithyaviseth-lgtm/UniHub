@@ -173,7 +173,6 @@ const ClubManagement = () => {
             wordWrap: "break-word",
           }}
         >
-          Welcome
         </div>
 
         <div
@@ -212,7 +211,6 @@ const ClubManagement = () => {
               wordWrap: "break-word",
             }}
           >
-            Navigation
           </div>
 
           {/* Manage Club */}
@@ -267,7 +265,6 @@ const ClubManagement = () => {
               wordWrap: "break-word",
             }}
           >
-            Events and Notifications
           </div>
 
           {/* Announcements */}
