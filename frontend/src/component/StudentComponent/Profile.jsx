@@ -1,378 +1,446 @@
-// src/components/Profile.jsx  (or src/pages/Profile.jsx)
+// src/components/Profile.jsx (or src/pages/Profile.jsx)
 import React from "react";
 import closeImg from "../../images/Close.png";
+import { useStudentStore } from "../../store/student"; 
+import { useNavigate } from "react-router-dom";
 
-/**
- * Profile
- * - Presentational modal body.
- * - Delegates navigation via props (parent should pass onManageClub to push `/clubManage`).
- *
- * Example parent usage:
- * <Profile onManageClub={() => { setProfileOpen(false); navigate('/clubManage'); }} />
- */
 export default function Profile({
   onClose = () => {},
   onEditProfile = () => {},
   onLeaveClub = () => {},
-  onManageClub = () => {}, // ← parent wires navigation here
+  onManageClub = () => {},
 }) {
-  const baseW = 598.92;
-  const baseH = 814;
+  const { student, isAuthenticated } = useStudentStore();
+  const logout = useStudentStore((s) => s.logout);
+  const navigate = useNavigate();
 
-  const CARD_PAD = 20;
-  const RIGHT_PAD = 16;
-  const NAME_LEFT = 118.03;
+  const handleLogout = () => {
+    logout();            // clear store + localStorage
+    navigate("/");  // redirect to login page
+  };
 
-  const clubs = [
-    "Robotics Club",
-    "Hiking Club",
-    "Club",
-    "Club",
-    "Club",
-    "Club",
-    "Another Club",
-    "And One More",
-  ];
+  // Fallback if somehow not hydrated / not logged in
+  const email = student?.email || "";
+  const role = student?.role || "";
+  const userName =
+    student?.name ||
+    (email ? email.split("@")[0] : "Unknown User");
+
+  const initials = React.useMemo(() => {
+    const source = userName || email || "";
+    if (!source) return "";
+    const parts = source
+      .replace(/@.*/, "") // strip domain if email-like
+      .split(/[.\s_-]+/)
+      .filter(Boolean);
+    if (parts.length === 0) return "";
+    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+    return (parts[0][0] + parts[1][0]).toUpperCase();
+  }, [userName, email]);
+
+  const isClubOwner = role === "club owner";
+
+  const clubs = React.useMemo(
+    () => [
+      "Robotics Club",
+      "Hiking Club",
+      "Club",
+      "Club",
+      "Club",
+      "Club",
+      "Another Club",
+      "And One More",
+    ],
+    []
+  );
+
+  const events = React.useMemo(
+    () => [
+      "Watch the Minecraft Movie",
+      "Run the 10k Marathon",
+      "Book Club Monthly Meeting",
+      "Book Club Monthly Meeting",
+      "Book Club Monthly Meeting",
+      "Book Club Monthly Meeting",
+      "Extra Event A",
+      "Extra Event B",
+    ],
+    []
+  );
 
   return (
     <div
       style={{
-        width: baseW,
-        height: baseH,
-        background: "white",
-        overflow: "hidden",
-        borderRadius: 17.49,
-        boxShadow: "0 10px 30px rgba(0,0,0,.06)",
+        width: 600,
+        maxWidth: "100%",
+        background: "#ffffff",
+        borderRadius: 16,
+        boxShadow: "0 12px 30px rgba(0,0,0,0.06)",
+        padding: 24,
         position: "relative",
+        display: "flex",
+        flexDirection: "column",
+        gap: 24,
+        fontFamily:
+          "Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
       }}
     >
-      {/* Close */}
-      <button
-        type="button"
-        aria-label="Close"
-        onClick={onClose}
-        style={{
-          position: "absolute",
-          top: 8,
-          right: 8,
-          width: 72,
-          height: 72,
-          padding: 12,
-          background: "transparent",
-          border: "none",
-          cursor: "pointer",
-          display: "inline-flex",
-          alignItems: "center",
-          justifyContent: "center",
-          zIndex: 10,
-        }}
-      >
-        <img
-          src={closeImg}
-          alt=""
-          style={{
-            width: "100%",
-            height: "100%",
-            objectFit: "contain",
-            filter: "brightness(0.7) contrast(1.1)",
-            pointerEvents: "none",
-          }}
-          draggable={false}
-        />
-      </button>
-
-      {/* Full-size content canvas with uniform inset padding */}
+      {/* Header */}
       <div
         style={{
-          position: "absolute",
-          inset: CARD_PAD,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 12,
         }}
       >
-        {/* Title */}
-        <div
+        <h2
           style={{
-            left: 0,
-            top: 6.12,
-            position: "absolute",
-            color: "#00550A",
-            fontSize: 30.53,
-            fontFamily: "Inter",
+            margin: 0,
+            fontSize: 24,
             fontWeight: 700,
+            color: "#00550A",
           }}
         >
           My Profile
-        </div>
+        </h2>
 
-        {/* Section headers */}
-        <div
+        <button
+          type="button"
+          aria-label="Close"
+          onClick={onClose}
           style={{
-            left: 7.87,
-            top: 319.13,
-            position: "absolute",
-            color: "black",
-            fontSize: 23.61,
-            fontFamily: "Inter",
-            fontWeight: 700,
+            width: 40,
+            height: 40,
+            padding: 0,
+            background: "transparent",
+            border: "none",
+            cursor: "pointer",
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
-          My Clubs
-        </div>
+          <img
+            src={closeImg}
+            alt=""
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "contain",
+              filter: "brightness(0.7) contrast(1.1)",
+              pointerEvents: "none",
+            }}
+            draggable={false}
+          />
+        </button>
+      </div>
 
+      {/* Identity + account actions */}
+      <div
+        style={{
+          padding: 20,
+          borderRadius: 12,
+          border: "1px solid #E5E7EB",
+          display: "flex",
+          flexDirection: "column",
+          gap: 16,
+        }}
+      >
         <div
           style={{
-            left: 6.12,
-            top: 506.24,
-            position: "absolute",
-            color: "black",
-            fontSize: 23.61,
-            fontFamily: "Inter",
-            fontWeight: 700,
+            display: "flex",
+            gap: 16,
+            alignItems: "center",
+            justifyContent: "space-between",
           }}
         >
-          My Events
-        </div>
-
-        {/* Identity block */}
-        <div style={{ left: 0, right: 0, height: 162.63, top: 53.33, position: "absolute" }}>
-          <div style={{ left: 0, right: 0, height: 2.62, top: 0, position: "absolute", background: "#E4E4E4" }} />
-          <div style={{ left: 0, right: 0, height: 1.75, top: 160.88, position: "absolute", background: "#F4F4F4" }} />
-
-          <div style={{ width: 78.69, height: 78.69, left: 21.86, top: 34.1, position: "absolute" }}>
+          {/* Avatar + name/email */}
+          <div
+            style={{
+              display: "flex",
+              gap: 16,
+              alignItems: "center",
+              flex: 1,
+            }}
+          >
             <div
               style={{
-                width: 78.69,
-                height: 78.69,
-                left: 0,
-                top: 7.87,
-                position: "absolute",
-                background: "#8FAAFF",
-                outline: "1.89px #00550A solid",
+                width: 64,
+                height: 64,
                 borderRadius: 12,
-              }}
-            />
-            <div
-              style={{
-                width: 78.69,
-                height: 78.69,
-                left: 0,
-                top: 7.87,
-                position: "absolute",
-                textAlign: "center",
-                justifyContent: "center",
+                background: "#E5F2FF",
+                border: "2px solid #00550A",
                 display: "flex",
-                flexDirection: "column",
-                color: "#00550A",
-                fontSize: 30.22,
-                fontFamily: "Inter",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: 24,
                 fontWeight: 700,
+                color: "#00550A",
+                flexShrink: 0,
               }}
             >
-              JD
+              {initials || "?"}
+            </div>
+
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 4,
+                minWidth: 0,
+              }}
+            >
+              <div
+                style={{
+                  fontSize: 20,
+                  fontWeight: 700,
+                  color: "#111827",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+                title={userName}
+              >
+                {userName}
+              </div>
+              <div
+                style={{
+                  fontSize: 14,
+                  fontWeight: 500,
+                  color: "#6B7280",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+                title={email}
+              >
+                {email || "No email"}
+              </div>
+              {role && (
+                <span
+                  style={{
+                    marginTop: 4,
+                    display: "inline-flex",
+                    alignItems: "center",
+                    alignSelf: "flex-start",
+                    padding: "2px 8px",
+                    borderRadius: 999,
+                    border: "1px solid #E5E7EB",
+                    fontSize: 11,
+                    textTransform: "uppercase",
+                    letterSpacing: 0.04,
+                    color: "#4B5563",
+                    background: "#F9FAFB",
+                  }}
+                >
+                  {role}
+                </span>
+              )}
             </div>
           </div>
 
-          {/* Name — constrained to right edge */}
-          <div
-            style={{
-              left: NAME_LEFT,
-              right: RIGHT_PAD,
-              top: 50.71,
-              height: 41.09,
-              position: "absolute",
-              display: "flex",
-              alignItems: "center",
-              color: "black",
-              fontSize: 30.22,
-              fontFamily: "Inter",
-              fontWeight: 700,
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-            }}
-            title="Peter Demonte"
-          >
-            Peter Demonte
-          </div>
-
-          {/* Email — constrained to right edge */}
-          <div
-            className="text-muted"
-            style={{
-              left: NAME_LEFT,
-              right: RIGHT_PAD,
-              top: 91.8,
-              height: 20.11,
-              position: "absolute",
-              display: "flex",
-              alignItems: "center",
-              fontSize: 17.49,
-              fontFamily: "Inter",
-              fontWeight: 700,
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-            }}
-            title="peter.demonte@csus.edu"
-          >
-            peter.demonte@csus.edu
-          </div>
-
-          {/* Manage button — now navigates via onManageClub */}
-          <button
-            className="btn-primary"
-            style={{
-              height: 41.09,
-              right: RIGHT_PAD,
-              top: 64.26,
-              position: "absolute",
-              borderRadius: 11.37,
-              padding: "0 16px",
-            }}
-            onClick={onManageClub}
-          >
-            Manage Your Club
-          </button>
+          {/* Manage button: only for club owners */}
+          {isClubOwner && (
+            <button
+              className="btn-primary"
+              onClick={onManageClub}
+              style={{
+                padding: "8px 16px",
+                borderRadius: 999,
+                border: "none",
+                background: "#00550A",
+                color: "#ffffff",
+                fontSize: 14,
+                fontWeight: 600,
+                cursor: "pointer",
+                whiteSpace: "nowrap",
+              }}
+            >
+              Manage Your Club
+            </button>
+          )}
         </div>
 
-        {/* Account settings header + Edit link */}
+        {/* Account settings row */}
         <div
           style={{
-            left: 11.37,
-            top: 236.07,
-            position: "absolute",
+            marginTop: 8,
             display: "flex",
             alignItems: "center",
-            color: "#707070",
-            fontSize: 23.61,
-            fontFamily: "Inter",
-            fontWeight: 400,
+            justifyContent: "space-between",
+            gap: 8,
           }}
         >
-          Account Settings
-        </div>
-
-        <button
-          className="btn-link"
-          style={{
-            right: RIGHT_PAD,
-            top: 236.07,
-            position: "absolute",
-            textAlign: "right",
-            color: "#009C6A",
-            fontSize: 23.61,
-            fontFamily: "Inter",
-            fontWeight: 700,
-          }}
-          onClick={onEditProfile}
-        >
-          Edit Profile&nbsp;
-        </button>
-
-        {/* Divider */}
-        <div style={{ left: 0, right: 0, height: 1.75, top: 297.27, position: "absolute", background: "#F4F4F4" }} />
-
-        {/* Clubs box */}
-        <div
-          style={{
-            left: 6.12,
-            right: 6.12,
-            height: 121.53,
-            top: 364.6,
-            position: "absolute",
-            background: "#F4F4F4",
-            overflow: "hidden",
-            borderRadius: 8.74,
-            outline: "0.87px #E0E0E0 solid",
-            outlineOffset: "-0.87px",
-            display: "flex",
-            flexDirection: "column",
-          }}
-          aria-label="My Clubs"
-        >
-          <div style={{ height: 8 }} />
-          <div style={{ padding: "0 12px", fontWeight: 700, color: "#2a2a2a" }}>Your Clubs</div>
-          <div className="hr" style={{ margin: "8px 12px" }} />
-          <div style={{ flex: 1, overflowY: "auto", padding: "0 12px 10px 12px" }}>
-            {clubs.map((name, i) => (
-              <div
-                key={i}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  padding: "6px 0",
-                }}
-              >
-                <div style={{ color: "black", fontSize: 20.98, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                  {name}
-                </div>
-                <button className="btn-link" style={{ color: "#E50000" }} onClick={() => onLeaveClub(name)}>
-                  Leave
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Events box */}
-        <div
-          style={{
-            left: 6.12,
-            right: 6.12,
-            height: 121.53,
-            top: 555.2,
-            position: "absolute",
-            background: "#F4F4F4",
-            overflow: "hidden",
-            borderRadius: 8.74,
-            outline: "0.87px #E0E0E0 solid",
-            outlineOffset: "-0.87px",
-            display: "flex",
-            flexDirection: "column",
-          }}
-          aria-label="My Events"
-        >
-          <div style={{ height: 8 }} />
-          <div style={{ padding: "0 12px", fontWeight: 700, color: "#2a2a2a" }}>Upcoming Events</div>
-          <div className="hr" style={{ margin: "8px 12px" }} />
-          <div style={{ flex: 1, overflowY: "auto", padding: "0 12px 10px 12px" }}>
-            {[
-              "Watch the Minecraft Movie",
-              "Run the 10k Marathon",
-              "Book Club Monthly Meeting",
-              "Book Club Monthly Meeting",
-              "Book Club Monthly Meeting",
-              "Book Club Monthly Meeting",
-              "Extra Event A",
-              "Extra Event B",
-            ].map((event, i) => (
-              <div key={i} className="panel-cta" style={{ padding: "10px 12px", marginBottom: 8 }}>
-                {event}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Sign Out */}
-        <div style={{ left: 6.12, right: 6.12, height: 51.59, top: 696.84, position: "absolute" }}>
-          <button
+          <span
             style={{
-              width: "100%",
-              height: 43.72,
-              position: "absolute",
-              left: 0,
-              top: 4.37,
-              background: "rgba(30, 64, 175, 0)",
-              borderRadius: 8.76,
-              border: "1.31px #FF0000 solid",
-              color: "#FF1F1F",
-              fontSize: 21.89,
+              fontSize: 14,
+              color: "#6B7280",
             }}
-            onClick={() => alert("Sign Out")}
           >
-            Sign Out
+            Account Settings
+          </span>
+          <button
+            className="btn-link"
+            onClick={onEditProfile}
+            style={{
+              padding: 0,
+              background: "none",
+              border: "none",
+              fontSize: 14,
+              fontWeight: 600,
+              color: "#009C6A",
+              cursor: "pointer",
+            }}
+          >
+            Edit Profile
           </button>
         </div>
+      </div>
+
+      {/* My Clubs */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "baseline",
+          }}
+        >
+          <h3
+            style={{
+              margin: 0,
+              fontSize: 18,
+              fontWeight: 700,
+              color: "#111827",
+            }}
+          >
+            My Clubs
+          </h3>
+        </div>
+
+        <div
+          aria-label="My Clubs"
+          style={{
+            borderRadius: 12,
+            border: "1px solid #E5E7EB",
+            background: "#F9FAFB",
+            maxHeight: 160,
+            overflowY: "auto",
+            padding: 12,
+            display: "flex",
+            flexDirection: "column",
+            gap: 4,
+          }}
+        >
+          {clubs.map((name, i) => (
+            <div
+              key={i}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: 8,
+                padding: "6px 4px",
+              }}
+            >
+              <span
+                style={{
+                  fontSize: 15,
+                  color: "#111827",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                {name}
+              </span>
+              <button
+                className="btn-link"
+                onClick={() => onLeaveClub(name)}
+                style={{
+                  padding: "4px 8px",
+                  fontSize: 13,
+                  borderRadius: 999,
+                  border: "1px solid #FCA5A5",
+                  background: "rgba(254, 242, 242, 0.9)",
+                  color: "#DC2626",
+                  cursor: "pointer",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                Leave
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* My Events */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        <h3
+          style={{
+            margin: 0,
+            fontSize: 18,
+            fontWeight: 700,
+            color: "#111827",
+          }}
+        >
+          My Events
+        </h3>
+
+        <div
+          aria-label="My Events"
+          style={{
+            borderRadius: 12,
+            border: "1px solid #E5E7EB",
+            background: "#F9FAFB",
+            maxHeight: 160,
+            overflowY: "auto",
+            padding: 12,
+            display: "flex",
+            flexDirection: "column",
+            gap: 8,
+          }}
+        >
+          {events.map((event, i) => (
+            <div
+              key={i}
+              className="panel-cta"
+              style={{
+                padding: "8px 10px",
+                borderRadius: 8,
+                background: "#ffffff",
+                border: "1px solid #E5E7EB",
+                fontSize: 14,
+                color: "#111827",
+              }}
+            >
+              {event}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Sign Out */}
+      <div>
+        <button
+          style={{
+            width: "100%",
+            padding: "10px 0",
+            borderRadius: 999,
+            border: "1px solid #EF4444",
+            background: "transparent",
+            color: "#EF4444",
+            fontSize: 15,
+            fontWeight: 600,
+            cursor: "pointer",
+          }}
+          onClick={handleLogout}
+          disabled={!isAuthenticated}
+        >
+          Sign Out
+        </button>
       </div>
     </div>
   );
