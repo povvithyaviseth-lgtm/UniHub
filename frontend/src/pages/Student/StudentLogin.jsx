@@ -350,7 +350,7 @@ const StudentLogin = () => {
                     }}
                   >
                     <p style={{ lineHeight: 'normal', margin: 0 }}>
-                      {loading ? 'Signing In...' : 'Sign In As Student'}
+                      {loading ? 'Letting you in...' : 'Let me in!'}
                     </p>
                   </div>
                 </button>

@@ -679,106 +679,77 @@ const HomePage = () => {
           </div>
           {/* ===== End Header ===== */}
 
-          {/* Search Section (scaled) */}
+          {/* Search Section */}
           <ScaleBox baseWidth={1282}>
             <div
               style={{
-                width: 1282,
-                height: 182,
-                position: "relative",
+                width: "100%",
+                height: 152,
                 background: "white",
                 boxShadow: "0px 10px 30px rgba(0, 0, 0, 0.25)",
                 overflow: "hidden",
                 borderRadius: 15,
                 margin: "0 auto",
+                padding: "40px 40px",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
               }}
             >
-              <div style={{ width: 965, left: 158, top: 91, position: "absolute" }}>
+              {/* Search Bar */}
+              <div
+                style={{
+                  width: "100%",
+                  height: 107,
+                  background: "white",
+                  borderRadius: 8,
+                  border: "2px #00550A solid",
+                  display: "flex",
+                  alignItems: "center",
+                  padding: "0 16px",
+                  gap: 12,
+                }}
+              >
+                {/* Icon */}
                 <div
                   style={{
-                    width: 965,
-                    position: "absolute",
-                    left: 0,
-                    top: -70,
-                    textAlign: "center",
-                    color: "black",
-                    fontSize: 55,
+                    width: 68,
+                    height: 68,
+                    backgroundColor: "#00550A",
+                    WebkitMaskImage: `url(${searchIcon})`,
+                    maskImage: `url(${searchIcon})`,
+                    WebkitMaskRepeat: "no-repeat",
+                    maskRepeat: "no-repeat",
+                    WebkitMaskPosition: "center",
+                    maskPosition: "center",
+                    WebkitMaskSize: "contain",
+                    maskSize: "contain",
+                    flexShrink: 0,
+                  }}
+                />
+
+                {/* Input (auto-expands to fill width) */}
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Let’s find your people…"
+                  style={{
+                    flex: 1,
+                    height: "100%",
+                    border: "none",
+                    outline: "none",
                     fontFamily: "Inter",
                     fontWeight: 700,
+                    fontSize: 50,
+                    color: "#000000ff",
+                    background: "transparent",
                   }}
-                >
-                </div>
-
-                {/* Input */}
-                <div style={{ width: 965, height: 67, position: "absolute", left: 0, top: -1 }}>
-                  <div
-                    className="search-input-wrap"
-                    style={{
-                      width: "100%",
-                      height: 57,
-                      position: "absolute",
-                      left: 0,
-                      top: 1,
-                      background: "white",
-                      borderRadius: 8,
-                      border: "2px #00550A solid",
-                    }}
-                  />
-                  <div
-                    style={{
-                      width: 67,
-                      height: 57,
-                      position: "absolute",
-                      left: 4,
-                      top: 1,
-                      borderRadius: 12,
-                      overflow: "hidden",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                    aria-hidden
-                  >
-                    <div
-                      style={{
-                        width: 28,
-                        height: 28,
-                        backgroundColor: "#00550A",
-                        WebkitMaskImage: `url(${searchIcon})`,
-                        maskImage: `url(${searchIcon})`,
-                        WebkitMaskRepeat: "no-repeat",
-                        maskRepeat: "no-repeat",
-                        WebkitMaskPosition: "center",
-                        maskPosition: "center",
-                        WebkitMaskSize: "contain",
-                        maskSize: "contain",
-                      }}
-                    />
-                  </div>
-                  <input
-                    type="text"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Search for clubs"
-                    style={{
-                      position: "absolute",
-                      left: 75,
-                      top: 6,
-                      width: 870,
-                      height: 45,
-                      border: "none",
-                      outline: "none",
-                      fontFamily: "Inter",
-                      fontWeight: 700,
-                      fontSize: 17,
-                      color: "#2A2A2A",
-                      background: "transparent",
-                    }}
-                  />
-                </div>
+                />
               </div>
             </div>
           </ScaleBox>
+
 
           {/* ===== Explore by Category ===== */}
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 13, width: "100%" }}>
