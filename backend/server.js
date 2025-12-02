@@ -1,4 +1,5 @@
 import express from 'express';
+import path from "path";
 import dotenv from 'dotenv';
 import { connectDB } from './config/db.js';
 
@@ -58,6 +59,11 @@ app.use((req, res, next) => {
   next();
 });
 // ------------------------------------------------------------
+
+app.use(
+  '/images/club',
+  express.static(path.join(process.cwd(), 'public', 'images'))
+);
 
 // Routes
 app.use('/api/students', studentRoutes);

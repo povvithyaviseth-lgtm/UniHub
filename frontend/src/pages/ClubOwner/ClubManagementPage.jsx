@@ -3,10 +3,40 @@ import { useNavigate } from "react-router-dom";
 import PopUpModals from "../../component/PopUpModals.jsx";
 import CreateClubPopUp from "../../component/ClubOwnerComponent/CreateClubPopUp.jsx";
 
+const API_BASE_URL = "http://localhost:5050";
+
+/**
+ * Turn whatever is stored in `club.image` into a browser-usable src.
+ *
+ * Expected values:
+ *   - "https://..." or "http://..." → use as-is
+ *   - "/images/club/slug.png"       → prefix with API_BASE_URL
+ *   - "images/club/slug.png"        → add leading "/", then prefix
+ */
+function resolveImageSrc(image) {
+  if (!image) return null;
+
+  // 1) Already absolute URL
+  if (/^https?:\/\//i.test(image)) {
+    return image;
+  }
+
+  // 2) Normalize: ensure there is exactly one leading "/"
+  let path = image.replace(/\\/g, "/"); // Windows safety
+  if (!path.startsWith("/")) {
+    path = `/${path}`;
+  }
+
+  // 3) Prefix with backend host
+  return `${API_BASE_URL}${path}`;
+}
+
 // Card component for each club
 function ClubCard({ club, onEdit }) {
   const [hovered, setHovered] = React.useState(false);
   const isPending = club.status === "pending";
+
+  const imageSrc = resolveImageSrc(club.image);
 
   return (
     <article
@@ -29,7 +59,7 @@ function ClubCard({ club, onEdit }) {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      {/* Base content: image + name (rectangle-style card like before) */}
+      {/* Base content: image + name */}
       <div>
         <div
           style={{
@@ -40,11 +70,14 @@ function ClubCard({ club, onEdit }) {
             overflow: "hidden",
             background: "#AEFFD2",
             aspectRatio: "16 / 10",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
-          {club.image && (
+          {imageSrc ? (
             <img
-              src={club.image}
+              src={imageSrc}
               alt={`${club.name} cover`}
               style={{
                 position: "absolute",
@@ -54,7 +87,22 @@ function ClubCard({ club, onEdit }) {
                 objectFit: "cover",
               }}
               loading="lazy"
+              onError={(e) => {
+                // hide broken images so you don’t get the broken-icon
+                e.currentTarget.style.display = "none";
+              }}
             />
+          ) : (
+            <span
+              style={{
+                fontSize: 14,
+                color: "#065F46",
+                padding: 8,
+                textAlign: "center",
+              }}
+            >
+              No image uploaded
+            </span>
           )}
         </div>
 
@@ -79,7 +127,7 @@ function ClubCard({ club, onEdit }) {
         </div>
       </div>
 
-      {/* Hover overlay: fills the card, white background */}
+      {/* Hover overlay */}
       {hovered && (
         <div
           style={{
@@ -95,8 +143,6 @@ function ClubCard({ club, onEdit }) {
             border: "1px solid #E5E7EB",
           }}
         >
-          {/* No club name here (per request) */}
-
           {/* Tag + Status row */}
           <div
             style={{
@@ -214,7 +260,7 @@ export default function ClubManagement() {
 
   const [clubs, setClubs] = React.useState([]);
   const [loadingClubs, setLoadingClubs] = React.useState(true);
-   const [editingClub, setEditingClub] = React.useState(null);
+  const [editingClub, setEditingClub] = React.useState(null);
 
   // Fetch clubs owned by the logged-in user
   React.useEffect(() => {
@@ -229,7 +275,7 @@ export default function ClubManagement() {
           return;
         }
 
-        const res = await fetch("http://localhost:5050/api/clubs/mine", {
+        const res = await fetch(`${API_BASE_URL}/api/clubs/mine`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -253,7 +299,7 @@ export default function ClubManagement() {
     fetchClubs();
   }, []);
 
-  // Create handler (talks to backend)
+  // Create handler (talks to backend with multer)
   const handleCreate = async (payload) => {
     console.log("CREATE club payload:", payload);
     setError("");
@@ -268,20 +314,24 @@ export default function ClubManagement() {
     }
 
     try {
-      const imagePath = imageFile ? `/images/clubs/${draft.slug}.png` : "";
+      const formData = new FormData();
 
-      const res = await fetch("http://localhost:5050/api/clubs", {
+      formData.append("name", name);
+      formData.append("tag", tag);
+      formData.append("description", description);
+      formData.append("slug", draft.slug);
+
+      if (imageFile) {
+        formData.append("image", imageFile); // must match upload.single("image")
+      }
+
+      const res = await fetch(`${API_BASE_URL}/api/clubs`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
+          // DO NOT set Content-Type when sending FormData
         },
-        body: JSON.stringify({
-          name,
-          tag,
-          description,
-          image: imagePath,
-        }),
+        body: formData,
       });
 
       const data = await res.json();
@@ -295,7 +345,6 @@ export default function ClubManagement() {
 
       console.log("New club from backend:", data.club);
 
-      // Newly created club (likely status: "pending") still appears in list
       setClubs((prev) => [data.club, ...prev]);
 
       setTimeout(() => setSuccess(""), 4000);
@@ -320,29 +369,21 @@ export default function ClubManagement() {
     }
 
     try {
-      const { name, tag, description, imageFile, draft } = payload;
+      const { name, tag, description } = payload;
 
-      // If image is being changed, adjust path; otherwise keep existing
-      const imagePath = imageFile
-        ? `/images/clubs/${draft?.slug || editingClub._id}.png`
-        : editingClub.image || "";
-
-      const res = await fetch(
-        `http://localhost:5050/api/clubs/${editingClub._id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            name: name ?? editingClub.name,
-            tag: tag ?? editingClub.tag,
-            description: description ?? editingClub.description,
-            image: imagePath,
-          }),
-        }
-      );
+      const res = await fetch(`${API_BASE_URL}/api/clubs/${editingClub._id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name: name ?? editingClub.name,
+          tag: tag ?? editingClub.tag,
+          description: description ?? editingClub.description,
+          // not touching `image` here; file updates should go through multer upload
+        }),
+      });
 
       const data = await res.json();
 
@@ -352,9 +393,7 @@ export default function ClubManagement() {
 
       console.log("Updated club from backend:", data);
 
-      setClubs((prev) =>
-        prev.map((c) => (c._id === data._id ? data : c))
-      );
+      setClubs((prev) => prev.map((c) => (c._id === data._id ? data : c)));
 
       setSuccess("Club updated successfully!");
       setShowEdit(false);
@@ -366,8 +405,9 @@ export default function ClubManagement() {
       setTimeout(() => setError(""), 2000);
     }
   };
+
   /* ======================================================
-     SUCCESS BANNER (appears after creation)
+     SUCCESS & ERROR BANNERS
   ====================================================== */
   const successBanner = success && (
     <div
@@ -471,8 +511,7 @@ export default function ClubManagement() {
                 marginBottom: 20,
                 paddingLeft: 8,
               }}
-            >
-            </div>
+            ></div>
 
             <div
               style={{
@@ -603,8 +642,7 @@ export default function ClubManagement() {
                   fontWeight: 700,
                   marginTop: 6,
                 }}
-              >
-              </div>
+              ></div>
             </div>
 
             <div>
@@ -642,7 +680,8 @@ export default function ClubManagement() {
 
             {!loadingClubs && clubs.length === 0 && (
               <div style={{ fontSize: 18, color: "#707070" }}>
-                You don’t manage any clubs yet. Click “Create New Club” to start one!
+                You don’t manage any clubs yet. Click “Create A New Club” to
+                start one!
               </div>
             )}
 
@@ -651,7 +690,10 @@ export default function ClubManagement() {
                 <ClubCard
                   key={club._id}
                   club={club}
-                  onEdit={() => setShowEdit(true)}
+                  onEdit={() => {
+                    setEditingClub(club);
+                    setShowEdit(true);
+                  }}
                 />
               ))}
           </div>
@@ -686,7 +728,6 @@ export default function ClubManagement() {
             setEditingClub(null);
           }}
           onCreate={handleEdit}
-          // Optional: if you update CreateClubPopUp to accept initial values
           initialName={editingClub?.name}
           initialTag={editingClub?.tag}
           initialDescription={editingClub?.description}

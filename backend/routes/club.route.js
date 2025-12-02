@@ -2,11 +2,12 @@
 import express from 'express';
 import { createClub, getMyClubs, updateClub } from '../controllers/club.controller.js';
 import { auth } from '../middleware/auth.middleware.js';
+import upload from '../middleware/multer.middleware.js';
 
 const router = express.Router();
 
 // POST /api/clubs
-router.post('/', auth, createClub);
+router.post('/', auth, upload.single('image'), createClub);
 router.get('/mine', auth, getMyClubs);
 router.put('/:id', auth, updateClub);
 

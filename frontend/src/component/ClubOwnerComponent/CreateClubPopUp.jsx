@@ -113,7 +113,7 @@ export default function CreateClubPopUp({
   };
 
   const handleTagSelect = (e) => {
-    const value = e.target.value.toLowerCase();
+    const value = e.target.value;
     if (!value) return;
 
     if (selectedTags.includes(value)) {
@@ -267,6 +267,7 @@ export default function CreateClubPopUp({
             >
               <input
                 type="file"
+                name="image"
                 accept="image/png"
                 onChange={handleFileChange}
                 style={{

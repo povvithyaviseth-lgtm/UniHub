@@ -250,7 +250,7 @@ const ClubManagement = () => {
                 cursor: "pointer",
               }}
             >
-              Manage Club &nbsp;&gt;
+              Manage Club &nbsp; 
             </button>
           </div>
 
