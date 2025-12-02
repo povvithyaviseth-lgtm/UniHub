@@ -5,7 +5,7 @@ import CreateClubPopUp from "../../component/ClubOwnerComponent/CreateClubPopUp.
 
 const API_BASE_URL = "http://localhost:5050";
 
-/* ======= CREATE EVENT MODAL (kept mostly as-is) ======= */
+/* ======= CREATE EVENT MODAL (small visual tweaks only) ======= */
 function CreateEventModal({ onSave, onCancel }) {
   const [title, setTitle] = React.useState("");
   const [date, setDate] = React.useState("");
@@ -46,23 +46,23 @@ function CreateEventModal({ onSave, onCancel }) {
       style={{
         width: "min(92vw, 560px)",
         maxHeight: "min(92vh, 660px)",
-        background: "white",
-        borderRadius: 15,
+        background: "#FFFFFF",
+        borderRadius: 16,
         overflow: "hidden",
         display: "flex",
         flexDirection: "column",
-        boxShadow: "0 25px 60px rgba(0,0,0,.25)",
+        boxShadow: "0 24px 60px rgba(15,23,42,0.25)",
       }}
     >
       {/* Header */}
       <div
         style={{
-          background: "#00550A",
-          minHeight: 52,
+          background: "#065F46",
+          minHeight: 56,
           display: "flex",
           alignItems: "center",
-          justifyContent: "center",
-          padding: "10px 16px",
+          justifyContent: "space-between",
+          padding: "14px 20px",
         }}
       >
         <h2
@@ -75,6 +75,21 @@ function CreateEventModal({ onSave, onCancel }) {
         >
           Create event
         </h2>
+        <button
+          type="button"
+          onClick={onCancel}
+          style={{
+            border: "none",
+            background: "rgba(255,255,255,0.1)",
+            borderRadius: 999,
+            padding: "4px 10px",
+            color: "#E5E7EB",
+            fontSize: 12,
+            cursor: "pointer",
+          }}
+        >
+          Close
+        </button>
       </div>
 
       {/* Body */}
@@ -97,9 +112,9 @@ function CreateEventModal({ onSave, onCancel }) {
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Weekly study session"
             style={{
-              borderRadius: 10,
+              borderRadius: 12,
               border: errors.title ? "1px solid #DC2626" : "1px solid #D1D5DB",
-              padding: "8px 10px",
+              padding: "10px 12px",
               fontSize: 14,
             }}
           />
@@ -125,11 +140,11 @@ function CreateEventModal({ onSave, onCancel }) {
               value={date}
               onChange={(e) => setDate(e.target.value)}
               style={{
-                borderRadius: 10,
+                borderRadius: 12,
                 border: errors.date
                   ? "1px solid #DC2626"
                   : "1px solid #D1D5DB",
-                padding: "8px 10px",
+                padding: "10px 12px",
                 fontSize: 14,
               }}
             />
@@ -147,11 +162,11 @@ function CreateEventModal({ onSave, onCancel }) {
               value={startTime}
               onChange={(e) => setStartTime(e.target.value)}
               style={{
-                borderRadius: 10,
+                borderRadius: 12,
                 border: errors.startTime
                   ? "1px solid #DC2626"
                   : "1px solid #D1D5DB",
-                padding: "8px 10px",
+                padding: "10px 12px",
                 fontSize: 14,
               }}
             />
@@ -169,9 +184,9 @@ function CreateEventModal({ onSave, onCancel }) {
               value={endTime}
               onChange={(e) => setEndTime(e.target.value)}
               style={{
-                borderRadius: 10,
+                borderRadius: 12,
                 border: "1px solid #D1D5DB",
-                padding: "8px 10px",
+                padding: "10px 12px",
                 fontSize: 14,
               }}
             />
@@ -203,9 +218,9 @@ function CreateEventModal({ onSave, onCancel }) {
                 onChange={(e) => setLocation(e.target.value)}
                 placeholder="Room 204, Science Building"
                 style={{
-                  borderRadius: 10,
+                  borderRadius: 12,
                   border: "1px solid #D1D5DB",
-                  padding: "8px 10px",
+                  padding: "10px 12px",
                   fontSize: 14,
                 }}
               />
@@ -218,7 +233,7 @@ function CreateEventModal({ onSave, onCancel }) {
                 whiteSpace: "nowrap",
                 borderRadius: 999,
                 border: "1px solid #D1D5DB",
-                padding: "6px 12px",
+                padding: "8px 14px",
                 fontSize: 12,
                 fontWeight: 500,
                 background: isOnline ? "#ECFDF3" : "#F9FAFB",
@@ -239,9 +254,9 @@ function CreateEventModal({ onSave, onCancel }) {
                 onChange={(e) => setLink(e.target.value)}
                 placeholder="Zoom / Meet link"
                 style={{
-                  borderRadius: 10,
+                  borderRadius: 12,
                   border: "1px solid #D1D5DB",
-                  padding: "8px 10px",
+                  padding: "10px 12px",
                   fontSize: 14,
                 }}
               />
@@ -264,9 +279,9 @@ function CreateEventModal({ onSave, onCancel }) {
             onChange={(e) => setCapacity(e.target.value)}
             placeholder="30"
             style={{
-              borderRadius: 10,
+              borderRadius: 12,
               border: "1px solid #D1D5DB",
-              padding: "8px 10px",
+              padding: "10px 12px",
               fontSize: 14,
               maxWidth: 160,
             }}
@@ -288,9 +303,9 @@ function CreateEventModal({ onSave, onCancel }) {
             placeholder="Short summary of the event..."
             style={{
               resize: "vertical",
-              borderRadius: 10,
+              borderRadius: 12,
               border: "1px solid #D1D5DB",
-              padding: "8px 10px",
+              padding: "10px 12px",
               fontSize: 14,
             }}
           />
@@ -315,7 +330,7 @@ function CreateEventModal({ onSave, onCancel }) {
             borderRadius: 999,
             border: "1px solid #D1D5DB",
             background: "#FFFFFF",
-            padding: "7px 14px",
+            padding: "8px 16px",
             fontSize: 13,
             fontWeight: 500,
             cursor: "pointer",
@@ -330,8 +345,8 @@ function CreateEventModal({ onSave, onCancel }) {
           style={{
             borderRadius: 999,
             border: "none",
-            background: "#00550A",
-            padding: "7px 16px",
+            background: "#065F46",
+            padding: "8px 18px",
             fontSize: 13,
             fontWeight: 600,
             cursor: "pointer",
@@ -357,6 +372,10 @@ export default function ClubDashboard() {
   const [showMembersModal, setShowMembersModal] = React.useState(false);
   const [showEditModal, setShowEditModal] = React.useState(false);
   const [showCreateEventModal, setShowCreateEventModal] = React.useState(false);
+
+  // NEW: Attendance modal state
+  const [showAttendanceModal, setShowAttendanceModal] = React.useState(false);
+  const [attendanceEvent, setAttendanceEvent] = React.useState(null);
 
   const [members, setMembers] = React.useState([
     { id: 1, email: "student1@example.edu" },
@@ -395,6 +414,9 @@ export default function ClubDashboard() {
     },
   ]);
 
+  // NEW: track attendance per event (eventId -> { [memberId]: boolean })
+  const [attendanceByEvent, setAttendanceByEvent] = React.useState({});
+
   // simple announcements
   const [announcements, setAnnouncements] = React.useState([
     {
@@ -411,6 +433,9 @@ export default function ClubDashboard() {
     },
   ]);
   const [newAnnouncement, setNewAnnouncement] = React.useState("");
+
+  // NEW: toggle between upcoming and old events
+  const [showOldEvents, setShowOldEvents] = React.useState(false);
 
   React.useEffect(() => {
     const fetchClub = async () => {
@@ -500,6 +525,37 @@ export default function ClubDashboard() {
     setEvents((prev) => prev.filter((ev) => ev.id !== eventId));
   };
 
+  // NEW: Mark attendance handlers
+  const handleOpenAttendance = (event) => {
+    setAttendanceEvent(event);
+    setShowAttendanceModal(true);
+  };
+
+  const handleToggleAttendance = (eventId, memberId) => {
+    setAttendanceByEvent((prev) => {
+      const prevEvent = prev[eventId] || {};
+      return {
+        ...prev,
+        [eventId]: {
+          ...prevEvent,
+          [memberId]: !prevEvent[memberId],
+        },
+      };
+    });
+  };
+
+  const handleCloseAttendanceModal = () => {
+    setShowAttendanceModal(false);
+    setAttendanceEvent(null);
+  };
+
+  // NEW: RSVP button handler (placeholder behavior)
+  const handleRSVPClick = () => {
+    window.alert(
+      "RSVPs are typically handled on the public event page. This admin dashboard button is a placeholder for viewing RSVP details."
+    );
+  };
+
   // announcements actions
   const handleAddAnnouncement = () => {
     const trimmed = newAnnouncement.trim();
@@ -545,13 +601,13 @@ export default function ClubDashboard() {
   /* small helper styles for minimal buttons */
   const ghostButton = {
     borderRadius: 999,
-    border: "1px solid #D1D5DB",
+    border: "1px solid #E5E7EB",
     background: "#FFFFFF",
-    padding: "6px 12px",
+    padding: "8px 14px",
     fontSize: 13,
     fontWeight: 500,
     cursor: "pointer",
-    color: "#374151",
+    color: "#111827",
   };
 
   const subtleTextButton = {
@@ -569,17 +625,46 @@ export default function ClubDashboard() {
     color: "#B91C1C",
   };
 
+  const pillButton = {
+    borderRadius: 999,
+    padding: "6px 12px",
+    border: "none",
+    fontSize: 12,
+    fontWeight: 500,
+    cursor: "pointer",
+  };
+
+  const softOutlineButton = {
+    borderRadius: 999,
+    padding: "6px 12px",
+    fontSize: 12,
+    fontWeight: 500,
+    cursor: "pointer",
+    border: "1px solid #E5E7EB",
+    background: "#F9FAFB",
+    color: "#111827",
+  };
+
+  // NEW: filter events into upcoming vs old
+  const today = new Date().toISOString().slice(0, 10);
+  const upcomingEvents = events.filter(
+    (ev) => !ev.date || ev.date >= today
+  );
+  const pastEvents = events.filter((ev) => ev.date && ev.date < today);
+
+  const eventsToRender = showOldEvents ? pastEvents : upcomingEvents;
+
   return (
     <div
       style={{
         width: "100%",
         minHeight: "100vh",
-        background: "#F9FAFB",
-        padding: "24px 32px",
+        background: "#F3F4F6",
+        padding: "28px 36px",
         boxSizing: "border-box",
         display: "flex",
         flexDirection: "column",
-        gap: 12,
+        gap: 16,
       }}
     >
       {/* ======= TOP BAR ======= */}
@@ -588,7 +673,7 @@ export default function ClubDashboard() {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          gap: 16,
+          gap: 24,
         }}
       >
         {/* Left: Club name + badge */}
@@ -596,9 +681,9 @@ export default function ClubDashboard() {
           <div
             style={{
               color: "#111827",
-              fontSize: 32,
+              fontSize: 30,
               fontWeight: 700,
-              lineHeight: 1.2,
+              lineHeight: 1.1,
               marginBottom: 6,
             }}
           >
@@ -610,11 +695,11 @@ export default function ClubDashboard() {
               style={{
                 display: "inline-flex",
                 alignItems: "center",
-                gap: 6,
-                padding: "4px 10px",
+                gap: 8,
+                padding: "4px 12px",
                 borderRadius: 999,
                 fontSize: 11,
-                fontWeight: 500,
+                fontWeight: 600,
                 border: "1px solid #E5E7EB",
                 backgroundColor: "#FFFFFF",
                 textTransform: "uppercase",
@@ -622,17 +707,25 @@ export default function ClubDashboard() {
                 color: isPending ? "#4B5563" : "#16A34A",
               }}
             >
+              <span
+                style={{
+                  width: 6,
+                  height: 6,
+                  borderRadius: "999px",
+                  backgroundColor: isPending ? "#9CA3AF" : "#22C55E",
+                }}
+              />
               {isPending ? "Pending approval" : "Approved club"}
             </div>
           )}
         </div>
 
-        {/* Right: Members / Edit in a simple row, more minimal */}
+        {/* Right: Members / Edit in a simple row, chunky pills */}
         <div
           style={{
             display: "flex",
             alignItems: "center",
-            gap: 8,
+            gap: 10,
           }}
         >
           <button
@@ -662,14 +755,14 @@ export default function ClubDashboard() {
           marginTop: 8,
         }}
       >
-        {/* Tabs - softer look */}
+        {/* Tabs */}
         <div
           style={{
             display: "inline-flex",
             alignItems: "center",
             padding: 4,
             borderRadius: 999,
-            background: "#E5E7EB66",
+            background: "#E5E7EB80",
             marginBottom: 16,
           }}
         >
@@ -679,12 +772,11 @@ export default function ClubDashboard() {
             style={{
               border: "none",
               borderRadius: 999,
-              padding: "6px 16px",
+              padding: "8px 18px",
               fontSize: 14,
               fontWeight: 500,
               cursor: "pointer",
-              background:
-                activeTab === "events" ? "#111827" : "transparent",
+              background: activeTab === "events" ? "#111827" : "transparent",
               color: activeTab === "events" ? "#F9FAFB" : "#4B5563",
             }}
           >
@@ -697,7 +789,7 @@ export default function ClubDashboard() {
             style={{
               border: "none",
               borderRadius: 999,
-              padding: "6px 16px",
+              padding: "8px 18px",
               fontSize: 14,
               fontWeight: 500,
               cursor: "pointer",
@@ -733,18 +825,18 @@ export default function ClubDashboard() {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "space-between",
-                  gap: 12,
+                  gap: 16,
                 }}
               >
                 <div>
                   <div
                     style={{
-                      fontSize: 15,
+                      fontSize: 16,
                       fontWeight: 600,
                       color: "#111827",
                     }}
                   >
-                    Events
+                    {showOldEvents ? "Old events" : "Upcoming events"}
                   </div>
                   <div
                     style={{
@@ -757,61 +849,84 @@ export default function ClubDashboard() {
                   </div>
                 </div>
 
-                <button
-                  type="button"
+                <div
                   style={{
-                    ...ghostButton,
-                    border: "none",
-                    background: "#111827",
-                    color: "#F9FAFB",
-                    padding: "7px 14px",
-                    fontSize: 13,
+                    display: "flex",
+                    gap: 10,
+                    alignItems: "center",
                   }}
-                  onClick={() => setShowCreateEventModal(true)}
                 >
-                  Create event
-                </button>
+                  {/* NEW: Old events toggle button */}
+                  <button
+                    type="button"
+                    style={{
+                      ...softOutlineButton,
+                      background: showOldEvents ? "#111827" : "#F9FAFB",
+                      color: showOldEvents ? "#F9FAFB" : "#111827",
+                    }}
+                    onClick={() => setShowOldEvents((prev) => !prev)}
+                  >
+                    {showOldEvents ? "Show upcoming" : "Old events"}
+                  </button>
+
+                  <button
+                    type="button"
+                    style={{
+                      ...ghostButton,
+                      border: "none",
+                      background: "#111827",
+                      color: "#F9FAFB",
+                      padding: "8px 16px",
+                      fontSize: 13,
+                    }}
+                    onClick={() => setShowCreateEventModal(true)}
+                  >
+                    Create event
+                  </button>
+                </div>
               </div>
 
               {/* Event list */}
-              {events.length === 0 ? (
+              {(eventsToRender || []).length === 0 ? (
                 <div
                   style={{
                     marginTop: 8,
-                    padding: "20px 16px",
-                    borderRadius: 14,
+                    padding: "24px 18px",
+                    borderRadius: 16,
                     border: "1px dashed #D1D5DB",
                     background: "#FFFFFF",
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "center",
                     textAlign: "center",
-                    gap: 6,
+                    gap: 8,
                   }}
                 >
                   <div
                     style={{
-                      width: 32,
-                      height: 32,
+                      width: 40,
+                      height: 40,
                       borderRadius: 999,
                       border: "1px solid #E5E7EB",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      fontSize: 18,
-                      marginBottom: 2,
+                      fontSize: 20,
+                      marginBottom: 4,
                     }}
                   >
                     +
                   </div>
                   <div
                     style={{
-                      fontSize: 13,
+                      fontSize: 14,
                       fontWeight: 500,
                       color: "#111827",
                     }}
                   >
-                    No events yet
+                    {showOldEvents
+                      ? "No old events yet"
+                      : "No events yet"}
                   </div>
                   <div
                     style={{
@@ -820,8 +935,9 @@ export default function ClubDashboard() {
                       maxWidth: 320,
                     }}
                   >
-                    Create your first event. Once you post it, members will be
-                    able to RSVP.
+                    {showOldEvents
+                      ? "Past events will appear here once you start hosting."
+                      : "Create your first event. Once you post it, members will be able to RSVP."}
                   </div>
                 </div>
               ) : (
@@ -829,10 +945,10 @@ export default function ClubDashboard() {
                   style={{
                     display: "flex",
                     flexDirection: "column",
-                    gap: 10,
+                    gap: 12,
                   }}
                 >
-                  {events.map((ev) => {
+                  {eventsToRender.map((ev) => {
                     const isPublished = ev.status === "published";
 
                     const dateStr = ev.date
@@ -858,13 +974,13 @@ export default function ClubDashboard() {
                       <div
                         key={ev.id}
                         style={{
-                          borderRadius: 12,
+                          borderRadius: 18,
                           border: "1px solid #E5E7EB",
                           background: "#FFFFFF",
-                          padding: 14,
+                          padding: 16,
                           display: "flex",
                           flexDirection: "column",
-                          gap: 6,
+                          gap: 10,
                         }}
                       >
                         <div
@@ -872,13 +988,13 @@ export default function ClubDashboard() {
                             display: "flex",
                             justifyContent: "space-between",
                             alignItems: "flex-start",
-                            gap: 8,
+                            gap: 12,
                           }}
                         >
                           <div style={{ flex: 1, minWidth: 0 }}>
                             <div
                               style={{
-                                fontSize: 15,
+                                fontSize: 16,
                                 fontWeight: 600,
                                 color: "#111827",
                                 wordBreak: "break-word",
@@ -891,17 +1007,40 @@ export default function ClubDashboard() {
                               style={{
                                 display: "flex",
                                 flexWrap: "wrap",
-                                gap: 8,
+                                gap: 10,
                                 fontSize: 12,
                                 color: "#6B7280",
-                                marginTop: 4,
+                                marginTop: 6,
                               }}
                             >
-                              {dateStr && <span>{dateStr}</span>}
-                              {timeStr && <span>{timeStr}</span>}
+                              {dateStr && (
+                                <span
+                                  style={{
+                                    padding: "4px 8px",
+                                    borderRadius: 999,
+                                    background: "#F3F4F6",
+                                  }}
+                                >
+                                  {dateStr}
+                                </span>
+                              )}
+                              {timeStr && (
+                                <span
+                                  style={{
+                                    padding: "4px 8px",
+                                    borderRadius: 999,
+                                    background: "#F3F4F6",
+                                  }}
+                                >
+                                  {timeStr}
+                                </span>
+                              )}
                               {ev.location && (
                                 <span
                                   style={{
+                                    padding: "4px 8px",
+                                    borderRadius: 999,
+                                    background: "#F3F4F6",
                                     whiteSpace: "nowrap",
                                     textOverflow: "ellipsis",
                                     overflow: "hidden",
@@ -916,11 +1055,11 @@ export default function ClubDashboard() {
                             {ev.description && (
                               <p
                                 style={{
-                                  margin: 4,
+                                  margin: 8,
                                   marginLeft: 0,
-                                  fontSize: 12,
+                                  fontSize: 13,
                                   color: "#4B5563",
-                                  maxHeight: 40,
+                                  maxHeight: 44,
                                   overflow: "hidden",
                                   textOverflow: "ellipsis",
                                 }}
@@ -930,27 +1069,61 @@ export default function ClubDashboard() {
                             )}
                           </div>
 
-                          {/* status hint, very subtle */}
+                          {/* status pill */}
                           <span
                             style={{
                               fontSize: 11,
+                              padding: "4px 10px",
+                              borderRadius: 999,
+                              background: isPublished
+                                ? "#ECFDF3"
+                                : "#F3F4F6",
                               color: isPublished ? "#15803D" : "#6B7280",
                               whiteSpace: "nowrap",
+                              fontWeight: 500,
                             }}
                           >
                             {isPublished ? "Posted" : "Draft"}
                           </span>
                         </div>
 
-                        {/* actions: only edit/post + delete, inline and light */}
+                        {/* NEW: RSVP + Mark attendance + existing actions */}
                         <div
                           style={{
                             display: "flex",
                             justifyContent: "flex-end",
-                            gap: 12,
+                            gap: 10,
                             marginTop: 4,
+                            flexWrap: "wrap",
                           }}
                         >
+                          {/* NEW: RSVP button (before mark attendance) */}
+                          <button
+                            type="button"
+                            style={{
+                              ...pillButton,
+                              background: "#EEF2FF",
+                              color: "#3730A3",
+                            }}
+                            onClick={handleRSVPClick}
+                          >
+                            RSVP
+                          </button>
+
+                          {/* NEW: Mark attendance button (before Edit/Post) */}
+                          <button
+                            type="button"
+                            style={{
+                              ...pillButton,
+                              background: "#ECFDF3",
+                              color: "#166534",
+                            }}
+                            onClick={() => handleOpenAttendance(ev)}
+                          >
+                            Mark attendance
+                          </button>
+
+                          {/* Existing actions */}
                           <button
                             type="button"
                             style={subtleTextButton}
@@ -986,10 +1159,10 @@ export default function ClubDashboard() {
               {/* New announcement composer */}
               <div
                 style={{
-                  borderRadius: 12,
+                  borderRadius: 18,
                   border: "1px solid #E5E7EB",
                   background: "#FFFFFF",
-                  padding: 12,
+                  padding: 14,
                   display: "flex",
                   flexDirection: "column",
                   gap: 8,
@@ -1002,9 +1175,9 @@ export default function ClubDashboard() {
                   onChange={(e) => setNewAnnouncement(e.target.value)}
                   style={{
                     width: "100%",
-                    borderRadius: 8,
+                    borderRadius: 12,
                     border: "1px solid #E5E7EB",
-                    padding: "8px 10px",
+                    padding: "10px 12px",
                     fontSize: 13,
                     resize: "vertical",
                     minHeight: 60,
@@ -1023,7 +1196,7 @@ export default function ClubDashboard() {
                       border: "none",
                       background: "#111827",
                       color: "#F9FAFB",
-                      padding: "6px 12px",
+                      padding: "8px 16px",
                       fontSize: 12,
                     }}
                     onClick={handleAddAnnouncement}
@@ -1037,8 +1210,8 @@ export default function ClubDashboard() {
               {announcements.length === 0 ? (
                 <div
                   style={{
-                    padding: "16px 14px",
-                    borderRadius: 12,
+                    padding: "18px 16px",
+                    borderRadius: 18,
                     border: "1px dashed #D1D5DB",
                     background: "#FFFFFF",
                     fontSize: 13,
@@ -1073,7 +1246,7 @@ export default function ClubDashboard() {
                       <div
                         key={a.id}
                         style={{
-                          borderRadius: 12,
+                          borderRadius: 16,
                           border: "1px solid #E5E7EB",
                           background: "#FFFFFF",
                           padding: 12,
@@ -1164,7 +1337,7 @@ export default function ClubDashboard() {
         </section>
       </main>
 
-      {/* ======= BOTTOM RIGHT BACK BUTTON (more minimal) ======= */}
+      {/* ======= BOTTOM RIGHT BACK BUTTON ======= */}
       <div
         style={{
           marginTop: 12,
@@ -1176,7 +1349,7 @@ export default function ClubDashboard() {
           type="button"
           style={{
             ...ghostButton,
-            padding: "6px 14px",
+            padding: "8px 16px",
             minWidth: "auto",
           }}
           onClick={handleGoBack}
@@ -1198,22 +1371,22 @@ export default function ClubDashboard() {
             width: "min(92vw, 500px)",
             maxHeight: "min(92vh, 600px)",
             background: "white",
-            borderRadius: 15,
+            borderRadius: 16,
             overflow: "hidden",
             display: "flex",
             flexDirection: "column",
-            boxShadow: "0 25px 60px rgba(0,0,0,.25)",
+            boxShadow: "0 24px 60px rgba(15,23,42,0.25)",
           }}
         >
           {/* Header strip */}
           <div
             style={{
-              background: "#00550A",
-              minHeight: 52,
+              background: "#065F46",
+              minHeight: 56,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              padding: "10px 16px",
+              padding: "14px 20px",
             }}
           >
             <h2
@@ -1221,7 +1394,7 @@ export default function ClubDashboard() {
                 margin: 0,
                 color: "white",
                 fontWeight: 600,
-                fontSize: 20,
+                fontSize: 18,
               }}
             >
               Members
@@ -1251,7 +1424,7 @@ export default function ClubDashboard() {
                       alignItems: "center",
                       justifyContent: "space-between",
                       padding: "8px 10px",
-                      borderRadius: 8,
+                      borderRadius: 10,
                       border: "1px solid #E5E7EB",
                     }}
                   >
@@ -1355,6 +1528,177 @@ export default function ClubDashboard() {
           onSave={handleCreateEventSave}
           onCancel={() => setShowCreateEventModal(false)}
         />
+      </PopUpModals>
+
+      {/* ======= MARK ATTENDANCE MODAL (NEW) ======= */}
+      <PopUpModals open={showAttendanceModal} onClose={handleCloseAttendanceModal}>
+        <div
+          style={{
+            width: "min(92vw, 520px)",
+            maxHeight: "min(92vh, 620px)",
+            background: "#FFFFFF",
+            borderRadius: 16,
+            overflow: "hidden",
+            display: "flex",
+            flexDirection: "column",
+            boxShadow: "0 24px 60px rgba(15,23,42,0.25)",
+          }}
+        >
+          <div
+            style={{
+              background: "#065F46",
+              minHeight: 56,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              padding: "14px 20px",
+            }}
+          >
+            <h2
+              style={{
+                margin: 0,
+                color: "white",
+                fontWeight: 600,
+                fontSize: 18,
+              }}
+            >
+              Mark attendance
+            </h2>
+            <button
+              type="button"
+              onClick={handleCloseAttendanceModal}
+              style={{
+                border: "none",
+                background: "rgba(255,255,255,0.1)",
+                borderRadius: 999,
+                padding: "4px 10px",
+                color: "#E5E7EB",
+                fontSize: 12,
+                cursor: "pointer",
+              }}
+            >
+              Close
+            </button>
+          </div>
+
+          <div
+            style={{
+              padding: 18,
+              display: "flex",
+              flexDirection: "column",
+              gap: 10,
+            }}
+          >
+            {attendanceEvent && (
+              <div
+                style={{
+                  marginBottom: 8,
+                  fontSize: 13,
+                  color: "#4B5563",
+                }}
+              >
+                Event:{" "}
+                <span style={{ fontWeight: 600, color: "#111827" }}>
+                  {attendanceEvent.title}
+                </span>
+              </div>
+            )}
+
+            {members.length === 0 ? (
+              <p style={{ fontSize: 13, color: "#4B5563" }}>
+                No members to mark attendance for.
+              </p>
+            ) : (
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 8,
+                  maxHeight: 360,
+                  overflowY: "auto",
+                }}
+              >
+                {members.map((member) => {
+                  const eventId = attendanceEvent?.id;
+                  const eventAttendance = attendanceByEvent[eventId] || {};
+                  const isPresent = !!eventAttendance[member.id];
+
+                  return (
+                    <label
+                      key={member.id}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        padding: "8px 10px",
+                        borderRadius: 10,
+                        border: "1px solid #E5E7EB",
+                        cursor: "pointer",
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontSize: 13,
+                          color: "#111827",
+                          wordBreak: "break-all",
+                        }}
+                      >
+                        {member.email}
+                      </span>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 8,
+                        }}
+                      >
+                        <span
+                          style={{
+                            fontSize: 12,
+                            color: isPresent ? "#15803D" : "#6B7280",
+                          }}
+                        >
+                          {isPresent ? "Present" : "Absent"}
+                        </span>
+                        <input
+                          type="checkbox"
+                          checked={isPresent}
+                          onChange={() =>
+                            handleToggleAttendance(eventId, member.id)
+                          }
+                          style={{ cursor: "pointer" }}
+                        />
+                      </div>
+                    </label>
+                  );
+                })}
+              </div>
+            )}
+
+            <div
+              style={{
+                marginTop: 10,
+                display: "flex",
+                justifyContent: "flex-end",
+              }}
+            >
+              <button
+                type="button"
+                onClick={handleCloseAttendanceModal}
+                style={{
+                  ...ghostButton,
+                  border: "none",
+                  background: "#111827",
+                  color: "#F9FAFB",
+                  padding: "8px 16px",
+                  fontSize: 13,
+                }}
+              >
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
       </PopUpModals>
     </div>
   );
