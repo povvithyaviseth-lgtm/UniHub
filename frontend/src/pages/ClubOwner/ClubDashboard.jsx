@@ -1,8 +1,6 @@
 import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import PopUpModals from "../../component/PopUpModals.jsx";
-// You can later swap these placeholders with real components/forms
-// import CreateClubPopUp from "../../component/ClubOwnerComponent/CreateClubPopUp.jsx";
 
 const API_BASE_URL = "http://localhost:5050";
 
@@ -17,7 +15,6 @@ export default function ClubDashboard() {
   const [showMembersModal, setShowMembersModal] = React.useState(false);
   const [showEditModal, setShowEditModal] = React.useState(false);
 
-  // Very simple fetch skeleton — wire up backend later
   React.useEffect(() => {
     const fetchClub = async () => {
       try {
@@ -44,7 +41,7 @@ export default function ClubDashboard() {
   }, [clubId]);
 
   const handleGoBack = () => {
-    navigate("/console/clubs"); // or wherever your ClubManagement lives
+    navigate("/console/clubs");
   };
 
   const isPending = club?.status === "pending";
@@ -54,145 +51,153 @@ export default function ClubDashboard() {
       style={{
         width: "100%",
         minHeight: "100vh",
-        background: "#F6F6F6",
-        display: "flex",
-        justifyContent: "center",
-        padding: 16,
+        background: "#F9FAFB",
+        padding: "24px 32px",
         boxSizing: "border-box",
+        display: "flex",
+        flexDirection: "column",
       }}
     >
-      <div
+      {/* ======= TOP BAR ======= */}
+      <header
         style={{
-          width: "100%",
-          maxWidth: 1200,
-          background: "#FFFFFF",
-          borderRadius: 16,
-          boxShadow: "0 6px 16px rgba(15, 23, 42, 0.08)",
-          padding: 20,
-          boxSizing: "border-box",
+          display: "flex",
+          alignItems: "flex-start",
+          justifyContent: "space-between",
+          gap: 16,
+          marginBottom: 24,
         }}
       >
-        {/* ======= HEADER: club name (left) + status (right) ======= */}
-        <header
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: 12,
-            marginBottom: 16,
-          }}
-        >
-          <div>
-            <button
-              type="button"
-              onClick={handleGoBack}
-              style={{
-                marginBottom: 8,
-                fontSize: 14,
-                color: "#6B7280",
-                background: "transparent",
-                border: "none",
-                cursor: "pointer",
-                textDecoration: "underline",
-              }}
-            >
-              ← Back
-            </button>
+        {/* Left: Back, Club name, Badge */}
+        <div>
+          <button
+            type="button"
+            onClick={handleGoBack}
+            style={{
+              marginBottom: 8,
+              fontSize: 13,
+              color: "#6B7280",
+              background: "transparent",
+              border: "none",
+              cursor: "pointer",
+              textDecoration: "underline",
+              padding: 0,
+            }}
+          >
+            ← Back to clubs
+          </button>
 
-            <div
-              style={{
-                color: "black",
-                fontSize: 32,
-                fontWeight: 800,
-                lineHeight: 1.1,
-              }}
-            >
-              {loading ? "Loading..." : club?.name || "Club"}
-            </div>
+          <div
+            style={{
+              color: "#111827",
+              fontSize: 28,
+              fontWeight: 800,
+              lineHeight: 1.2,
+              marginBottom: 6,
+            }}
+          >
+            {loading ? "Loading..." : club?.name || "Club"}
           </div>
 
-          {/* Status pill on the right */}
           {!loading && club && (
             <div
               style={{
-                padding: "6px 14px",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 6,
+                padding: "4px 10px",
                 borderRadius: 999,
-                fontSize: 12,
-                fontWeight: 700,
-                backgroundColor: isPending ? "#F3F4F6" : "#DCFCE7",
-                color: isPending ? "#4B5563" : "#166534",
+                fontSize: 11,
+                fontWeight: 600,
+                border: "1px solid #E5E7EB",
+                backgroundColor: "#FFFFFF",
                 textTransform: "uppercase",
                 letterSpacing: 0.6,
-                whiteSpace: "nowrap",
               }}
             >
-              {isPending ? "Pending approval" : "Approved"}
+              <span
+                style={{
+                  fontSize: 12,
+                }}
+              >
+              </span>
+              <span style={{ color: isPending ? "#4B5563" : "#16A34A" }}>
+                {isPending ? "Pending approval" : "Approved"}
+              </span>
             </div>
           )}
-        </header>
+        </div>
 
-        {/* ======= ACTION BUTTONS: View Members + Edit ======= */}
+        {/* Right: Members / Edit stacked */}
         <div
           style={{
             display: "flex",
-            gap: 10,
-            marginBottom: 20,
+            flexDirection: "column",
+            gap: 8,
           }}
         >
           <button
             type="button"
             className="btn-primary"
             style={{
-              minWidth: 150,
-              height: 40,
-              fontSize: 16,
+              minWidth: 190,
+              height: 56,
+              fontSize: 24,
               borderRadius: 999,
             }}
             onClick={() => setShowMembersModal(true)}
           >
-            View Members
+            Members
           </button>
 
           <button
             type="button"
             className="btn-primary"
             style={{
-              minWidth: 150,
-              height: 40,
-              fontSize: 16,
+              minWidth: 190,
+              height: 56,
+              fontSize: 24,
               borderRadius: 999,
-              background: "#FFFFFF",
-              color: "#111827",
-              border: "1px solid #D1D5DB",
             }}
             onClick={() => setShowEditModal(true)}
           >
-            Edit Club
+            Edit
           </button>
         </div>
+      </header>
 
-        {/* ======= TABS: Events / Announcements ======= */}
+      {/* ======= MAIN CONTENT ======= */}
+      <main
+        style={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        {/* Tabs */}
         <div
           style={{
             display: "flex",
+            gap: 24,
             borderBottom: "1px solid #E5E7EB",
             marginBottom: 16,
-            gap: 8,
           }}
         >
           <button
             type="button"
             onClick={() => setActiveTab("events")}
             style={{
-              padding: "8px 16px",
-              borderRadius: 999,
+              padding: "8px 0",
               border: "none",
-              background:
-                activeTab === "events" ? "#111827" : "transparent",
-              color: activeTab === "events" ? "#FFFFFF" : "#6B7280",
+              background: "transparent",
               fontSize: 15,
               fontWeight: 600,
               cursor: "pointer",
+              borderBottom:
+                activeTab === "events"
+                  ? "2px solid #111827"
+                  : "2px solid transparent",
+              color: activeTab === "events" ? "#111827" : "#9CA3AF",
             }}
           >
             Events
@@ -202,39 +207,36 @@ export default function ClubDashboard() {
             type="button"
             onClick={() => setActiveTab("announcements")}
             style={{
-              padding: "8px 16px",
-              borderRadius: 999,
+              padding: "8px 0",
               border: "none",
-              background:
-                activeTab === "announcements" ? "#111827" : "transparent",
-              color:
-                activeTab === "announcements" ? "#FFFFFF" : "#6B7280",
+              background: "transparent",
               fontSize: 15,
               fontWeight: 600,
               cursor: "pointer",
+              borderBottom:
+                activeTab === "announcements"
+                  ? "2px solid #111827"
+                  : "2px solid transparent",
+              color: activeTab === "announcements" ? "#111827" : "#9CA3AF",
             }}
           >
             Announcements
           </button>
         </div>
 
-        {/* ======= TAB CONTENT AREA ======= */}
+        {/* Tab content */}
         <section
           style={{
-            minHeight: 200,
-            padding: 8,
+            flex: 1,
+            paddingTop: 4,
+            fontSize: 15,
+            color: "#4B5563",
           }}
         >
           {activeTab === "events" && (
-            <div
-              style={{
-                fontSize: 16,
-                color: "#4B5563",
-              }}
-            >
-              {/* Skeleton UI for Events */}
-              <p>Events list will go here.</p>
-              <ul style={{ paddingLeft: 18 }}>
+            <div>
+              <p style={{ marginBottom: 8 }}>Events list will go here.</p>
+              <ul style={{ paddingLeft: 18, margin: 0 }}>
                 <li>Show upcoming events</li>
                 <li>Button to create a new event</li>
                 <li>Per event: view RSVPs, edit, mark attendance</li>
@@ -243,22 +245,16 @@ export default function ClubDashboard() {
           )}
 
           {activeTab === "announcements" && (
-            <div
-              style={{
-                fontSize: 16,
-                color: "#4B5563",
-              }}
-            >
-              {/* Skeleton UI for Announcements */}
-              <p>Announcements will go here.</p>
-              <ul style={{ paddingLeft: 18 }}>
+            <div>
+              <p style={{ marginBottom: 8 }}>Announcements will go here.</p>
+              <ul style={{ paddingLeft: 18, margin: 0 }}>
                 <li>Simple text area to post new announcement</li>
                 <li>List of past announcements</li>
               </ul>
             </div>
           )}
         </section>
-      </div>
+      </main>
 
       {/* ======= VIEW MEMBERS MODAL ======= */}
       <PopUpModals
@@ -310,7 +306,6 @@ export default function ClubDashboard() {
             A simple form to edit club name, description, tags, etc. will go
             here.
           </p>
-          {/* Later you can replace this with your CreateClubPopUp or a dedicated EditClub form */}
         </div>
       </PopUpModals>
     </div>

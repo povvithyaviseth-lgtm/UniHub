@@ -539,7 +539,7 @@ export default function ClubManagement() {
                 }}
                 onClick={handleGoHome}
               >
-                Home
+                Back
               </button>
 
               <button
