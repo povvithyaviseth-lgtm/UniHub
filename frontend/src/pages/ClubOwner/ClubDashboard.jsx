@@ -5,7 +5,7 @@ import CreateClubPopUp from "../../component/ClubOwnerComponent/CreateClubPopUp.
 
 const API_BASE_URL = "http://localhost:5050";
 
-/* ======= CREATE EVENT MODAL ======= */
+/* ======= CREATE EVENT MODAL (kept mostly as-is) ======= */
 function CreateEventModal({ onSave, onCancel }) {
   const [title, setTitle] = React.useState("");
   const [date, setDate] = React.useState("");
@@ -58,22 +58,22 @@ function CreateEventModal({ onSave, onCancel }) {
       <div
         style={{
           background: "#00550A",
-          minHeight: 56,
+          minHeight: 52,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          padding: "12px 16px",
+          padding: "10px 16px",
         }}
       >
         <h2
           style={{
             margin: 0,
             color: "white",
-            fontWeight: 700,
-            fontSize: 24,
+            fontWeight: 600,
+            fontSize: 20,
           }}
         >
-          Create Event
+          Create event
         </h2>
       </div>
 
@@ -90,12 +90,12 @@ function CreateEventModal({ onSave, onCancel }) {
       >
         {/* Event name */}
         <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-          <label style={{ fontWeight: 600 }}>Event name *</label>
+          <label style={{ fontWeight: 500 }}>Event name *</label>
           <input
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="e.g. Weekly Study Session"
+            placeholder="Weekly study session"
             style={{
               borderRadius: 10,
               border: errors.title ? "1px solid #DC2626" : "1px solid #D1D5DB",
@@ -119,7 +119,7 @@ function CreateEventModal({ onSave, onCancel }) {
           }}
         >
           <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            <label style={{ fontWeight: 600 }}>Date *</label>
+            <label style={{ fontWeight: 500 }}>Date *</label>
             <input
               type="date"
               value={date}
@@ -141,7 +141,7 @@ function CreateEventModal({ onSave, onCancel }) {
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            <label style={{ fontWeight: 600 }}>Start *</label>
+            <label style={{ fontWeight: 500 }}>Start *</label>
             <input
               type="time"
               value={startTime}
@@ -163,7 +163,7 @@ function CreateEventModal({ onSave, onCancel }) {
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            <label style={{ fontWeight: 600 }}>End</label>
+            <label style={{ fontWeight: 500 }}>End</label>
             <input
               type="time"
               value={endTime}
@@ -188,13 +188,20 @@ function CreateEventModal({ onSave, onCancel }) {
               gap: 12,
             }}
           >
-            <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 4 }}>
-              <label style={{ fontWeight: 600 }}>Location</label>
+            <div
+              style={{
+                flex: 1,
+                display: "flex",
+                flexDirection: "column",
+                gap: 4,
+              }}
+            >
+              <label style={{ fontWeight: 500 }}>Location</label>
               <input
                 type="text"
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
-                placeholder="e.g. Room 204, Science Building"
+                placeholder="Room 204, Science Building"
                 style={{
                   borderRadius: 10,
                   border: "1px solid #D1D5DB",
@@ -213,7 +220,7 @@ function CreateEventModal({ onSave, onCancel }) {
                 border: "1px solid #D1D5DB",
                 padding: "6px 12px",
                 fontSize: 12,
-                fontWeight: 600,
+                fontWeight: 500,
                 background: isOnline ? "#ECFDF3" : "#F9FAFB",
                 color: isOnline ? "#15803D" : "#4B5563",
                 cursor: "pointer",
@@ -225,12 +232,12 @@ function CreateEventModal({ onSave, onCancel }) {
 
           {isOnline && (
             <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-              <label style={{ fontWeight: 600 }}>Join link</label>
+              <label style={{ fontWeight: 500 }}>Join link</label>
               <input
                 type="url"
                 value={link}
                 onChange={(e) => setLink(e.target.value)}
-                placeholder="e.g. Zoom / Google Meet link"
+                placeholder="Zoom / Meet link"
                 style={{
                   borderRadius: 10,
                   border: "1px solid #D1D5DB",
@@ -244,7 +251,7 @@ function CreateEventModal({ onSave, onCancel }) {
 
         {/* Capacity */}
         <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-          <label style={{ fontWeight: 600 }}>
+          <label style={{ fontWeight: 500 }}>
             Capacity{" "}
             <span style={{ fontWeight: 400, color: "#6B7280" }}>
               (optional)
@@ -255,7 +262,7 @@ function CreateEventModal({ onSave, onCancel }) {
             min="1"
             value={capacity}
             onChange={(e) => setCapacity(e.target.value)}
-            placeholder="e.g. 30"
+            placeholder="30"
             style={{
               borderRadius: 10,
               border: "1px solid #D1D5DB",
@@ -268,7 +275,7 @@ function CreateEventModal({ onSave, onCancel }) {
 
         {/* Description */}
         <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-          <label style={{ fontWeight: 600 }}>
+          <label style={{ fontWeight: 500 }}>
             Description{" "}
             <span style={{ fontWeight: 400, color: "#6B7280" }}>
               (what should people expect?)
@@ -293,11 +300,11 @@ function CreateEventModal({ onSave, onCancel }) {
       {/* Footer actions */}
       <div
         style={{
-          padding: 16,
+          padding: 14,
           borderTop: "1px solid #E5E7EB",
           display: "flex",
           justifyContent: "flex-end",
-          gap: 10,
+          gap: 8,
           background: "#F9FAFB",
         }}
       >
@@ -305,11 +312,11 @@ function CreateEventModal({ onSave, onCancel }) {
           type="button"
           onClick={onCancel}
           style={{
-            borderRadius: 10,
+            borderRadius: 999,
             border: "1px solid #D1D5DB",
             background: "#FFFFFF",
-            padding: "8px 14px",
-            fontSize: 14,
+            padding: "7px 14px",
+            fontSize: 13,
             fontWeight: 500,
             cursor: "pointer",
             color: "#374151",
@@ -321,11 +328,11 @@ function CreateEventModal({ onSave, onCancel }) {
           type="button"
           onClick={handleSubmit}
           style={{
-            borderRadius: 10,
+            borderRadius: 999,
             border: "none",
             background: "#00550A",
-            padding: "8px 18px",
-            fontSize: 14,
+            padding: "7px 16px",
+            fontSize: 13,
             fontWeight: 600,
             cursor: "pointer",
             color: "#FFFFFF",
@@ -349,23 +356,20 @@ export default function ClubDashboard() {
   const [activeTab, setActiveTab] = React.useState("events"); // "events" | "announcements"
   const [showMembersModal, setShowMembersModal] = React.useState(false);
   const [showEditModal, setShowEditModal] = React.useState(false);
-
   const [showCreateEventModal, setShowCreateEventModal] = React.useState(false);
 
-  // minimal mock members list
   const [members, setMembers] = React.useState([
     { id: 1, email: "student1@example.edu" },
     { id: 2, email: "student2@example.edu" },
     { id: 3, email: "student3@example.edu" },
   ]);
-
   const [confirmKickId, setConfirmKickId] = React.useState(null);
 
-  // mock events for UI
+  // mock events
   const [events, setEvents] = React.useState([
     {
       id: 1,
-      title: "Welcome Mixer",
+      title: "Welcome mixer",
       date: "2025-09-10",
       startTime: "18:00",
       endTime: "20:00",
@@ -378,7 +382,7 @@ export default function ClubDashboard() {
     },
     {
       id: 2,
-      title: "Weekly Study Session",
+      title: "Weekly study session",
       date: "2025-09-15",
       startTime: "16:00",
       endTime: "18:00",
@@ -391,23 +395,35 @@ export default function ClubDashboard() {
     },
   ]);
 
+  // simple announcements
+  const [announcements, setAnnouncements] = React.useState([
+    {
+      id: 1,
+      text: "First meeting this Thursday! Snacks provided.",
+      createdAt: "2025-09-01",
+      status: "published",
+    },
+    {
+      id: 2,
+      text: "Looking for volunteers to help with outreach.",
+      createdAt: "2025-09-05",
+      status: "draft",
+    },
+  ]);
+  const [newAnnouncement, setNewAnnouncement] = React.useState("");
+
   React.useEffect(() => {
     const fetchClub = async () => {
       try {
         setLoading(true);
         // TODO: replace with real backend
-        // const res = await fetch(`${API_BASE_URL}/api/clubs/${clubId}`);
-        // const data = await res.json();
-        // setClub(data.club);
-
-        // TEMP MOCK so UI doesn't explode before backend exists
         setClub({
           _id: clubId,
           name: "Sample Club Name",
           status: "approved", // or "pending"
           description: "This is a sample description for the club.",
           tag: "Academic, Social",
-          imageUrl: "", // if you have one later
+          imageUrl: "",
         });
       } catch (err) {
         console.error(err);
@@ -438,7 +454,6 @@ export default function ClubDashboard() {
         : prev
     );
     setShowEditModal(false);
-    console.log("Edited club payload:", payload);
   };
 
   const handleKickClick = (memberId) => {
@@ -465,6 +480,7 @@ export default function ClubDashboard() {
     setShowCreateEventModal(false);
   };
 
+  // single toggle: when draft -> publish (button shows "Post"), when published -> back to draft (button shows "Edit")
   const handleToggleEventStatus = (eventId) => {
     setEvents((prev) =>
       prev.map((ev) =>
@@ -484,12 +500,74 @@ export default function ClubDashboard() {
     setEvents((prev) => prev.filter((ev) => ev.id !== eventId));
   };
 
+  // announcements actions
+  const handleAddAnnouncement = () => {
+    const trimmed = newAnnouncement.trim();
+    if (!trimmed) return;
+    setAnnouncements((prev) => [
+      {
+        id: Date.now(),
+        text: trimmed,
+        createdAt: new Date().toISOString().slice(0, 10),
+        status: "draft",
+      },
+      ...prev,
+    ]);
+    setNewAnnouncement("");
+  };
+
+  const handleToggleAnnouncementStatus = (id) => {
+    setAnnouncements((prev) =>
+      prev.map((a) =>
+        a.id === id
+          ? {
+              ...a,
+              status: a.status === "published" ? "draft" : "published",
+            }
+          : a
+      )
+    );
+  };
+
+  const handleDeleteAnnouncement = (id) => {
+    const ok = window.confirm("Delete this announcement?");
+    if (!ok) return;
+    setAnnouncements((prev) => prev.filter((a) => a.id !== id));
+  };
+
   const initialTags = club?.tag
     ? club.tag
         .split(",")
         .map((t) => t.trim())
         .filter(Boolean)
     : [];
+
+  /* small helper styles for minimal buttons */
+  const ghostButton = {
+    borderRadius: 999,
+    border: "1px solid #D1D5DB",
+    background: "#FFFFFF",
+    padding: "6px 12px",
+    fontSize: 13,
+    fontWeight: 500,
+    cursor: "pointer",
+    color: "#374151",
+  };
+
+  const subtleTextButton = {
+    border: "none",
+    background: "transparent",
+    padding: 0,
+    fontSize: 13,
+    fontWeight: 500,
+    cursor: "pointer",
+    color: "#4B5563",
+  };
+
+  const dangerTextButton = {
+    ...subtleTextButton,
+    color: "#B91C1C",
+  };
 
   return (
     <div
@@ -501,16 +579,16 @@ export default function ClubDashboard() {
         boxSizing: "border-box",
         display: "flex",
         flexDirection: "column",
+        gap: 12,
       }}
     >
       {/* ======= TOP BAR ======= */}
       <header
         style={{
           display: "flex",
-          alignItems: "flex-start",
+          alignItems: "center",
           justifyContent: "space-between",
           gap: 16,
-          marginBottom: 24,
         }}
       >
         {/* Left: Club name + badge */}
@@ -518,7 +596,7 @@ export default function ClubDashboard() {
           <div
             style={{
               color: "#111827",
-              fontSize: 40,
+              fontSize: 32,
               fontWeight: 700,
               lineHeight: 1.2,
               marginBottom: 6,
@@ -536,37 +614,30 @@ export default function ClubDashboard() {
                 padding: "4px 10px",
                 borderRadius: 999,
                 fontSize: 11,
-                fontWeight: 600,
+                fontWeight: 500,
                 border: "1px solid #E5E7EB",
                 backgroundColor: "#FFFFFF",
                 textTransform: "uppercase",
-                letterSpacing: 0.6,
+                letterSpacing: 0.5,
+                color: isPending ? "#4B5563" : "#16A34A",
               }}
             >
-              <span style={{ color: isPending ? "#4B5563" : "#16A34A" }}>
-                {isPending ? "Pending approval" : "Approved club"}
-              </span>
+              {isPending ? "Pending approval" : "Approved club"}
             </div>
           )}
         </div>
 
-        {/* Right: Members / Edit stacked */}
+        {/* Right: Members / Edit in a simple row, more minimal */}
         <div
           style={{
             display: "flex",
-            flexDirection: "column",
+            alignItems: "center",
             gap: 8,
           }}
         >
           <button
             type="button"
-            className="btn-primary"
-            style={{
-              width: "100%",
-              minWidth: 220,
-              height: 41,
-              fontSize: 17,
-            }}
+            style={ghostButton}
             onClick={() => setShowMembersModal(true)}
           >
             Members
@@ -574,16 +645,10 @@ export default function ClubDashboard() {
 
           <button
             type="button"
-            className="btn-primary"
-            style={{
-              width: "100%",
-              minWidth: 220,
-              height: 41,
-              fontSize: 17,
-            }}
+            style={ghostButton}
             onClick={() => setShowEditModal(true)}
           >
-            Edit
+            Edit club
           </button>
         </div>
       </header>
@@ -594,14 +659,17 @@ export default function ClubDashboard() {
           flex: 1,
           display: "flex",
           flexDirection: "column",
+          marginTop: 8,
         }}
       >
-        {/* Tabs */}
+        {/* Tabs - softer look */}
         <div
           style={{
-            display: "flex",
-            gap: 24,
-            borderBottom: "1px solid #E5E7EB",
+            display: "inline-flex",
+            alignItems: "center",
+            padding: 4,
+            borderRadius: 999,
+            background: "#E5E7EB66",
             marginBottom: 16,
           }}
         >
@@ -609,17 +677,15 @@ export default function ClubDashboard() {
             type="button"
             onClick={() => setActiveTab("events")}
             style={{
-              padding: "8px 0",
               border: "none",
-              background: "transparent",
-              fontSize: 15,
-              fontWeight: 600,
+              borderRadius: 999,
+              padding: "6px 16px",
+              fontSize: 14,
+              fontWeight: 500,
               cursor: "pointer",
-              borderBottom:
-                activeTab === "events"
-                  ? "2px solid #111827"
-                  : "2px solid transparent",
-              color: activeTab === "events" ? "#111827" : "#9CA3AF",
+              background:
+                activeTab === "events" ? "#111827" : "transparent",
+              color: activeTab === "events" ? "#F9FAFB" : "#4B5563",
             }}
           >
             Events
@@ -629,17 +695,15 @@ export default function ClubDashboard() {
             type="button"
             onClick={() => setActiveTab("announcements")}
             style={{
-              padding: "8px 0",
               border: "none",
-              background: "transparent",
-              fontSize: 15,
-              fontWeight: 600,
+              borderRadius: 999,
+              padding: "6px 16px",
+              fontSize: 14,
+              fontWeight: 500,
               cursor: "pointer",
-              borderBottom:
-                activeTab === "announcements"
-                  ? "2px solid #111827"
-                  : "2px solid transparent",
-              color: activeTab === "announcements" ? "#111827" : "#9CA3AF",
+              background:
+                activeTab === "announcements" ? "#111827" : "transparent",
+              color: activeTab === "announcements" ? "#F9FAFB" : "#4B5563",
             }}
           >
             Announcements
@@ -650,13 +714,19 @@ export default function ClubDashboard() {
         <section
           style={{
             flex: 1,
-            paddingTop: 4,
-            fontSize: 15,
+            fontSize: 14,
             color: "#4B5563",
           }}
         >
+          {/* EVENTS TAB */}
           {activeTab === "events" && (
-            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 16,
+              }}
+            >
               {/* Header row for Events */}
               <div
                 style={{
@@ -669,11 +739,12 @@ export default function ClubDashboard() {
                 <div>
                   <div
                     style={{
-                      fontSize: 16,
+                      fontSize: 15,
                       fontWeight: 600,
                       color: "#111827",
                     }}
                   >
+                    Events
                   </div>
                   <div
                     style={{
@@ -682,16 +753,19 @@ export default function ClubDashboard() {
                       marginTop: 2,
                     }}
                   >
+                    Manage what members can see on your events page.
                   </div>
                 </div>
 
                 <button
                   type="button"
-                  className="btn-primary"
                   style={{
-                    minWidth: 160,
-                    height: 38,
-                    fontSize: 14,
+                    ...ghostButton,
+                    border: "none",
+                    background: "#111827",
+                    color: "#F9FAFB",
+                    padding: "7px 14px",
+                    fontSize: 13,
                   }}
                   onClick={() => setShowCreateEventModal(true)}
                 >
@@ -703,8 +777,8 @@ export default function ClubDashboard() {
               {events.length === 0 ? (
                 <div
                   style={{
-                    marginTop: 12,
-                    padding: "24px 16px",
+                    marginTop: 8,
+                    padding: "20px 16px",
                     borderRadius: 14,
                     border: "1px dashed #D1D5DB",
                     background: "#FFFFFF",
@@ -712,28 +786,28 @@ export default function ClubDashboard() {
                     flexDirection: "column",
                     alignItems: "center",
                     textAlign: "center",
-                    gap: 8,
+                    gap: 6,
                   }}
                 >
                   <div
                     style={{
-                      width: 40,
-                      height: 40,
+                      width: 32,
+                      height: 32,
                       borderRadius: 999,
                       border: "1px solid #E5E7EB",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      fontSize: 20,
-                      marginBottom: 4,
+                      fontSize: 18,
+                      marginBottom: 2,
                     }}
                   >
                     +
                   </div>
                   <div
                     style={{
-                      fontSize: 14,
-                      fontWeight: 600,
+                      fontSize: 13,
+                      fontWeight: 500,
                       color: "#111827",
                     }}
                   >
@@ -741,13 +815,13 @@ export default function ClubDashboard() {
                   </div>
                   <div
                     style={{
-                      fontSize: 13,
+                      fontSize: 12,
                       color: "#6B7280",
                       maxWidth: 320,
                     }}
                   >
-                    Start by creating your first event. Members will be able to
-                    see and RSVP once you publish it.
+                    Create your first event. Once you post it, members will be
+                    able to RSVP.
                   </div>
                 </div>
               ) : (
@@ -755,8 +829,7 @@ export default function ClubDashboard() {
                   style={{
                     display: "flex",
                     flexDirection: "column",
-                    gap: 12,
-                    marginTop: 4,
+                    gap: 10,
                   }}
                 >
                   {events.map((ev) => {
@@ -779,31 +852,30 @@ export default function ClubDashboard() {
                         }`
                       : "";
 
+                    const primaryLabel = isPublished ? "Edit" : "Post";
+
                     return (
                       <div
                         key={ev.id}
                         style={{
-                          borderRadius: 14,
+                          borderRadius: 12,
                           border: "1px solid #E5E7EB",
                           background: "#FFFFFF",
-                          padding: 16,
+                          padding: 14,
                           display: "flex",
-                          alignItems: "flex-start",
-                          justifyContent: "space-between",
-                          gap: 12,
+                          flexDirection: "column",
+                          gap: 6,
                         }}
                       >
-                        {/* Left section */}
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "space-between",
-                              gap: 8,
-                              marginBottom: 4,
-                            }}
-                          >
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "flex-start",
+                            gap: 8,
+                          }}
+                        >
+                          <div style={{ flex: 1, minWidth: 0 }}>
                             <div
                               style={{
                                 fontSize: 15,
@@ -814,148 +886,85 @@ export default function ClubDashboard() {
                             >
                               {ev.title}
                             </div>
-                          </div>
 
-                          <div
-                            style={{
-                              display: "flex",
-                              flexWrap: "wrap",
-                              gap: 8,
-                              fontSize: 13,
-                              color: "#6B7280",
-                              marginBottom: 6,
-                            }}
-                          >
-                            {dateStr && (
-                              <span>
-                                <span style={{ fontWeight: 500 }}>Date:</span>{" "}
-                                {dateStr}
-                              </span>
-                            )}
-                            {timeStr && (
-                              <span>
-                                <span style={{ fontWeight: 500 }}>Time:</span>{" "}
-                                {timeStr}
-                              </span>
-                            )}
-                            {ev.location && (
-                              <span>
-                                <span style={{ fontWeight: 500 }}>
-                                  Location:
-                                </span>{" "}
-                                {ev.location}
-                              </span>
-                            )}
-                            {ev.isOnline && ev.link && (
-                              <span
-                                style={{
-                                  whiteSpace: "nowrap",
-                                  overflow: "hidden",
-                                  textOverflow: "ellipsis",
-                                  maxWidth: 260,
-                                }}
-                              >
-                                <span style={{ fontWeight: 500 }}>Link:</span>{" "}
-                                {ev.link}
-                              </span>
-                            )}
-                            {ev.capacity && (
-                              <span>
-                                <span style={{ fontWeight: 500 }}>
-                                  Capacity:
-                                </span>{" "}
-                                {ev.capacity}
-                              </span>
-                            )}
-                          </div>
-
-                          {ev.description && (
-                            <p
+                            <div
                               style={{
-                                margin: 0,
-                                fontSize: 13,
-                                color: "#4B5563",
-                                maxHeight: 42,
-                                overflow: "hidden",
-                                textOverflow: "ellipsis",
+                                display: "flex",
+                                flexWrap: "wrap",
+                                gap: 8,
+                                fontSize: 12,
+                                color: "#6B7280",
+                                marginTop: 4,
                               }}
                             >
-                              {ev.description}
-                            </p>
-                          )}
+                              {dateStr && <span>{dateStr}</span>}
+                              {timeStr && <span>{timeStr}</span>}
+                              {ev.location && (
+                                <span
+                                  style={{
+                                    whiteSpace: "nowrap",
+                                    textOverflow: "ellipsis",
+                                    overflow: "hidden",
+                                    maxWidth: 220,
+                                  }}
+                                >
+                                  {ev.location}
+                                </span>
+                              )}
+                            </div>
+
+                            {ev.description && (
+                              <p
+                                style={{
+                                  margin: 4,
+                                  marginLeft: 0,
+                                  fontSize: 12,
+                                  color: "#4B5563",
+                                  maxHeight: 40,
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                }}
+                              >
+                                {ev.description}
+                              </p>
+                            )}
+                          </div>
+
+                          {/* status hint, very subtle */}
+                          <span
+                            style={{
+                              fontSize: 11,
+                              color: isPublished ? "#15803D" : "#6B7280",
+                              whiteSpace: "nowrap",
+                            }}
+                          >
+                            {isPublished ? "Posted" : "Draft"}
+                          </span>
                         </div>
 
-                        {/* Right section: status + actions */}
+                        {/* actions: only edit/post + delete, inline and light */}
                         <div
                           style={{
                             display: "flex",
-                            flexDirection: "column",
-                            alignItems: "flex-end",
-                            gap: 8,
-                            marginLeft: 12,
+                            justifyContent: "flex-end",
+                            gap: 12,
+                            marginTop: 4,
                           }}
                         >
-                          <span
-                            style={{
-                              padding: "3px 9px",
-                              borderRadius: 999,
-                              fontSize: 11,
-                              fontWeight: 600,
-                              border: "1px solid",
-                              borderColor: isPublished
-                                ? "#BBF7D0"
-                                : "#E5E7EB",
-                              backgroundColor: isPublished
-                                ? "#ECFDF3"
-                                : "#F9FAFB",
-                              color: isPublished ? "#15803D" : "#4B5563",
-                              textTransform: "uppercase",
-                              letterSpacing: 0.6,
-                            }}
+                          <button
+                            type="button"
+                            style={subtleTextButton}
+                            onClick={() => handleToggleEventStatus(ev.id)}
                           >
-                            {isPublished ? "Published" : "Draft"}
-                          </span>
-
-                          <div
-                            style={{
-                              display: "flex",
-                              flexDirection: "column",
-                              gap: 6,
-                            }}
+                            {primaryLabel}
+                          </button>
+                          <button
+                            type="button"
+                            style={dangerTextButton}
+                            onClick={() => handleDeleteEvent(ev.id)}
                           >
-                            <button
-                              type="button"
-                              onClick={() => handleToggleEventStatus(ev.id)}
-                              style={{
-                                borderRadius: 999,
-                                border: "1px solid #D1D5DB",
-                                background: "#FFFFFF",
-                                padding: "5px 10px",
-                                fontSize: 12,
-                                fontWeight: 500,
-                                cursor: "pointer",
-                                color: "#374151",
-                              }}
-                            >
-                              {isPublished ? "Unpublish" : "Publish"}
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => handleDeleteEvent(ev.id)}
-                              style={{
-                                borderRadius: 999,
-                                border: "1px solid #FCA5A5",
-                                background: "#FEF2F2",
-                                padding: "5px 10px",
-                                fontSize: 12,
-                                fontWeight: 500,
-                                cursor: "pointer",
-                                color: "#B91C1C",
-                              }}
-                            >
-                              Delete
-                            </button>
-                          </div>
+                            Delete
+                          </button>
                         </div>
                       </div>
                     );
@@ -965,33 +974,210 @@ export default function ClubDashboard() {
             </div>
           )}
 
+          {/* ANNOUNCEMENTS TAB */}
           {activeTab === "announcements" && (
-            <div>
-              <p style={{ marginBottom: 8 }}>Announcements will go here.</p>
-              <ul style={{ paddingLeft: 18, margin: 0 }}>
-                <li>Simple text area to post new announcement</li>
-                <li>List of past announcements</li>
-              </ul>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 16,
+              }}
+            >
+              {/* New announcement composer */}
+              <div
+                style={{
+                  borderRadius: 12,
+                  border: "1px solid #E5E7EB",
+                  background: "#FFFFFF",
+                  padding: 12,
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 8,
+                }}
+              >
+                <textarea
+                  placeholder="Share an update with your members..."
+                  rows={3}
+                  value={newAnnouncement}
+                  onChange={(e) => setNewAnnouncement(e.target.value)}
+                  style={{
+                    width: "100%",
+                    borderRadius: 8,
+                    border: "1px solid #E5E7EB",
+                    padding: "8px 10px",
+                    fontSize: 13,
+                    resize: "vertical",
+                    minHeight: 60,
+                  }}
+                />
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "flex-end",
+                  }}
+                >
+                  <button
+                    type="button"
+                    style={{
+                      ...ghostButton,
+                      border: "none",
+                      background: "#111827",
+                      color: "#F9FAFB",
+                      padding: "6px 12px",
+                      fontSize: 12,
+                    }}
+                    onClick={handleAddAnnouncement}
+                  >
+                    Add announcement
+                  </button>
+                </div>
+              </div>
+
+              {/* List of announcements */}
+              {announcements.length === 0 ? (
+                <div
+                  style={{
+                    padding: "16px 14px",
+                    borderRadius: 12,
+                    border: "1px dashed #D1D5DB",
+                    background: "#FFFFFF",
+                    fontSize: 13,
+                    color: "#6B7280",
+                  }}
+                >
+                  No announcements yet.
+                </div>
+              ) : (
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 10,
+                  }}
+                >
+                  {announcements.map((a) => {
+                    const isPublished = a.status === "published";
+                    const primaryLabel = isPublished ? "Edit" : "Post";
+                    const dateStr = a.createdAt
+                      ? new Date(a.createdAt + "T00:00:00").toLocaleDateString(
+                          undefined,
+                          {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                          }
+                        )
+                      : "";
+
+                    return (
+                      <div
+                        key={a.id}
+                        style={{
+                          borderRadius: 12,
+                          border: "1px solid #E5E7EB",
+                          background: "#FFFFFF",
+                          padding: 12,
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: 6,
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "flex-start",
+                            gap: 8,
+                          }}
+                        >
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <p
+                              style={{
+                                margin: 0,
+                                fontSize: 13,
+                                color: "#111827",
+                                whiteSpace: "pre-wrap",
+                              }}
+                            >
+                              {a.text}
+                            </p>
+                          </div>
+                          <div
+                            style={{
+                              display: "flex",
+                              flexDirection: "column",
+                              alignItems: "flex-end",
+                              gap: 2,
+                              minWidth: 80,
+                            }}
+                          >
+                            <span
+                              style={{
+                                fontSize: 11,
+                                color: "#6B7280",
+                              }}
+                            >
+                              {dateStr}
+                            </span>
+                            <span
+                              style={{
+                                fontSize: 11,
+                                color: isPublished ? "#15803D" : "#6B7280",
+                              }}
+                            >
+                              {isPublished ? "Posted" : "Draft"}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "flex-end",
+                            gap: 12,
+                          }}
+                        >
+                          <button
+                            type="button"
+                            style={subtleTextButton}
+                            onClick={() =>
+                              handleToggleAnnouncementStatus(a.id)
+                            }
+                          >
+                            {primaryLabel}
+                          </button>
+                          <button
+                            type="button"
+                            style={dangerTextButton}
+                            onClick={() => handleDeleteAnnouncement(a.id)}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           )}
         </section>
       </main>
 
-      {/* ======= BOTTOM RIGHT BACK BUTTON ======= */}
+      {/* ======= BOTTOM RIGHT BACK BUTTON (more minimal) ======= */}
       <div
         style={{
-          marginTop: 24,
+          marginTop: 12,
           display: "flex",
           justifyContent: "flex-end",
         }}
       >
         <button
           type="button"
-          className="btn-primary"
           style={{
-            minWidth: 220,
-            height: 41,
-            fontSize: 17,
+            ...ghostButton,
+            padding: "6px 14px",
+            minWidth: "auto",
           }}
           onClick={handleGoBack}
         >
@@ -1023,19 +1209,19 @@ export default function ClubDashboard() {
           <div
             style={{
               background: "#00550A",
-              minHeight: 56,
+              minHeight: 52,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              padding: "12px 16px",
+              padding: "10px 16px",
             }}
           >
             <h2
               style={{
                 margin: 0,
                 color: "white",
-                fontWeight: 700,
-                fontSize: 24,
+                fontWeight: 600,
+                fontSize: 20,
               }}
             >
               Members
@@ -1044,14 +1230,14 @@ export default function ClubDashboard() {
 
           <div
             style={{
-              padding: 20,
+              padding: 18,
               display: "flex",
               flexDirection: "column",
-              gap: 12,
+              gap: 10,
             }}
           >
             {members.length === 0 ? (
-              <p style={{ fontSize: 14, color: "#4B5563" }}>
+              <p style={{ fontSize: 13, color: "#4B5563" }}>
                 No members in this club yet.
               </p>
             ) : (
@@ -1065,13 +1251,13 @@ export default function ClubDashboard() {
                       alignItems: "center",
                       justifyContent: "space-between",
                       padding: "8px 10px",
-                      borderRadius: 10,
+                      borderRadius: 8,
                       border: "1px solid #E5E7EB",
                     }}
                   >
                     <span
                       style={{
-                        fontSize: 14,
+                        fontSize: 13,
                         color: "#111827",
                         wordBreak: "break-all",
                       }}
@@ -1084,17 +1270,15 @@ export default function ClubDashboard() {
                         type="button"
                         onClick={() => handleKickClick(member.id)}
                         style={{
-                          borderRadius: 8,
-                          border: "1px solid #F97373",
+                          ...dangerTextButton,
+                          borderRadius: 999,
+                          border: "1px solid #FCA5A5",
                           background: "#FEF2F2",
-                          color: "#B91C1C",
-                          fontSize: 13,
-                          fontWeight: 600,
-                          padding: "6px 10px",
-                          cursor: "pointer",
+                          padding: "4px 10px",
+                          fontSize: 12,
                         }}
                       >
-                        Kick
+                        Remove
                       </button>
                     ) : (
                       <div
@@ -1107,14 +1291,12 @@ export default function ClubDashboard() {
                           type="button"
                           onClick={handleCancelKick}
                           style={{
-                            borderRadius: 8,
+                            ...subtleTextButton,
+                            borderRadius: 999,
                             border: "1px solid #D1D5DB",
                             background: "#FFFFFF",
-                            color: "#374151",
+                            padding: "4px 10px",
                             fontSize: 12,
-                            fontWeight: 600,
-                            padding: "6px 10px",
-                            cursor: "pointer",
                           }}
                         >
                           Cancel
@@ -1123,17 +1305,16 @@ export default function ClubDashboard() {
                           type="button"
                           onClick={() => handleConfirmKick(member.id)}
                           style={{
-                            borderRadius: 8,
+                            ...dangerTextButton,
+                            borderRadius: 999,
                             border: "1px solid #B91C1C",
                             background: "#B91C1C",
                             color: "#FFFFFF",
+                            padding: "4px 10px",
                             fontSize: 12,
-                            fontWeight: 600,
-                            padding: "6px 10px",
-                            cursor: "pointer",
                           }}
                         >
-                          Kick them out!
+                          Confirm
                         </button>
                       </div>
                     )}
@@ -1153,7 +1334,7 @@ export default function ClubDashboard() {
         {club && (
           <CreateClubPopUp
             title="Edit Club"
-            confirmText="Save Changes"
+            confirmText="Save changes"
             cancelText="Cancel"
             onCancel={() => setShowEditModal(false)}
             onCreate={handleEditSave}
