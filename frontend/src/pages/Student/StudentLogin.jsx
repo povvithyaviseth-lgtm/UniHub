@@ -208,7 +208,6 @@ const StudentLogin = () => {
                     type="email"
                     value={credentials.email}
                     onChange={(e) => setCredentials({ email: e.target.value })}
-                    placeholder="Enter your email"
                     style={{
                       position: 'absolute',
                       backgroundColor: 'transparent',
