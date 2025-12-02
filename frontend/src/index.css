@@ -123,3 +123,133 @@ button:disabled { opacity: .6; cursor: not-allowed; }
   box-shadow: 0 4px 10px rgba(0,0,0,.12);
 }
 
+/* === Club Card === */
+
+.club-card {
+  position: relative;
+  width: 100%;
+  max-width: 360px;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #ffffff;
+  box-shadow: 0px 27px 38px rgba(0, 0, 0, 0.17);
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.club-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0px 30px 45px rgba(0, 0, 0, 0.22);
+}
+
+/* Image on top */
+
+.club-card-image {
+  width: 100%;
+  height: 210px;
+  overflow: hidden;
+}
+
+.club-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Light green placeholder when no image */
+
+.club-card-placeholder {
+  width: 100%;
+  height: 100%;
+  background: #aeffd2;
+}
+
+/* Name under image */
+
+.club-card-body {
+  padding: 14px 16px 18px 16px;
+}
+
+.club-card-name {
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: #000000;
+  line-height: 1.2;
+}
+
+/* Hover overlay */
+
+.club-card-hover {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.85),
+    rgba(0, 0, 0, 0.4),
+    transparent
+  );
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 18px 16px 20px 16px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(10px);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.club-card:hover .club-card-hover {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.club-card-description {
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 16px;
+  color: #f9fafb;
+  margin-bottom: 10px;
+  max-height: 90px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Join / confirmation buttons */
+
+.club-card-join-btn,
+.club-card-yes-btn,
+.club-card-cancel-btn {
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 999px;
+  border: none;
+  padding: 8px 18px;
+  cursor: pointer;
+}
+
+.club-card-join-btn {
+  background: #00550a;
+  color: white;
+}
+
+.club-card-join-btn:hover {
+  filter: brightness(1.05);
+}
+
+.club-card-confirm-row {
+  display: flex;
+  gap: 8px;
+}
+
+.club-card-yes-btn {
+  background: #00550a;
+  color: white;
+}
+
+.club-card-cancel-btn {
+  background: #e1e1e3;
+  color: #333333;
+}
