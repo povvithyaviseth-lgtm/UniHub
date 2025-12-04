@@ -23,6 +23,11 @@ export async function getClubsByOwner(ownerId) {
   return Club.find({ owner: ownerId }).sort({ createdAt: -1 });
 }
 
+export async function getClubsService() {
+  const clubs = await Club.find().sort({ createdAt: -1 });
+  return clubs;
+}
+
 // Delete a club (only the owner can delete)
 export async function deleteClub(clubId, ownerId) {
   const club = await Club.findOneAndDelete({

@@ -1,4 +1,3 @@
-// src/component/ClubCard.jsx
 import React, { useState } from "react";
 
 const ClubCard = ({ club, onCardClick, onJoin }) => {
@@ -9,7 +8,7 @@ const ClubCard = ({ club, onCardClick, onJoin }) => {
   };
 
   const handleJoinClick = (e) => {
-    e.stopPropagation(); // don’t trigger card click / modal
+    e.stopPropagation();
     setConfirmingJoin(true);
   };
 
@@ -30,47 +29,55 @@ const ClubCard = ({ club, onCardClick, onJoin }) => {
       onClick={handleCardClick}
       onMouseLeave={() => setConfirmingJoin(false)}
     >
-      {/* Top image */}
-      <div className="club-card-image">
-        {club.imageUrl ? (
-          <img src={club.imageUrl} alt={`${club.name} cover`} />
-        ) : (
-          <div className="club-card-placeholder" />
-        )}
-      </div>
-
-      {/* Name under image */}
-      <div className="club-card-body">
-        <div className="club-card-name">{club.name}</div>
-      </div>
-
-      {/* Hover overlay */}
-      <div className="club-card-hover">
-        <div className="club-card-description">{club.description}</div>
-
-        {!confirmingJoin ? (
-          <button
-            className="club-card-join-btn"
-            onClick={handleJoinClick}
-          >
-            Join
-          </button>
-        ) : (
-          <div className="club-card-confirm-row">
-            <button
-              className="club-card-yes-btn"
-              onClick={handleYesClick}
-            >
-              Yes
-            </button>
-            <button
-              className="club-card-cancel-btn"
-              onClick={handleCancelClick}
-            >
-              Cancel
-            </button>
+      {/* Base content: image + name bar */}
+      <div className="club-card-base">
+        <div className="club-card-image">
+          {club.imageUrl ? (
+            <img src={club.imageUrl} alt={`${club.name} cover`} />
+          ) : (
+            <div className="club-card-placeholder" />
+          )}
+          <div className="club-card-name-bar">
+            <span className="club-card-name">{club.name}</span>
           </div>
-        )}
+        </div>
+      </div>
+
+      {/* Hover content */}
+      <div className="club-card-hover">
+        <div className="club-card-hover-header">
+          <span className="club-card-name">{club.name}</span>
+        </div>
+
+        <div className="club-card-description">
+          {club.description}
+        </div>
+
+        <div className="club-card-actions">
+          {!confirmingJoin ? (
+            <button
+              className="club-card-join-btn"
+              onClick={handleJoinClick}
+            >
+              Join
+            </button>
+          ) : (
+            <>
+              <button
+                className="club-card-yes-btn"
+                onClick={handleYesClick}
+              >
+                Yeah, join!
+              </button>
+              <button
+                className="club-card-cancel-btn"
+                onClick={handleCancelClick}
+              >
+                Cancel
+              </button>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

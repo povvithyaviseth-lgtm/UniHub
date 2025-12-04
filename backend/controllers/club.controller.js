@@ -2,6 +2,7 @@
 import { 
   createClubService, 
   getClubsByOwner, 
+  getClubsService,
   updateClubService
 } from '../services/club.service.js';
 
@@ -81,6 +82,26 @@ export const getMyClubs = async (req, res) => {
     return res.status(500).json({ message: 'Failed to fetch your clubs' });
   }
 };
+
+
+export async function getClubs(req, res) {
+  try {
+    console.log('✅ getClubs controller called');
+
+    const clubs = await getClubsService();
+
+    return res.status(200).json({
+      success: true,
+      data: clubs,
+    });
+  } catch (error) {
+    console.error('Error fetching clubs:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to fetch clubs',
+    });
+  }
+}
 
 export const updateClub = async (req, res)  => {
   try {

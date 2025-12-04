@@ -59,27 +59,42 @@ const ScaleBox = ({ baseWidth, maxScale = 1, style, children }) => {
 };
 
 /** ----------------------------------------------------------------
- * Mock Data (replace with real API later)
+ * Mock Events (clubs now come from backend)
  * ---------------------------------------------------------------- */
-const mockClubs = [
-  { id: "c1", name: "The Robotics Team", tag: "Tech", description: "Do you enjoy robots? Do you enjoy coding? Or do you just enjoy tech? Join us for builds, competitions, and fun!", imageUrl: null, approved: true, leader: "Evelyn Reeds", email: "EvelynReeds@csus.edu" },
-  { id: "c2", name: "Basketball Club", tag: "Sports", description: "Pickup games, drills, and tournaments. All skill levels welcome.", imageUrl: null, approved: true, leader: "Marcus Hill", email: "basketball@csus.edu" },
-  { id: "c3", name: "Outdoor Adventure Club", tag: "Volunteering", description: "Trail care days and community cleanups—give back while outdoors.", imageUrl: null, approved: true, leader: "Taylor Nguyen", email: "outdoors@csus.edu" },
-  { id: "c4", name: "Movie Watchers Club", tag: "Casual", description: "Weekly screenings and lively (friendly!) debates. Popcorn provided.", imageUrl: null, approved: true, leader: "Priya Desai", email: "movies@csus.edu" },
-  { id: "c5", name: "Competitive Programming", tag: "Coding", description: "Sharpen your problem-solving with contests and interview prep.", imageUrl: null, approved: true, leader: "Alex Chen", email: "comp-prog@csus.edu" },
-  { id: "c6", name: "Art Collective", tag: "Art", description: "Open studios, critiques, and gallery trips—create and share.", imageUrl: null, approved: true, leader: "Samira Ali", email: "art@csus.edu" },
-  { id: "c7", name: "Social Hour", tag: "Social", description: "Meet people, board games, and campus hangouts every Friday.", imageUrl: null, approved: true, leader: "Jordan Lee", email: "social@csus.edu" },
-  { id: "c8", name: "Academic Research Circle", tag: "Academic", description: "Journal clubs, reading groups, and faculty Q&A sessions.", imageUrl: null, approved: true, leader: "Dr. Rivera", email: "research@csus.edu" },
-];
-
 const mockEvents = [
-  { id: "e1", title: "Monthly Valorant Tournament (Team of 5 Required)", hostedBy: "Esports Club", description: "Competitive Valorant tournament—bring your five-stack or spectate. Everyone’s welcome!", when: "Thu, Oct 18 | 12:00 PM – 12:30 AM", location: "Discord Server", imageUrl: null },
-  { id: "e2", title: "Go Hiking at Lake Tahoe", hostedBy: "Hiking Club", description: "Join our day trip to Lake Tahoe. Hike, snack, and soak in the views. All levels welcome.", when: "Sat, Oct 1 | 5:00 PM – 9:30 AM", location: "Lake Tahoe", imageUrl: null },
+  {
+    id: "e1",
+    title: "Monthly Valorant Tournament (Team of 5 Required)",
+    hostedBy: "Esports Club",
+    description:
+      "Competitive Valorant tournament—bring your five-stack or spectate. Everyone’s welcome!",
+    when: "Thu, Oct 18 | 12:00 PM – 12:30 AM",
+    location: "Discord Server",
+    imageUrl: null,
+  },
+  {
+    id: "e2",
+    title: "Go Hiking at Lake Tahoe",
+    hostedBy: "Hiking Club",
+    description:
+      "Join our day trip to Lake Tahoe. Hike, snack, and soak in the views. All levels welcome.",
+    when: "Sat, Oct 1 | 5:00 PM – 9:30 AM",
+    location: "Lake Tahoe",
+    imageUrl: null,
+  },
 ];
 
 /** Light-green placeholder “image” */
 const PlaceholderImage = ({ width, height, style = {} }) => (
-  <div style={{ width, height, background: "#AEFFD2", borderRadius: 18.8, ...style }} />
+  <div
+    style={{
+      width,
+      height,
+      background: "#AEFFD2",
+      borderRadius: 18.8,
+      ...style,
+    }}
+  />
 );
 
 /** ------------------------------ Club Modal ------------------------------ */
@@ -87,7 +102,10 @@ const ClubModal = ({ club, onClose }) => {
   const leader = club.leader || "Club Leader (TBD)";
   const email = club.email || "club@example.edu";
 
-  const onEsc = useCallback((e) => e.key === "Escape" && onClose(), [onClose]);
+  const onEsc = useCallback(
+    (e) => e.key === "Escape" && onClose(),
+    [onClose]
+  );
 
   useEffect(() => {
     document.addEventListener("keydown", onEsc);
@@ -160,10 +178,26 @@ const ClubModal = ({ club, onClose }) => {
             gap: 14,
           }}
         >
-          <div style={{ color: "black", fontSize: 32, fontFamily: "Inter", fontWeight: 700, lineHeight: 1.2 }}>
+          <div
+            style={{
+              color: "black",
+              fontSize: 32,
+              fontFamily: "Inter",
+              fontWeight: 700,
+              lineHeight: 1.2,
+            }}
+          >
             {club.name}
           </div>
-          <div style={{ color: "black", fontSize: 20, fontFamily: "Inter", fontWeight: 400, lineHeight: 1.35 }}>
+          <div
+            style={{
+              color: "black",
+              fontSize: 20,
+              fontFamily: "Inter",
+              fontWeight: 400,
+              lineHeight: 1.35,
+            }}
+          >
             {club.description}
           </div>
         </div>
@@ -182,15 +216,48 @@ const ClubModal = ({ club, onClose }) => {
         >
           <div style={{ height: 2, background: "#B7B7B7" }} />
           <div style={{ display: "flex", alignItems: "center" }}>
-            <span style={{ color: "black", fontSize: 20, fontFamily: "Inter", fontWeight: 700 }}>Club Leader:&nbsp;</span>
-            <span style={{ color: "black", fontSize: 20, fontFamily: "Inter", fontWeight: 400 }}>{leader}</span>
+            <span
+              style={{
+                color: "black",
+                fontSize: 20,
+                fontFamily: "Inter",
+                fontWeight: 700,
+              }}
+            >
+              Club Leader:&nbsp;
+            </span>
+            <span
+              style={{
+                color: "black",
+                fontSize: 20,
+                fontFamily: "Inter",
+                fontWeight: 400,
+              }}
+            >
+              {leader}
+            </span>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <span style={{ color: "black", fontSize: 20, fontFamily: "Inter", fontWeight: 700 }}>Contact:</span>
+            <span
+              style={{
+                color: "black",
+                fontSize: 20,
+                fontFamily: "Inter",
+                fontWeight: 700,
+              }}
+            >
+              Contact:
+            </span>
             <a
               href={`mailto:${email}`}
               className="text-link"
-              style={{ color: "#007D99", fontSize: 20, fontFamily: "Inter", fontWeight: 400, textDecoration: "underline" }}
+              style={{
+                color: "#007D99",
+                fontSize: 20,
+                fontFamily: "Inter",
+                fontWeight: 400,
+                textDecoration: "underline",
+              }}
             >
               {email}
             </a>
@@ -199,8 +266,11 @@ const ClubModal = ({ club, onClose }) => {
 
         {/* Buttons */}
         <div style={{ position: "absolute", left: 292, top: 669 }}>
-          <button className="btn-primary" style={{ width: 258, height: 67, borderRadius: 8 }}
-            onClick={() => alert(`Requested to join "${club.name}"`)}>
+          <button
+            className="btn-primary"
+            style={{ width: 258, height: 67, borderRadius: 8 }}
+            onClick={() => alert(`Requested to join "${club.name}"`)}
+          >
             Join Club
           </button>
         </div>
@@ -261,7 +331,11 @@ const ClubCard = ({ club, onCardClick }) => {
             }}
           >
             {club.imageUrl ? (
-              <img src={club.imageUrl} alt={`${club.name} cover`} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              <img
+                src={club.imageUrl}
+                alt={`${club.name} cover`}
+                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              />
             ) : (
               <PlaceholderImage width="100%" height="100%" />
             )}
@@ -281,28 +355,87 @@ const ClubCard = ({ club, onCardClick }) => {
               gap: 6,
             }}
           >
-            <div style={{ alignSelf: "stretch", color: "black", fontSize: 40, fontFamily: "Inter", fontWeight: 700, lineHeight: 1.1 }}>
+            <div
+              style={{
+                alignSelf: "stretch",
+                color: "black",
+                fontSize: 40,
+                fontFamily: "Inter",
+                fontWeight: 700,
+                lineHeight: 1.1,
+              }}
+            >
               {club.name}
             </div>
 
             <div style={{ display: "inline-flex", gap: 6, alignItems: "center" }}>
-              <div style={{ color: "#707070", fontSize: 20, fontFamily: "Inter", fontWeight: 400 }}>Category:</div>
-              <div style={{ color: "#00550A", fontSize: 20, fontFamily: "Inter", fontWeight: 700 }}>{club.tag}</div>
+              <div
+                style={{
+                  color: "#707070",
+                  fontSize: 20,
+                  fontFamily: "Inter",
+                  fontWeight: 400,
+                }}
+              >
+                Category:
+              </div>
+              <div
+                style={{
+                  color: "#00550A",
+                  fontSize: 20,
+                  fontFamily: "Inter",
+                  fontWeight: 700,
+                }}
+              >
+                {club.tag}
+              </div>
             </div>
 
-            <div style={{ alignSelf: "stretch", color: "black", fontSize: 20, fontFamily: "Inter", fontWeight: 400 }}>
+            <div
+              style={{
+                alignSelf: "stretch",
+                color: "black",
+                fontSize: 20,
+                fontFamily: "Inter",
+                fontWeight: 400,
+              }}
+            >
               {club.description}
             </div>
           </div>
 
           {/* Divider */}
-          <div style={{ width: 332, height: 2.5, left: 24, top: 485, position: "absolute", background: "#B7B7B7" }} />
+          <div
+            style={{
+              width: 332,
+              height: 2.5,
+              left: 24,
+              top: 485,
+              position: "absolute",
+              background: "#B7B7B7",
+            }}
+          />
 
           {/* Button */}
-          <div style={{ width: 257, height: 59, left: 61, top: 500, position: "absolute" }}>
+          <div
+            style={{
+              width: 257,
+              height: 59,
+              left: 61,
+              top: 500,
+              position: "absolute",
+            }}
+          >
             <button
               className="btn-primary"
-              style={{ width: "100%", height: 50, borderRadius: 10, position: "absolute", left: 0, top: 5 }}
+              style={{
+                width: "100%",
+                height: 50,
+                borderRadius: 10,
+                position: "absolute",
+                left: 0,
+                top: 5,
+              }}
               onClick={(e) => {
                 e.stopPropagation();
                 onCardClick(club);
@@ -347,14 +480,27 @@ const EventCard = ({ event }) => {
           }}
         >
           {event.imageUrl ? (
-            <img src={event.imageUrl} alt={`${event.title} poster`} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            <img
+              src={event.imageUrl}
+              alt={`${event.title} poster`}
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            />
           ) : (
             <PlaceholderImage width="100%" height="100%" />
           )}
         </div>
 
         {/* White strip */}
-        <div style={{ width: 36, height: 318, left: 266, top: 0, position: "absolute", background: "white" }} />
+        <div
+          style={{
+            width: 36,
+            height: 318,
+            left: 266,
+            top: 0,
+            position: "absolute",
+            background: "white",
+          }}
+        />
 
         {/* Content */}
         <div
@@ -371,29 +517,92 @@ const EventCard = ({ event }) => {
             gap: 6,
           }}
         >
-          <div style={{ alignSelf: "stretch", color: "black", fontSize: 40, fontFamily: "Inter", fontWeight: 700, lineHeight: 1.1 }}>
+          <div
+            style={{
+              alignSelf: "stretch",
+              color: "black",
+              fontSize: 40,
+              fontFamily: "Inter",
+              fontWeight: 700,
+              lineHeight: 1.1,
+            }}
+          >
             {event.title}
           </div>
 
           <div style={{ alignSelf: "stretch" }}>
-            <span style={{ color: "#707070", fontSize: 20, fontFamily: "Inter", fontWeight: 400 }}>Hosted by:</span>
-            <span style={{ color: "#00550A", fontSize: 20, fontFamily: "Inter", fontWeight: 700 }}> {event.hostedBy}</span>
+            <span
+              style={{
+                color: "#707070",
+                fontSize: 20,
+                fontFamily: "Inter",
+                fontWeight: 400,
+              }}
+            >
+              Hosted by:
+            </span>
+            <span
+              style={{
+                color: "#00550A",
+                fontSize: 20,
+                fontFamily: "Inter",
+                fontWeight: 700,
+              }}
+            >
+              {" "}
+              {event.hostedBy}
+            </span>
           </div>
 
-          <div style={{ alignSelf: "stretch", color: "black", fontSize: 20, fontFamily: "Inter", fontWeight: 400 }}>
+          <div
+            style={{
+              alignSelf: "stretch",
+              color: "black",
+              fontSize: 20,
+              fontFamily: "Inter",
+              fontWeight: 400,
+            }}
+          >
             {event.description}
           </div>
         </div>
 
         {/* CTA */}
-        <div style={{ width: 257, height: 59, left: 946, top: 254, position: "absolute" }}>
-          <button className="btn-primary" style={{ width: "100%", height: 50, borderRadius: 10, position: "absolute", left: 0, top: 5 }}>
+        <div
+          style={{
+            width: 257,
+            height: 59,
+            left: 946,
+            top: 254,
+            position: "absolute",
+          }}
+        >
+          <button
+            className="btn-primary"
+            style={{
+              width: "100%",
+              height: 50,
+              borderRadius: 10,
+              position: "absolute",
+              left: 0,
+              top: 5,
+            }}
+          >
             View Details
           </button>
         </div>
 
         {/* When & Where */}
-        <div style={{ width: 614, height: 64, left: 324, top: 251, position: "absolute", overflow: "hidden" }}>
+        <div
+          style={{
+            width: 614,
+            height: 64,
+            left: 324,
+            top: 251,
+            position: "absolute",
+            overflow: "hidden",
+          }}
+        >
           <div
             style={{
               width: 551,
@@ -411,9 +620,35 @@ const EventCard = ({ event }) => {
           </div>
         </div>
 
-        <div style={{ left: 300, top: 256, position: "absolute", display: "inline-flex", alignItems: "center", gap: 8 }}>
-          <div style={{ width: 24, height: 24, borderRadius: 6, background: "#AEFFD2" }} aria-hidden />
-          <div style={{ color: "#787878", fontSize: 20, fontFamily: "Inter", fontWeight: 400 }}>{event.when}</div>
+        <div
+          style={{
+            left: 300,
+            top: 256,
+            position: "absolute",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 8,
+          }}
+        >
+          <div
+            style={{
+              width: 24,
+              height: 24,
+              borderRadius: 6,
+              background: "#AEFFD2",
+            }}
+            aria-hidden
+          />
+          <div
+            style={{
+              color: "#787878",
+              fontSize: 20,
+              fontFamily: "Inter",
+              fontWeight: 400,
+            }}
+          >
+            {event.when}
+          </div>
         </div>
       </div>
     </ScaleBox>
@@ -445,6 +680,11 @@ const HomePage = () => {
   const [category, setCategory] = useState("All Clubs");
   const [openClub, setOpenClub] = useState(null);
 
+  // Clubs from backend
+  const [clubs, setClubs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
   // Profile & EditProfile popups
   const [profileOpen, setProfileOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
@@ -455,13 +695,67 @@ const HomePage = () => {
   const [confirmMessage, setConfirmMessage] = useState("");
   const confirmActionRef = useRef(() => {});
 
-  const approvedClubs = useMemo(() => mockClubs.filter((c) => c.approved), []);
+  // 🔥 Fetch clubs from backend on mount
+  useEffect(() => {
+    const fetchClubs = async () => {
+      try {
+        setLoading(true);
+        setError("");
+
+        // If needed, swap "/api/clubs" for your actual backend URL
+        const res = await fetch("http://localhost:5050/api/clubs");
+        if (!res.ok) {
+          throw new Error(`Failed to load clubs (status ${res.status})`);
+        }
+
+        const json = await res.json();
+        const apiClubs = json.data || json.clubs || [];
+
+        // Normalize to what the UI expects
+        const normalized = apiClubs.map((c) => ({
+          id: c._id || c.id,
+          name: c.name,
+          description: c.description || "",
+          tag: c.tag || "Other",
+          imageUrl: c.image || null, // backend stores "image"
+          status: c.status || (c.approved ? "approved" : "pending"),
+          leader: c.leader,
+          email: c.email,
+        }));
+
+        setClubs(normalized);
+      } catch (err) {
+        console.error("Error loading clubs:", err);
+        setError(err.message || "Error loading clubs");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchClubs();
+  }, []);
+
+  const approvedClubs = useMemo(
+    () =>
+      clubs.filter(
+        (c) => c.status === "approved" || c.approved === true
+      ),
+    [clubs]
+  );
+
   const filteredClubs = useMemo(() => {
     const term = search.trim().toLowerCase();
+
     return approvedClubs.filter((c) => {
-      const matchesText = term ? c.name.toLowerCase().includes(term) : true;
+      const matchesText = term
+        ? c.name.toLowerCase().includes(term)
+        : true;
+
       const matchesCategory =
-        category === "All Clubs" ? true : c.tag.toLowerCase() === category.toLowerCase();
+        category === "All Clubs"
+          ? true
+          : (c.tag || "").toLowerCase() === category.toLowerCase();
+
       return matchesText && matchesCategory;
     });
   }, [approvedClubs, search, category]);
@@ -524,9 +818,25 @@ const HomePage = () => {
           }}
         >
           {/* ===== Sticky Header (scaled to fit) ===== */}
-          <div style={{ position: "sticky", top: 0, zIndex: 20, alignSelf: "stretch", background: "#F8FAFC", boxShadow: "0px 1px 30px rgba(0, 0, 0, 0.19)" }}>
+          <div
+            style={{
+              position: "sticky",
+              top: 0,
+              zIndex: 20,
+              alignSelf: "stretch",
+              background: "#F8FAFC",
+              boxShadow: "0px 1px 30px rgba(0, 0, 0, 0.19)",
+            }}
+          >
             <ScaleBox baseWidth={1440}>
-              <div style={{ height: 120, position: "relative", width: 1440, margin: "0 auto" }}>
+              <div
+                style={{
+                  height: 120,
+                  position: "relative",
+                  width: 1440,
+                  margin: "0 auto",
+                }}
+              >
                 {/* Left Logo */}
                 <div
                   style={{
@@ -544,7 +854,12 @@ const HomePage = () => {
                   <img
                     src={siteLogo}
                     alt="Site logo"
-                    style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain", display: "block" }}
+                    style={{
+                      maxWidth: "100%",
+                      maxHeight: "100%",
+                      objectFit: "contain",
+                      display: "block",
+                    }}
                   />
                 </div>
 
@@ -560,11 +875,42 @@ const HomePage = () => {
                     gap: 28,
                   }}
                 >
-                  <div style={{ width: 153, height: 50, display: "flex", alignItems: "center", justifyContent: "center", color: "#707070", fontSize: 40, fontFamily: "Inter", fontWeight: 500 }}>
+                  <div
+                    style={{
+                      width: 153,
+                      height: 50,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      color: "#707070",
+                      fontSize: 40,
+                      fontFamily: "Inter",
+                      fontWeight: 500,
+                    }}
+                  >
                     Clubs
                   </div>
-                  <div style={{ width: 2, height: 40, background: "#D0D0D0", borderRadius: 1 }} />
-                  <div style={{ width: 153, height: 50, display: "flex", alignItems: "center", justifyContent: "center", color: "#707070", fontSize: 40, fontFamily: "Inter", fontWeight: 500 }}>
+                  <div
+                    style={{
+                      width: 2,
+                      height: 40,
+                      background: "#D0D0D0",
+                      borderRadius: 1,
+                    }}
+                  />
+                  <div
+                    style={{
+                      width: 153,
+                      height: 50,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      color: "#707070",
+                      fontSize: 40,
+                      fontFamily: "Inter",
+                      fontWeight: 500,
+                    }}
+                  >
                     Events
                   </div>
                 </div>
@@ -750,11 +1096,28 @@ const HomePage = () => {
             </div>
           </ScaleBox>
 
-
           {/* ===== Explore by Category ===== */}
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 13, width: "100%" }}>
-            <div style={{ height: 14, textAlign: "center", display: "flex", alignItems: "flex-end", color: "black", fontSize: 40, fontFamily: "Inter", fontWeight: 700 }}>
-            </div>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 13,
+              width: "100%",
+            }}
+          >
+            <div
+              style={{
+                height: 14,
+                textAlign: "center",
+                display: "flex",
+                alignItems: "flex-end",
+                color: "black",
+                fontSize: 40,
+                fontFamily: "Inter",
+                fontWeight: 700,
+              }}
+            ></div>
 
             <div
               style={{
@@ -781,8 +1144,13 @@ const HomePage = () => {
                       height: 50,
                       borderRadius: 25,
                       border: "1px rgba(0, 0, 0, 0.21) solid",
-                      background: isActive ? "#00550A" : isAll ? "#00550A" : "white",
-                      color: isActive || isAll ? "white" : "black",
+                      background: isActive
+                        ? "#00550A"
+                        : isAll
+                        ? "#00550A"
+                        : "white",
+                      color:
+                        isActive || isAll ? "white" : "black",
                       fontSize: 20,
                       fontFamily: "Inter",
                       fontWeight: 500,
@@ -801,7 +1169,14 @@ const HomePage = () => {
           {/* ===== End Explore by Category ===== */}
 
           {/* Clubs Grid (responsive wrap) */}
-          <div style={{ width: "100%", maxWidth: 1282, padding: "0 8px", boxSizing: "border-box" }}>
+          <div
+            style={{
+              width: "100%",
+              maxWidth: 1282,
+              padding: "0 8px",
+              boxSizing: "border-box",
+            }}
+          >
             <div
               style={{
                 display: "flex",
@@ -810,23 +1185,90 @@ const HomePage = () => {
                 justifyContent: "center",
               }}
             >
-              {filteredClubs.length === 0 ? (
-                <div style={{ width: "100%", textAlign: "center", color: "#707070", fontFamily: "Inter", fontSize: 18 }}>
+              {loading ? (
+                <div
+                  style={{
+                    width: "100%",
+                    textAlign: "center",
+                    color: "#707070",
+                    fontFamily: "Inter",
+                    fontSize: 18,
+                  }}
+                >
+                  Loading clubs…
+                </div>
+              ) : error ? (
+                <div
+                  style={{
+                    width: "100%",
+                    textAlign: "center",
+                    color: "red",
+                    fontFamily: "Inter",
+                    fontSize: 18,
+                  }}
+                >
+                  {error}
+                </div>
+              ) : filteredClubs.length === 0 ? (
+                <div
+                  style={{
+                    width: "100%",
+                    textAlign: "center",
+                    color: "#707070",
+                    fontFamily: "Inter",
+                    fontSize: 18,
+                  }}
+                >
                   No clubs match your search.
                 </div>
               ) : (
-                filteredClubs.map((club) => <ClubCard key={club.id} club={club} onCardClick={setOpenClub} />)
+                filteredClubs.map((club) => (
+                  <ClubCard
+                    key={club.id}
+                    club={club}
+                    onCardClick={setOpenClub}
+                  />
+                ))
               )}
             </div>
           </div>
 
           {/* Upcoming Events Header */}
-          <div style={{ width: "100%", maxWidth: 1220, padding: 10, display: "flex", alignItems: "center", gap: 10 }}>
-            <div style={{ color: "black", fontFamily: "Inter", fontSize: 40, fontWeight: 700 }}>Upcoming Club Events</div>
+          <div
+            style={{
+              width: "100%",
+              maxWidth: 1220,
+              padding: 10,
+              display: "flex",
+              alignItems: "center",
+              gap: 10,
+            }}
+          >
+            <div
+              style={{
+                color: "black",
+                fontFamily: "Inter",
+                fontSize: 40,
+                fontWeight: 700,
+              }}
+            >
+              Upcoming Club Events
+            </div>
           </div>
 
           {/* Events List (each scales to width) */}
-          <div style={{ width: "100%", maxWidth: 1282, padding: "0 8px", display: "flex", flexDirection: "column", alignItems: "stretch", gap: 28, boxSizing: "border-box" }}>
+          <div
+            style={{
+              width: "100%",
+              maxWidth: 1282,
+              padding: "0 8px",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "stretch",
+              gap: 28,
+              boxSizing: "border-box",
+            }}
+          >
             {mockEvents.map((event) => (
               <EventCard key={event.id} event={event} />
             ))}
@@ -837,7 +1279,9 @@ const HomePage = () => {
       </div>
 
       {/* Club details modal */}
-      {openClub && <ClubModal club={openClub} onClose={() => setOpenClub(null)} />}
+      {openClub && (
+        <ClubModal club={openClub} onClose={() => setOpenClub(null)} />
+      )}
 
       {/* PROFILE popup */}
       <PopUpModals
@@ -846,7 +1290,6 @@ const HomePage = () => {
         baseW={598.92}
         baseH={814}
       >
-        {/* onManageClub navigates to /clubManage */}
         <Profile
           onClose={() => setProfileOpen(false)}
           onEditProfile={handleOpenEditFromProfile}
@@ -862,7 +1305,12 @@ const HomePage = () => {
         baseW={733}
         baseH={671}
       >
-        <EditProfile onBack={() => { setEditOpen(false); setProfileOpen(true); }} />
+        <EditProfile
+          onBack={() => {
+            setEditOpen(false);
+            setProfileOpen(true);
+          }}
+        />
       </PopUpModals>
 
       {/* CONFIRM DIALOG popup (reusable across the app) */}
