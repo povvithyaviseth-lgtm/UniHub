@@ -96,7 +96,7 @@ const PlaceholderImage = ({ width, height, style = {} }) => (
     style={{
       width,
       height,
-      background: "#AEFFD2",
+      background: "#0f763dff",
       borderRadius: 18.8,
       ...style,
     }}
@@ -307,10 +307,10 @@ const ClubModal = ({ club, onClose }) => {
 
 /** ------------------------------- New Club Card -------------------------- */
 /**
- * New homepage ClubCard:
- * - Uses your nicer article + hover overlay style
- * - Join button -> "Let's go" + "Cancel" -> "Club joined!"
- * - Clicking anywhere else on the card opens the club modal (onCardClick)
+ * Minimal, structured homepage ClubCard:
+ * - Base: image + name
+ * - Hover overlay: header (name + tags), description, join flow
+ * - Join → "Let's go!" + "Cancel" → "Club joined!"
  */
 const ClubCard = ({ club, onCardClick, onJoin }) => {
   const [hovered, setHovered] = useState(false);
@@ -349,20 +349,21 @@ const ClubCard = ({ club, onCardClick, onJoin }) => {
     <article
       style={{
         position: "relative",
-        background: "#fff",
-        borderRadius: 16,
+        background: "#FFFFFF",
+        borderRadius: 26,
+        border: "1.7px solid #E5E7EB",
         boxShadow: hovered
-          ? "0 12px 26px rgba(15, 23, 42, 0.16)"
-          : "0 6px 16px rgba(15, 23, 42, 0.08)",
+          ? "0 10px 24px rgba(15, 23, 42, 0.14)"
+          : "0 4px 12px rgba(15, 23, 42, 0.06)",
         overflow: "hidden",
         display: "flex",
         flexDirection: "column",
         cursor: "pointer",
         transition: "transform 0.18s ease, box-shadow 0.18s ease",
-        transform: hovered ? "translateY(-3px)" : "translateY(0)",
-        minHeight: 340,
+        transform: hovered ? "translateY(-2px)" : "translateY(0)",
+        minHeight: 320,
         width: "100%",
-        maxWidth: 360,
+        maxWidth: 430,
       }}
       aria-label={`${club.name} card`}
       onMouseEnter={() => setHovered(true)}
@@ -374,11 +375,11 @@ const ClubCard = ({ club, onCardClick, onJoin }) => {
         <div
           style={{
             position: "relative",
-            margin: 20,
-            marginBottom: 12,
-            borderRadius: 15,
+            margin: 16,
+            marginBottom: 10,
+            borderRadius: 12,
             overflow: "hidden",
-            background: "#AEFFD2",
+            background: "#227246",
             aspectRatio: "16 / 10",
             display: "flex",
             alignItems: "center",
@@ -404,8 +405,8 @@ const ClubCard = ({ club, onCardClick, onJoin }) => {
           ) : (
             <span
               style={{
-                fontSize: 14,
-                color: "#065F46",
+                fontSize: 13,
+                color: "#D1FAE5",
                 padding: 8,
                 textAlign: "center",
               }}
@@ -417,14 +418,14 @@ const ClubCard = ({ club, onCardClick, onJoin }) => {
 
         <div
           style={{
-            padding: "0 20px 20px 20px",
+            padding: "0 16px 16px 16px",
           }}
         >
           <div
             style={{
-              color: "#000",
-              fontSize: 24,
-              fontWeight: 800,
+              color: "#111827",
+              fontSize: 35,
+              fontWeight: 700,
               lineHeight: 1.2,
               whiteSpace: "nowrap",
               overflow: "hidden",
@@ -443,129 +444,192 @@ const ClubCard = ({ club, onCardClick, onJoin }) => {
           style={{
             position: "absolute",
             inset: 0,
-            background: "#FFFFFF",
+            background: "rgba(255, 255, 255, 0.98)",
             color: "#0F172A",
             display: "flex",
             flexDirection: "column",
-            padding: 20,
+            padding: 16,
             boxSizing: "border-box",
-            borderRadius: 16,
-            border: "1px solid #E5E7EB",
           }}
         >
-          {/* Description (scrollable) */}
+          {/* Header: name + tags */}
           <div
             style={{
-              fontSize: 15,
-              lineHeight: 1.4,
+              marginBottom: 8,
+            }}
+          >
+            <div
+              style={{
+                fontSize: 35,
+                fontWeight: 700,
+                color: "#111827",
+                marginBottom: 10,
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
+              {club.name}
+            </div>
+
+            {tagLines.length > 0 && (
+              <div
+                style={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  gap: 15,
+                }}
+              >
+                {tagLines.map((tag) => (
+                  <span
+                    key={tag}
+                    style={{
+                      padding: "7px 8px",
+                      borderRadius: 999,
+                      border: "1px solid #E5E7EB",
+                      background: "#F9FAFB",
+                      fontSize: 11,
+                      fontWeight: 500,
+                      color: "#006f32ff",
+                    }}
+                  >
+                    #{tag}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Body: description (scrollable) */}
+          <div
+            style={{
+              fontSize: 16,
+              lineHeight: 1.5,
               color: "#4B5563",
               marginBottom: 12,
               flex: 1,
-              maxHeight: 150,
+              maxHeight: 140,
               overflowY: "auto",
             }}
           >
             {club.description || "No description provided."}
           </div>
 
-          {/* Tags */}
-          {tagLines.length > 0 && (
-            <div
-              style={{
-                fontSize: 12,
-                color: "#6B7280",
-                marginBottom: 12,
-              }}
-            >
-              {tagLines.map((tag) => (
-                <div key={tag}>#{tag}</div>
-              ))}
-            </div>
-          )}
-
-          {/* Join button flow */}
+          {/* Divider */}
           <div
             style={{
-              marginTop: "auto",
+              height: 1,
+              background: "#E5E7EB",
+              marginBottom: 10,
+              marginTop: 2,
+            }}
+          />
+
+          {/* Footer: join button flow */}
+          <div
+            style={{
               display: "flex",
-              justifyContent: "flex-end",
-              gap: 8,
+              justifyContent: "space-between",
               alignItems: "center",
+              gap: 8,
             }}
           >
-            {joinState === "idle" && (
-              <button
-                onClick={handleJoinClick}
-                style={{
-                  padding: "8px 16px",
-                  borderRadius: 999,
-                  border: "none",
-                  background: "#16A34A",
-                  color: "white",
-                  fontWeight: 600,
-                  fontSize: 14,
-                  cursor: "pointer",
-                }}
-              >
-                Join
-              </button>
-            )}
+            <span
+              style={{
+                fontSize: 11,
+                color: "#9CA3AF",
+                textTransform: "uppercase",
+                letterSpacing: 0.05,
+              }}
+            >
+            </span>
 
-            {joinState === "confirm" && (
-              <>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+              }}
+            >
+              {joinState === "idle" && (
                 <button
-                  onClick={handleLetsGoClick}
+                  onClick={handleJoinClick}
                   style={{
-                    padding: "8px 16px",
+                    padding: "9px 30px",
                     borderRadius: 999,
                     border: "none",
-                    background: "#16A34A",
+                    background: "#0D6C30",
                     color: "white",
-                    fontWeight: 600,
-                    fontSize: 14,
-                    cursor: "pointer",
-                  }}
-                >
-                  Let&apos;s go
-                </button>
-                <button
-                  onClick={handleCancelClick}
-                  style={{
-                    padding: "8px 16px",
-                    borderRadius: 999,
-                    border: "1px solid #9CA3AF",
-                    background: "white",
-                    color: "#374151",
                     fontWeight: 500,
-                    fontSize: 14,
+                    fontSize: 30,
                     cursor: "pointer",
+                    whiteSpace: "nowrap",
                   }}
                 >
-                  Cancel
+                  Join
                 </button>
-              </>
-            )}
+              )}
 
-            {joinState === "joined" && (
-              <span
-                style={{
-                  padding: "6px 12px",
-                  borderRadius: 999,
-                  background: "#DCFCE7",
-                  color: "#166534",
-                  fontWeight: 600,
-                  fontSize: 13,
-                }}
-              >
-                Club joined!
-              </span>
-            )}
+              {joinState === "confirm" && (
+                <>
+                  <button
+                    onClick={handleLetsGoClick}
+                    style={{
+                      padding: "9px 20px",
+                      borderRadius: 999,
+                      border: "none",
+                      background: "#105F2D",
+                      color: "white",
+                      fontWeight: 500,
+                      fontSize: 25,
+                      cursor: "pointer",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    Let&apos;s go!
+                  </button>
+                  <button
+                    onClick={handleCancelClick}
+                    style={{
+                      padding: "9px 20px",
+                      borderRadius: 999,
+                      border: "1px solid #D1D5DB",
+                      background: "white",
+                      color: "#374151",
+                      fontWeight: 500,
+                      fontSize: 25,
+                      cursor: "pointer",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    Cancel
+                  </button>
+                </>
+              )}
+
+              {joinState === "joined" && (
+                <span
+                  style={{
+                    padding: "9px 20px",
+                    borderRadius: 999,
+                    background: "#DCFCE7",
+                    color: "#166534",
+                    fontWeight: 600,
+                    fontSize: 25,
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  Club joined!
+                </span>
+              )}
+            </div>
           </div>
         </div>
       )}
     </article>
   );
 };
+
 
 /** ------------------------------- Event Card ----------------------------- */
 const EventCard = ({ event }) => {
@@ -908,11 +972,7 @@ const HomePage = () => {
   }, [navigate]);
 
   // ✅ called when user confirms "Let's go" on a card
-  const handleJoinClub = (club) => {
-    // TODO: hook into your real join-club API
-    // e.g. await api.joinClub(club.id)
-    alert(`Requested to join "${club.name}"`);
-  };
+  const handleJoinClub = (club) => {};
 
   return (
     <div
@@ -1350,14 +1410,22 @@ const HomePage = () => {
                   No clubs match your search.
                 </div>
               ) : (
-                filteredClubs.map((club) => (
-                  <ClubCard
-                    key={club.id}
-                    club={club}
-                    onCardClick={setOpenClub}
-                    onJoin={handleJoinClub}
-                  />
-                ))
+                <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+              gap: 28,
+              justifyItems: "center",
+            }}
+          >
+            {filteredClubs.map((club) => (
+              <ClubCard
+                key={club.id}
+                club={club}
+                onCardClick={setOpenClub}
+              />
+            ))}
+          </div>
               )}
             </div>
           </div>
