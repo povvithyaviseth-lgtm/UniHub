@@ -852,7 +852,6 @@ const CATEGORIES = [
   "Environmental",
   "Hobbies",
 ];
-
 /** --------------------------------- Page --------------------------------- */
 const HomePage = () => {
   const navigate = useNavigate();
@@ -875,6 +874,39 @@ const HomePage = () => {
   const [confirmTitle, setConfirmTitle] = useState("");
   const [confirmMessage, setConfirmMessage] = useState("");
   const confirmActionRef = useRef(() => {});
+
+  // 🔄 New: section refs for scroll
+  const clubsSectionRef = useRef(null);
+  const eventsSectionRef = useRef(null);
+
+  // 🔄 New: responsive columns + "see more" state
+  const [columns, setColumns] = useState(3);
+  const [showAllClubs, setShowAllClubs] = useState(false);
+
+  // 🔄 New: update columns based on viewport
+  useEffect(() => {
+    const updateColumns = () => {
+      const width = window.innerWidth;
+      if (width >= 1024) {
+        setColumns(3); // desktop
+      } else if (width >= 640) {
+        setColumns(2); // tablet
+      } else {
+        setColumns(1); // phone
+      }
+    };
+
+    updateColumns();
+    window.addEventListener("resize", updateColumns);
+    return () => window.removeEventListener("resize", updateColumns);
+  }, []);
+
+  // 🔄 helper for smooth scroll
+  const scrollToSection = (ref) => {
+    if (ref.current) {
+      ref.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
 
   // 🔥 Fetch clubs from backend on mount
   useEffect(() => {
@@ -925,7 +957,6 @@ const HomePage = () => {
   );
 
   // 🔍 Search + tag filters
-  // Now supports comma-separated tags per club, and category chips filter by those tags.
   const filteredClubs = useMemo(() => {
     const term = search.trim().toLowerCase();
 
@@ -947,6 +978,12 @@ const HomePage = () => {
       return matchesText && matchesCategory;
     });
   }, [approvedClubs, search, category]);
+
+  // 🔄 New: only show first 12 clubs unless "See more" clicked
+  const visibleClubs = useMemo(() => {
+    if (showAllClubs) return filteredClubs;
+    return filteredClubs.slice(0, 12); // 4 rows * 3 cards
+  }, [filteredClubs, showAllClubs]);
 
   // When Profile wants to open EditProfile:
   const handleOpenEditFromProfile = () => {
@@ -1064,7 +1101,10 @@ const HomePage = () => {
                     gap: 28,
                   }}
                 >
+                  {/* 🔄 Clickable "Clubs" */}
                   <div
+                    role="button"
+                    onClick={() => scrollToSection(clubsSectionRef)}
                     style={{
                       width: 153,
                       height: 50,
@@ -1075,6 +1115,7 @@ const HomePage = () => {
                       fontSize: 40,
                       fontFamily: "Inter",
                       fontWeight: 500,
+                      cursor: "pointer",
                     }}
                   >
                     Clubs
@@ -1087,7 +1128,10 @@ const HomePage = () => {
                       borderRadius: 1,
                     }}
                   />
+                  {/* 🔄 Clickable "Events" */}
                   <div
+                    role="button"
+                    onClick={() => scrollToSection(eventsSectionRef)}
                     style={{
                       width: 153,
                       height: 50,
@@ -1098,6 +1142,7 @@ const HomePage = () => {
                       fontSize: 40,
                       fontFamily: "Inter",
                       fontWeight: 500,
+                      cursor: "pointer",
                     }}
                   >
                     Events
@@ -1263,7 +1308,7 @@ const HomePage = () => {
                   }}
                 />
 
-                {/* Input (auto-expands to fill width) */}
+                {/* Input */}
                 <input
                   type="text"
                   value={search}
@@ -1326,7 +1371,10 @@ const HomePage = () => {
                 return (
                   <button
                     key={cat}
-                    onClick={() => setCategory(cat)}
+                    onClick={() => {
+                      setCategory(cat);
+                      setShowAllClubs(false); // reset pagination when filter changes
+                    }}
                     style={{
                       minWidth: 120,
                       padding: "10px 16px",
@@ -1356,8 +1404,9 @@ const HomePage = () => {
           </div>
           {/* ===== End Explore by Category ===== */}
 
-          {/* Clubs Grid (responsive wrap) */}
-          <div
+          {/* 🔽 Clubs Section (scroll target) */}
+          <section
+            ref={clubsSectionRef}
             style={{
               width: "100%",
               maxWidth: 1282,
@@ -1410,66 +1459,105 @@ const HomePage = () => {
                   No clubs match your search.
                 </div>
               ) : (
-                <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-              gap: 28,
-              justifyItems: "center",
-            }}
-          >
-            {filteredClubs.map((club) => (
-              <ClubCard
-                key={club.id}
-                club={club}
-                onCardClick={setOpenClub}
-              />
-            ))}
-          </div>
+                <>
+                  {/* 🔄 Responsive grid with up to 3 columns */}
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
+                      gap: 28,
+                      justifyItems: "center",
+                    }}
+                  >
+                    {visibleClubs.map((club) => (
+                      <ClubCard
+                        key={club.id}
+                        club={club}
+                        onCardClick={setOpenClub}
+                      />
+                    ))}
+                  </div>
+
+                  {/* 🔄 "See more clubs" after 4 rows of 3 cards */}
+                  {!showAllClubs && filteredClubs.length > 12 && (
+                    <div
+                      style={{
+                        marginTop: 32,
+                        width: "100%",
+                        display: "flex",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <button
+                        className="btn-primary"
+                        onClick={() => setShowAllClubs(true)}
+                        style={{
+                          padding: "14px 32px",
+                          borderRadius: 999,
+                          fontSize: 20,
+                          fontWeight: 600,
+                          cursor: "pointer",
+                        }}
+                      >
+                        See more clubs
+                      </button>
+                    </div>
+                  )}
+                </>
               )}
             </div>
-          </div>
+          </section>
 
-          {/* Upcoming Events Header */}
-          <div
-            style={{
-              width: "100%",
-              maxWidth: 1220,
-              padding: 10,
-              display: "flex",
-              alignItems: "center",
-              gap: 10,
-            }}
-          >
-            <div
-              style={{
-                color: "black",
-                fontFamily: "Inter",
-                fontSize: 40,
-                fontWeight: 700,
-              }}
-            >
-              Upcoming Club Events
-            </div>
-          </div>
-
-          {/* Events List (each scales to width) */}
-          <div
+          {/* 🔽 Events Section (scroll target) */}
+          <section
+            ref={eventsSectionRef}
             style={{
               width: "100%",
               maxWidth: 1282,
-              padding: "0 8px",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "stretch",
-              gap: 28,
               boxSizing: "border-box",
             }}
           >
-            {mockEvents.map((event) => (
-              <EventCard key={event.id} event={event} />
-            ))}
-          </div>
+            {/* Upcoming Events Header */}
+            <div
+              style={{
+                width: "100%",
+                maxWidth: 1220,
+                padding: 10,
+                display: "flex",
+                alignItems: "center",
+                gap: 10,
+              }}
+            >
+              <div
+                style={{
+                  color: "black",
+                  fontFamily: "Inter",
+                  fontSize: 40,
+                  fontWeight: 700,
+                }}
+              >
+                Upcoming Club Events
+              </div>
+            </div>
+
+            {/* Events List (each scales to width) */}
+            <div
+              style={{
+                width: "100%",
+                maxWidth: 1282,
+                padding: "0 8px",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "stretch",
+                gap: 28,
+                boxSizing: "border-box",
+              }}
+            >
+              {mockEvents.map((event) => (
+                <EventCard key={event.id} event={event} />
+              ))}
+            </div>
+          </section>
 
           <div style={{ height: 40 }} />
         </div>
