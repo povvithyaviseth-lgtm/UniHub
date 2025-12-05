@@ -717,7 +717,9 @@ const HomePage = () => {
           name: c.name,
           description: c.description || "",
           tag: c.tag || "Other",
-          imageUrl: c.image || null, // backend stores "image"
+          imageUrl: c.image 
+            ? `http://localhost:5050/${c.image.replace(/^\/+/, "")}`
+            : null,
           status: c.status || (c.approved ? "approved" : "pending"),
           leader: c.leader,
           email: c.email,
