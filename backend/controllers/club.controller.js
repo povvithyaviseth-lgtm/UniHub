@@ -1,5 +1,8 @@
 // controllers/club.controller.js
 import Club from '../models/club.model.js';
+import ClubMembership from '../models/membership.model.js';
+
+
 import { 
   createClubService, 
   getClubsByOwner, 
@@ -22,7 +25,7 @@ export const createClub = async (req, res) => {
       });
     }
 
-    const { name, description, tag } = req.body;  // ✅ safe now, inside try
+    const { name, description, tag } = req.body;  
     const ownerId = req.user.id;                  // from auth middleware
 
     if (!ownerId) {
