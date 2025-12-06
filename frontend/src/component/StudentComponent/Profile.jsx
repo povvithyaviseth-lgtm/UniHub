@@ -257,7 +257,6 @@ export default function Profile({
           }}
         >
           <span style={{ fontSize: 14, color: "#6B7280" }}>
-            Account Settings
           </span>
           <button
             className="btn-link"
@@ -271,7 +270,6 @@ export default function Profile({
               fontWeight: 600,
             }}
           >
-            Edit Profile
           </button>
         </div>
       </div>

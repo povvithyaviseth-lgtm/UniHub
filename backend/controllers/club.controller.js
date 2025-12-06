@@ -1,7 +1,5 @@
 // controllers/club.controller.js
 import Club from '../models/club.model.js';
-import ClubMembership from '../models/membership.model.js';
-
 
 import { 
   createClubService, 

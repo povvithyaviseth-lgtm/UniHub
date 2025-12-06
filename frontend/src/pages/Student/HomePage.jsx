@@ -640,7 +640,7 @@ const ClubCard = ({ club, onCardClick, onJoin, isJoined }) => {
                     whiteSpace: "nowrap",
                   }}
                 >
-                  Club joined!
+                  Joined!
                 </span>
               )}
             </div>
