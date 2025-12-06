@@ -9,8 +9,8 @@ export const registerStudent = async (req, res) => {
   }
 
   try {
-    await AuthService.userSignUp(email, password);
-    res.status(201).json({ message: 'Student registered successfully' });
+    await AuthService.studentSignUp(email, password);
+    res.status(201).json({ message: 'Student registered successfully! Please Log In.' });
   } catch (error) {
     console.error('Error in registerStudent:', error.message);
 
@@ -19,5 +19,15 @@ export const registerStudent = async (req, res) => {
     }
 
     res.status(500).json({ message: 'Server error. Please try again later.' });
+  }
+};
+
+export const loginStudent = async (req, res) => {
+  const { email, password } = req.body; 
+  try {
+    const result = await AuthService.studentLogin(email, password); 
+    res.json(result);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
   }
 };

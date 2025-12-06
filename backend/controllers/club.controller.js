@@ -1,43 +1,124 @@
-// controller/clubManagementController.js
-import { createClub as createClubSvc } from '../services/club.service.js';
+// controllers/club.controller.js
+import { 
+  createClubService, 
+  getClubsByOwner, 
+  getClubsService,
+  updateClubService
+} from '../services/club.service.js';
 
-/**
- * POST /api/clubs/requests
- * Accepts JSON: { name, description?, location?, time?, imageUrl?, ownerId }
- * Creates a club with status 'pending' and returns it.
- */
-export async function createClub(req, res) {
+export const createClub = async (req, res) => {
   try {
-    const { name = '', description = '', location = '', time = '', ownerId, imageUrl = '' } = req.body;
+    // Debug logs so we can see what Multer gave us
+    console.log('🔥 REQ.BODY in createClub:', req.body);
+    console.log('🔥 REQ.FILE in createClub:', req.file);
+    console.log('🔥 CONTENT-TYPE:', req.headers['content-type']);
 
-    if (!name.trim()) {
-      return res.status(400).json({ error: 'Club name is required' });
+    if (!req.body) {
+      return res.status(400).json({
+        message:
+          'No form body received. Did you send multipart/form-data and is upload.single("image") on this route?',
+      });
     }
 
-    const clubDto = await createClubSvc(
-      { name, description, location, time, imageUrl },
-      ownerId
-    );
+    const { name, description, tag } = req.body;  // ✅ safe now, inside try
+    const ownerId = req.user.id;                  // from auth middleware
+
+    if (!ownerId) {
+      return res.status(401).json({ message: 'Not authorized' });
+    }
+
+    // Decide the image URL we store in DB
+    let image;
+    if (req.file) {
+      // This is what frontend will use in <img src={club.image} />
+      image = `/images/club/${req.file.filename}`;
+    } else if (req.body.image) {
+      // optional fallback if someone sends an image path manually
+      image = req.body.image;
+    }
+
+    // Call the service layer
+    const club = await createClubService({
+      ownerId,
+      name,
+      description,
+      tag,
+      image,
+    });
 
     return res.status(201).json({
-      ...clubDto,
-      message: 'Club created successfully!',
+      message: 'Club created successfully',
+      club,
     });
   } catch (err) {
-    return handleError(res, err);
+    console.error('Error creating club:', err);
+
+    if (err.message === 'Club name is required') {
+      return res.status(400).json({ message: err.message });
+    }
+
+    if (err.code === 11000) {
+      return res
+        .status(400)
+        .json({ message: 'A club with that name already exists.' });
+    }
+
+    return res.status(500).json({ message: 'Server error creating club' });
+  }
+};
+
+export const getMyClubs = async (req, res) => {
+  try {
+    const ownerId = req.user.id;
+
+    if (!ownerId) {
+      return res.status(401).json({ message: 'Not authorized' });
+    }
+
+    const clubs = await getClubsByOwner(ownerId);
+    return res.json({ clubs });
+  } catch (err) {
+    console.error('Error fetching clubs for owner:', err);
+    return res.status(500).json({ message: 'Failed to fetch your clubs' });
+  }
+};
+
+
+export async function getClubs(req, res) {
+  try {
+    console.log('✅ getClubs controller called');
+
+    const clubs = await getClubsService();
+
+    return res.status(200).json({
+      success: true,
+      data: clubs,
+    });
+  } catch (error) {
+    console.error('Error fetching clubs:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to fetch clubs',
+    });
   }
 }
 
-/* ---------------- helpers ---------------- */
+export const updateClub = async (req, res)  => {
+  try {
+    const ownerId = req.user.id;
+    const clubId = req.params.id;
+    const data = req.body; // { name, description, tag, image }
 
-function handleError(res, err) {
-  if (err?.code === 11000) {
-    return res.status(409).json({ error: 'Club name already exists' });
+    const updatedClub = await updateClubService(clubId, ownerId, data);
+
+    if (!updatedClub) {
+      return res
+        .status(403)
+        .json({ message: 'Not allowed to edit this club' });
+    }
+
+    res.json(updatedClub);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
   }
-  if (err?.name === 'CastError') {
-    return res.status(400).json({ error: 'Invalid ID' });
-  }
-  const msg = err?.message || 'Server error';
-  const status = /not found|invalid/i.test(msg) ? 404 : 400;
-  return res.status(status).json({ error: msg });
-}
+};

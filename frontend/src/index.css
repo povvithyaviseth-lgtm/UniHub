@@ -123,3 +123,130 @@ button:disabled { opacity: .6; cursor: not-allowed; }
   box-shadow: 0 4px 10px rgba(0,0,0,.12);
 }
 
+.club-card {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  background: #f5f5f5;
+  transition: transform 150ms ease, box-shadow 150ms ease, background 150ms ease;
+}
+
+.club-card:hover {
+  background: #ffffff;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+/* ----- Base state: image + name bar ----- */
+
+.club-card-base {
+  position: relative;
+}
+
+.club-card-image {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3; /* tweak as needed */
+  overflow: hidden;
+}
+
+.club-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.club-card-placeholder {
+  width: 100%;
+  height: 100%;
+  background: #ddd;
+}
+
+.club-card-name-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 8px 12px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.55), transparent);
+}
+
+.club-card-name {
+  color: #ffffff;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+/* ----- Hover overlay ----- */
+
+.club-card-hover {
+  position: absolute;
+  inset: 0;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  /* Hidden by default */
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 140ms ease;
+}
+
+.club-card:hover .club-card-hover {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.club-card-hover-header {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+/* Scrollable description */
+.club-card-description {
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: #444;
+  overflow-y: auto;
+  padding-right: 4px;
+  max-height: 120px; /* adjust based on card height */
+}
+
+/* Simple minimal buttons */
+
+.club-card-actions {
+  margin-top: auto;
+  display: flex;
+  gap: 8px;
+}
+
+.club-card-join-btn,
+.club-card-yes-btn,
+.club-card-cancel-btn {
+  border-radius: 999px;
+  border: none;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  background: #000;
+  color: #fff;
+  transition: background 120ms ease, transform 120ms ease, opacity 120ms ease;
+}
+
+.club-card-join-btn:hover,
+.club-card-yes-btn:hover,
+.club-card-cancel-btn:hover {
+  transform: translateY(-1px);
+}
+
+/* Differentiate cancel slightly */
+.club-card-cancel-btn {
+  background: #e5e5e5;
+  color: #333;
+}
+.club-card-cancel-btn:hover {
+  background: #d4d4d4;
+}

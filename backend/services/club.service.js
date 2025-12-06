@@ -1,39 +1,62 @@
+// services/club.service.js
 import Club from '../models/club.model.js';
 
-// Helper function to turn Mongoose object into a simple DTO
-function toClubDTO(club) {
-  return {
-    id: String(club._id),
-    name: club.name,
-    description: club.description || '',
-    location: club.location || '',
-    time: club.time || '',
-    imageUrl: club.imageUrl || '',
-    status: club.status,
-    clubOwner: String(club.clubOwner),
-    createdAt: club.createdAt,
-    updatedAt: club.updatedAt,
-  };
-}
-
-// Create a new club in the database (database-only)
-export async function createClub(payload, ownerId) {
-  const name = String(payload?.name || '').trim();
-  if (!name) throw new Error('Club name is required');
+// Create a new club
+export async function createClubService({ ownerId, name, description, tag, image }) {
+  if (!name) {
+    throw new Error('Club name is required');
+  }
 
   const club = await Club.create({
     name,
-    description: payload?.description || '',
-    location: payload?.location || '',
-    time: payload?.time || '',
-    imageUrl: payload?.imageUrl || '',
-    status: 'pending',  
-    clubOwner: ownerId,
-    members: [],        // empty array for members
+    description,
+    tag,
+    image,
+    owner: ownerId,
   });
 
-  return toClubDTO(club);
+  return club;
+}
 
-  //approveClub()
-  //rejectClub()
+// Get all clubs for a specific student (optional future use)
+export async function getClubsByOwner(ownerId) {
+  return Club.find({ owner: ownerId }).sort({ createdAt: -1 });
+}
+
+export async function getClubsService() {
+  const clubs = await Club.find().sort({ createdAt: -1 });
+  return clubs;
+}
+
+// Delete a club (only the owner can delete)
+export async function deleteClub(clubId, ownerId) {
+  const club = await Club.findOneAndDelete({
+    _id: clubId,
+    owner: ownerId,
+  });
+
+  return club;
+}
+
+export async function updateClubService(clubId, ownerId, data) {
+  const { name, description, tag, image } = data;
+
+  if (name !== undefined && name.trim() === '') {
+    throw new Error('Club name cannot be empty');
+  }
+
+  const updateFields = {};
+  if (name !== undefined) updateFields.name = name;
+  if (description !== undefined) updateFields.description = description;
+  if (tag !== undefined) updateFields.tag = tag;
+  if (image !== undefined) updateFields.image = image;
+
+  const club = await Club.findOneAndUpdate(
+    { _id: clubId, owner: ownerId }, // ensures only owner can edit
+    { $set: updateFields },
+    { new: true, runValidators: true }
+  );
+
+  // If club is null, either it doesn't exist or the user isn't the owner
+  return club;
 }

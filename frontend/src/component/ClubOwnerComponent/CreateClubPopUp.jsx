@@ -1,4 +1,3 @@
-// src/component/CreateClubPopUp.jsx
 import React from "react";
 
 /**
@@ -9,41 +8,89 @@ import React from "react";
  * @property {string} description
  * @property {('png'|null)} imageExt
  * @property {number|null} imageSize
- * @property {string} status           // 'pending' by default
- * @property {string} createdAt        // ISO string
+ * @property {string} status
+ * @property {string} createdAt
  */
 
-// simple, safe slug
+// simple slug
 const slugify = (s) =>
-  s.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  s
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 
-/** Build the minimal backend shape from UI inputs (no uploading here). */
-const buildClubDraft = ({ name, tag, description, imageFile }) =>
-  /** @type {ClubDraft} */ ({
-    name: name.trim(),
-    slug: slugify(name),
-    tag: tag.trim(),
-    description: description.trim(),
-    imageExt: imageFile ? "png" : null,       // we only accept PNGs
-    imageSize: imageFile?.size ?? null,       // bytes
-    status: "pending",                        // or 'draft' if you prefer
-    createdAt: new Date().toISOString(),
-  });
+// tag options as you had them
+const TAG_OPTIONS = [
+  "Academic",
+  "Arts",
+  "Culture",
+  "Career",
+  "Service",
+  "Social",
+  "Sports",
+  "Technology",
+  "Wellness",
+  "Leadership",
+  "Environmental",
+  "Hobbies",
+];
+
+// Build the backend object
+const buildClubDraft = ({ name, tag, description, imageFile }) => ({
+  // backend name stored as-is from caller (we pass lowercase below)
+  name: name.trim(),
+  slug: slugify(name),
+  tag: tag.trim(),
+  description: description.trim(),
+  imageExt: imageFile ? "png" : null,
+  imageSize: imageFile?.size ?? null,
+  status: "pending",
+  createdAt: new Date().toISOString(),
+});
 
 export default function CreateClubPopUp({
   onCancel = () => {},
   onCreate = () => {},
-  title = "Club Creation",
+  title = "Create Club",
   confirmText = "Create Club",
   cancelText = "Cancel",
+  // NEW: initial values for edit mode
+  initialName = "",
+  initialDescription = "",
+  initialTags = [],
+  initialImageUrl = "",
 }) {
-  const [name, setName] = React.useState("");
-  const [tag, setTag] = React.useState("");
-  const [imageUrl, setImageUrl] = React.useState("");   // preview URL
+  // raw = what user types (for display/title-style feel)
+  const [nameRaw, setNameRaw] = React.useState(initialName);
+  // name = normalized lowercase for backend/slug
+  const [name, setName] = React.useState(
+    initialName ? initialName.toLowerCase() : ""
+  );
+  const [nameWarning, setNameWarning] = React.useState("");
+  const [selectedTags, setSelectedTags] = React.useState(initialTags || []);
+  const [tagWarning, setTagWarning] = React.useState("");
+  const [imageUrl, setImageUrl] = React.useState(initialImageUrl || "");
   const [imageFile, setImageFile] = React.useState(null);
-  const [description, setDescription] = React.useState("");
+  const [description, setDescription] = React.useState(
+    initialDescription || ""
+  );
 
   const prevUrlRef = React.useRef(null);
+
+  // keep state in sync if initial props change (e.g. edit mode)
+  React.useEffect(() => {
+    setNameRaw(initialName);
+    setName(initialName ? initialName.toLowerCase() : "");
+  }, [initialName]);
+
+  React.useEffect(() => {
+    setDescription(initialDescription || "");
+  }, [initialDescription]);
+
+  React.useEffect(() => {
+    setImageUrl(initialImageUrl || "");
+  }, [initialImageUrl]);
 
   React.useEffect(() => {
     if (prevUrlRef.current && prevUrlRef.current !== imageUrl) {
@@ -59,34 +106,80 @@ export default function CreateClubPopUp({
     const file = e.target.files && e.target.files[0];
     if (!file) {
       setImageFile(null);
-      setImageUrl("");
+      setImageUrl(initialImageUrl || "");
       return;
     }
     if (file.type !== "image/png") {
       alert("Please select a PNG image (.png)");
       e.target.value = "";
-      setImageFile(null);
-      setImageUrl("");
       return;
     }
     setImageFile(file);
     setImageUrl(URL.createObjectURL(file));
   };
 
+  const handleNameChange = (e) => {
+    let raw = e.target.value;
+
+    if (raw.length > 25) {
+      raw = raw.slice(0, 25);
+      setNameWarning("Maximum 25 characters reached");
+    } else {
+      setNameWarning("");
+    }
+
+    // store what user sees
+    setNameRaw(raw);
+    // store lowercase for backend/slug
+    setName(raw.toLowerCase());
+  };
+
+  const handleTagSelect = (e) => {
+    const value = e.target.value;
+    if (!value) return;
+
+    if (selectedTags.includes(value)) {
+      setTagWarning("That tag is already selected.");
+      e.target.value = "";
+      return;
+    }
+
+    if (selectedTags.length >= 2) {
+      setTagWarning("You can only select 2 tags.");
+      e.target.value = "";
+      return;
+    }
+
+    setSelectedTags((prev) => [...prev, value]);
+    setTagWarning("");
+    e.target.value = "";
+  };
+
+  const handleRemoveTag = (tagToRemove) => {
+    setSelectedTags((prev) => prev.filter((t) => t !== tagToRemove));
+    setTagWarning("");
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // minimal backend-ready shape
-    const draft = buildClubDraft({ name, tag, description, imageFile });
+    const tagString = selectedTags.join(", ");
 
-    // keep your existing payload fields exactly the same, just add `draft`
-    onCreate({
-      name,
-      tag,
-      imageUrl,     // preview URL (optional downstream)
-      imageFile,    // actual file for upload later
+    const draft = buildClubDraft({
+      name, // lowercase version
+      tag: tagString,
       description,
-      draft,        // 👈 minimal DB/backend variables for later
+      imageFile,
+    });
+
+    onCreate({
+      // still sending lowercase name to consumer
+      name: name.toLowerCase(),
+      tag: tagString,
+      imageUrl,
+      imageFile,
+      description,
+      draft,
     });
   };
 
@@ -97,7 +190,8 @@ export default function CreateClubPopUp({
         maxHeight: "min(92vh, 922px)",
         background: "white",
         borderRadius: 15,
-        overflow: "hidden",
+        overflowX: "hidden",
+        overflowY: "auto",
         display: "flex",
         flexDirection: "column",
         boxShadow: "0 25px 60px rgba(0,0,0,.25)",
@@ -131,89 +225,264 @@ export default function CreateClubPopUp({
         </h1>
       </div>
 
-      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", flex: 1 }}>
+      <form
+        onSubmit={handleSubmit}
+        style={{ display: "flex", flexDirection: "column", flex: 1 }}
+      >
         <div style={{ padding: 20, display: "grid", rowGap: 18 }}>
-          {/* Club Name */}
-          <div style={{ display: "grid", rowGap: 8 }}>
-            <label htmlFor="club-name" style={{ color: "black", fontSize: 20, fontWeight: 400 }}>
-              Club Name
-            </label>
-            <div className="search-input-wrap" style={{ border: "1.5px #EEEEEE solid", borderRadius: 10, height: 50, display: "flex", alignItems: "center", padding: "0 10px" }}>
+          {/* Name */}
+          <div style={{ display: "grid", rowGap: 4 }}>
+            <label style={{ color: "black", fontSize: 20 }}>Club Name</label>
+
+            <div
+              style={{
+                border: "1.5px #EEEEEE solid",
+                borderRadius: 10,
+                height: 50,
+                display: "flex",
+                alignItems: "center",
+                padding: "0 10px",
+              }}
+            >
               <input
-                id="club-name"
                 type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Enter club name"
-                style={{ width: "100%", height: 36, border: "none", outline: "none", fontWeight: 700, fontSize: 17, color: "#2A2A2A", background: "transparent" }}
+                value={nameRaw}
+                onChange={handleNameChange}
+                style={{
+                  width: "100%",
+                  height: 36,
+                  border: "none",
+                  outline: "none",
+                  fontWeight: 700,
+                  fontSize: 17,
+                  color: "#2A2A2A",
+                  background: "transparent",
+                }}
               />
+            </div>
+
+            <div
+              style={{
+                fontSize: 12,
+                marginTop: 2,
+                color: nameWarning ? "#D32F2F" : "#888",
+              }}
+            >
+              {nameWarning || `${25 - nameRaw.length} characters remaining`}
             </div>
           </div>
 
-          {/* Club Image (PNG upload) */}
+          {/* Image */}
           <div style={{ display: "grid", rowGap: 8 }}>
-            <label htmlFor="club-image" style={{ color: "black", fontSize: 20, fontWeight: 400 }}>
-              Club Image (PNG)
-            </label>
-            <div className="search-input-wrap" style={{ border: "1.5px #EEEEEE solid", borderRadius: 10, minHeight: 50, display: "flex", alignItems: "center", padding: "0 10px", gap: 10 }}>
+            <label style={{ color: "black", fontSize: 20 }}>Club Image</label>
+
+            <div
+              style={{
+                border: "1.5px #EEEEEE solid",
+                borderRadius: 10,
+                minHeight: 50,
+                display: "flex",
+                alignItems: "center",
+                padding: "0 10px",
+                gap: 10,
+              }}
+            >
               <input
-                id="club-image"
                 type="file"
-                accept="image/png,.png"
+                name="image"
+                accept="image/png"
                 onChange={handleFileChange}
-                style={{ flex: 1, border: "none", outline: "none", background: "transparent" }}
+                style={{
+                  flex: 1,
+                  border: "none",
+                  outline: "none",
+                  background: "transparent",
+                }}
               />
             </div>
+
             {imageUrl && (
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <img src={imageUrl} alt="Selected club preview" style={{ width: 64, height: 64, objectFit: "cover", borderRadius: 8, background: "#F0F0F0" }} />
-                <div style={{ color: "#707070", fontSize: 14 }}>{imageFile?.name || "selected.png"}</div>
+                <img
+                  src={imageUrl}
+                  alt="club preview"
+                  style={{
+                    width: 64,
+                    height: 64,
+                    objectFit: "cover",
+                    borderRadius: 8,
+                    background: "#F0F0F0",
+                  }}
+                />
+                <div style={{ color: "#707070", fontSize: 14 }}>
+                  {imageFile?.name}
+                </div>
               </div>
             )}
           </div>
 
-          {/* Tag */}
-          <div style={{ display: "grid", rowGap: 8 }}>
-            <label htmlFor="club-tag" style={{ color: "black", fontSize: 20, fontWeight: 400 }}>
-              Tag
-            </label>
-            <div className="search-input-wrap" style={{ border: "1.5px #EEEEEE solid", borderRadius: 10, height: 50, display: "flex", alignItems: "center", padding: "0 10px" }}>
-              <input
-                id="club-tag"
-                type="text"
-                value={tag}
-                onChange={(e) => setTag(e.target.value)}
-                placeholder="Enter Tag"
-                style={{ width: "100%", height: 36, border: "none", outline: "none", fontWeight: 700, fontSize: 17, color: "#2A2A2A", background: "transparent" }}
-              />
+          {/* Tags */}
+          <div style={{ display: "grid", rowGap: 6 }}>
+            <label style={{ color: "black", fontSize: 20 }}>Tags</label>
+
+            <div style={{ display: "flex", gap: 10 }}>
+              <div
+                style={{
+                  border: "1px solid #ddd",
+                  borderRadius: 6,
+                  padding: "2px 6px",
+                  display: "inline-flex",
+                  maxWidth: "50%",
+                }}
+              >
+                <select
+                  onChange={handleTagSelect}
+                  defaultValue=""
+                  style={{
+                    height: 28,
+                    border: "none",
+                    outline: "none",
+                    fontSize: 13,
+                    fontWeight: 600,
+                    background: "transparent",
+                    cursor: "pointer",
+                  }}
+                >
+                  <option value="" disabled>
+                    select 2 tags
+                  </option>
+
+                  {TAG_OPTIONS.map((tag) => (
+                    <option key={tag} value={tag}>
+                      {tag}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div
+                style={{
+                  flex: 1,
+                  display: "flex",
+                  flexWrap: "wrap",
+                  gap: 6,
+                  maxHeight: 90,
+                  overflowY: "auto",
+                }}
+              >
+                {selectedTags.length === 0 ? (
+                  <div style={{ fontSize: 12, color: "#888" }} />
+                ) : (
+                  selectedTags.map((tag) => (
+                    <div
+                      key={tag}
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: 4,
+                        padding: "4px 8px",
+                        borderRadius: 999,
+                        background: "#F0F4F8",
+                        border: "1px solid #E0E4EA",
+                        fontSize: 12,
+                        fontWeight: 600,
+                      }}
+                    >
+                      <span>{tag}</span>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveTag(tag)}
+                        style={{
+                          border: "none",
+                          background: "transparent",
+                          cursor: "pointer",
+                          fontWeight: 700,
+                        }}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))
+                )}
+              </div>
             </div>
+
+            {tagWarning && (
+              <div style={{ fontSize: 12, color: "#D32F2F" }}>
+                {tagWarning}
+              </div>
+            )}
           </div>
 
           {/* Description */}
           <div style={{ display: "grid", rowGap: 8 }}>
-            <label htmlFor="club-desc" style={{ color: "black", fontSize: 20, fontWeight: 400 }}>
-              Description
-            </label>
-            <div className="search-input-wrap" style={{ border: "1.5px #EEEEEE solid", borderRadius: 10, minHeight: 120, padding: "8px 10px" }}>
+            <label style={{ color: "black", fontSize: 20 }}>Description</label>
+
+            <div
+              style={{
+                border: "1.5px #EEEEEE solid",
+                borderRadius: 10,
+                minHeight: 120,
+                padding: "8px 10px",
+              }}
+            >
               <textarea
-                id="club-desc"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="Enter club description"
                 rows={6}
-                style={{ width: "100%", border: "none", outline: "none", resize: "vertical", fontWeight: 700, fontSize: 17, color: "#2A2A2A", background: "transparent" }}
+                style={{
+                  width: "100%",
+                  border: "none",
+                  outline: "none",
+                  resize: "vertical",
+                  fontWeight: 700,
+                  fontSize: 17,
+                  color: "#2A2A2A",
+                  background: "transparent",
+                }}
               />
             </div>
           </div>
         </div>
 
-        <div className="hr" style={{ margin: "0 20px 12px 20px" }} />
+        {/* Footer buttons */}
+        <div style={{ margin: "0 20px 12px 20px" }} className="hr" />
 
-        <div style={{ display: "flex", gap: 12, justifyContent: "space-between", padding: "0 20px 20px 20px", flexWrap: "wrap" }}>
-          <button type="button" onClick={onCancel} style={{ width: 199, height: 55, borderRadius: 8, background: "#E1E1E3", color: "#6B6767", fontSize: 24, fontWeight: 700 }}>
+        <div
+          style={{
+            display: "flex",
+            gap: 12,
+            justifyContent: "space-between",
+            padding: "0 20px 20px 20px",
+            flexWrap: "wrap",
+          }}
+        >
+          <button
+            type="button"
+            onClick={onCancel}
+            style={{
+              width: 199,
+              height: 55,
+              borderRadius: 8,
+              background: "#E1E1E3",
+              color: "#6B6767",
+              fontSize: 24,
+              fontWeight: 700,
+            }}
+          >
             {cancelText}
           </button>
-          <button type="submit" className="btn-primary" style={{ width: 209, height: 53, borderRadius: 8, fontSize: 24 }}>
+
+          <button
+            type="submit"
+            className="btn-primary"
+            style={{
+              width: 209,
+              height: 53,
+              borderRadius: 8,
+              fontSize: 24,
+            }}
+          >
             {confirmText}
           </button>
         </div>

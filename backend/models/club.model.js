@@ -1,22 +1,49 @@
+// models/club.model.js
 import mongoose from 'mongoose';
 
-const clubSchema = new mongoose.Schema({
-  name: { type: String, required: true, unique: true, trim: true },
-  description: { type: String, default: '' },
-  location: { type: String, default: '' },
-  time: { type: String, default: '' },
-  imageUrl: { type: String, default: '' },
+const clubSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+    },
 
-  // approval flow
-  status: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending', index: true },
+    // Store image as a URL or filename (PNG on the frontend)
+    image: {
+      type: String,
+      default: '', // e.g. '/uploads/my-club.png' or a Cloudinary URL
+    },
 
-  // membership embedded as IDs
-  members: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Student', index: true }],
+    tag: {
+      type: String,
+      default: '',
+      trim: true,
+    },
 
-  clubOwner: { type: mongoose.Schema.Types.ObjectId, ref: 'Student', required: true, index: true },
-}, { timestamps: true });
+    description: {
+      type: String,
+      default: '',
+      trim: true,
+    },
 
+    owner: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Student',
+      required: true,
+    },
+
+    status: {
+      type: String,
+      enum: ['pending', 'approved'],
+      default: 'pending',
+      required: true,
+    },
+  },
+  {
+    timestamps: true, // createdAt / updatedAt
+  }
+);
 
 const Club = mongoose.model('Club', clubSchema);
-
 export default Club;
