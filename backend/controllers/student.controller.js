@@ -1,4 +1,6 @@
 import AuthService from '../services/auth.service.js';
+import student from '../models/student.model.js';
+import mongoose from 'mongoose';
 
 export const registerStudent = async (req, res) => {
   console.log("Request body:", req.body);
@@ -29,5 +31,58 @@ export const loginStudent = async (req, res) => {
     res.json(result);
   } catch (err) {
     res.status(400).json({ message: err.message });
+  }
+};
+
+export const getAllStudents = async (req, res) => {
+  const students = await student.find({});
+  return res.json(students);
+};
+
+export const deleteStudent = async (req, res) => {
+  const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).json({ success: false, message: "Invalid Student Id" });
+  }
+  try {
+    const deletedStudent = await student.findByIdAndDelete(id);
+    if (!deletedStudent) {
+      return res.status(404).json({ success: false, message: "Student not found" });
+    }
+
+    res.status(200).json({ success: true, message: "Student deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Server Error" });
+  }
+};
+
+export const updateStudentRole = async (req, res) => {
+  const { id } = req.params;
+  const { role } = req.body;
+
+  if (!role) {
+    return res.status(400).json({ success: false, message: 'Role is required' });
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).json({ success: false, message: "Invalid Student Id" });
+  }
+
+  try {
+    const updated = await student.findByIdAndUpdate(
+      id,
+      { $set: { role } },
+      { new: true }
+    );
+
+    if (!updated) {
+      return res.status(404).json({ success: false, message: 'Student not found' });
+    }
+
+    return res.status(200).json({ success: true, message: 'Role updated', student: updated });
+  } catch (error) {
+    console.error('Error updating role:', error);
+    return res.status(500).json({ success: false, message: 'Server error' });
   }
 };

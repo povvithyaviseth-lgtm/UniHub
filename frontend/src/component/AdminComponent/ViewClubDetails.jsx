@@ -27,21 +27,21 @@ import { useState } from "react";
 import { ConfirmApproveClub, ConfirmDenyClub } from "../ConfimButton.jsx";
 
 export const ViewClubDetails = ({ name, img, description, tag, onClose, status, onApprove }) => {
-  const [showConfirm, setShowConfirm] = useState(false);
+  // which action is being confirmed: 'approve' | 'deny' | null
+  const [confirmAction, setConfirmAction] = useState(null);
 
-  const handleApproveClick = () => {
-    setShowConfirm(true);
-  };
+  const handleApproveClick = () => setConfirmAction('approve');
+  const handleDenyClick = () => setConfirmAction('deny');
 
   const handleConfirmApprove = async () => {
     await onApprove("approved");
-    setShowConfirm(false);
+    setConfirmAction(null);
     onClose();
   };
 
   const handleConfirmDeny = async () => {
     await onApprove("denied");
-    setShowConfirm(false);
+    setConfirmAction(null);
     onClose();
   };
 
@@ -66,13 +66,13 @@ export const ViewClubDetails = ({ name, img, description, tag, onClose, status, 
         </div>
 
         {/* Deny button */}
-        <div style={denyBtnWrapper} onClick={() => setShowConfirm(true)}>
+        <div style={denyBtnWrapper} onClick={handleDenyClick}>
           <div style={denyBtnBg} />
           <div style={denyBtnText}>Deny Club</div>
         </div>
 
         {/* Approve button */}
-        <div style={approveBtnWrapper} onClick={() => setShowConfirm(true)}>
+        <div style={approveBtnWrapper} onClick={handleApproveClick}>
           <div style={approveBtnBg} />
           <div style={approveBtnText}>Approve Club</div>
         </div>
@@ -97,20 +97,20 @@ export const ViewClubDetails = ({ name, img, description, tag, onClose, status, 
         </div>
       </div>
 
-      {/* Confirmation popup */}
-      {showConfirm && (
+      {/* Confirmation popup: render only the requested action */}
+      {confirmAction === 'approve' && (
         <ConfirmApproveClub
-          onCancel={() => setShowConfirm(false)}
+          onCancel={() => setConfirmAction(null)}
           onConfirm={handleConfirmApprove}
         />
       )}
-      
-      {showConfirm && (
+
+      {confirmAction === 'deny' && (
         <ConfirmDenyClub
-          onCancel={() => setShowConfirm(false)}
+          onCancel={() => setConfirmAction(null)}
           onConfirm={handleConfirmDeny}
         />
-      )} 
+      )}
     </div>
   );
 };

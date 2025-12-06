@@ -6,6 +6,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
+      // Backend listens on 5050 in this project
       '/api': 'http://localhost:5050',
     },
   },

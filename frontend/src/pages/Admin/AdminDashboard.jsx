@@ -12,7 +12,7 @@ import {
 import { activeBtn, unActiveBtn, signoutBtn } from "../../style/ButtonStyle.jsx";
 import ApproveClub from "../../component/AdminComponent/ApproveClub.jsx";
 import DeleteClub from "../../component/AdminComponent/DeleteClub.jsx";
-
+import ManageAccount from "../../component/AdminComponent/ManageAccount.jsx";
 const AdminDashboard = () => {
 
   const [activationStatus, setActivationStatus] = useState("Approval");
@@ -41,6 +41,7 @@ const AdminDashboard = () => {
       {/* Main Content */}
       {activationStatus == "Approval" && <ApproveClub/>}
       {activationStatus == "Delete" && <DeleteClub/>}
+      {activationStatus == "ManageAccount" && <ManageAccount/>}
       
     </div>
   );

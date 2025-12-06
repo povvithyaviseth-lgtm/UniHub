@@ -30,7 +30,7 @@ export default function DeleteClub() {
 
   const handleDeleteClub = async (id) => {
     try {
-      const response = await fetch("http://localhost:5050/api/clubs/delete/" + id, {
+      const response = await fetch("http://localhost:5050/api/admins/deleteClub/" + id, {
         method: "DELETE",
       });
       if (!response.ok) {
