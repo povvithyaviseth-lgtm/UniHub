@@ -15,18 +15,9 @@ const clubMembershipSchema = new Schema(
       ref: 'Club',
       required: true,
     },
-    status: {
-      type: String,
-      enum: ['active', 'left'],
-      default: 'active',
-    },
     joinedAt: {
       type: Date,
       default: Date.now,
-    },
-    leftAt: {
-      type: Date,
-      default: null,
     },
   },
   {
@@ -34,7 +25,7 @@ const clubMembershipSchema = new Schema(
   }
 );
 
-// Prevent duplicate membership per student+club
+// prevent duplicate membership per student+club
 clubMembershipSchema.index({ student: 1, club: 1 }, { unique: true });
 
 const ClubMembership = mongoose.model('ClubMembership', clubMembershipSchema);

@@ -2,7 +2,7 @@
 import React, {
   useEffect,
   useMemo,
-  useState,
+  useState, 
   useCallback,
   useRef,
 } from "react";
@@ -20,6 +20,12 @@ import PopUpModals from "../../component/PopUpModals.jsx";
 import ConfirmDialog from "../../component/ConfirmDialog.jsx";
 import Profile from "../../component/StudentComponent/Profile.jsx";
 import EditProfile from "../../component/StudentComponent/EditProfile.jsx";
+
+// 🔐 student auth store
+import { useStudentStore } from "../../store/student";
+
+// ✅ backend base URL
+const API_BASE = "http://localhost:5050";
 
 /* ----------------------------- Scale helper ----------------------------- */
 /** Scales fixed-width children to fit the container width (<= maxScale). */
@@ -104,7 +110,7 @@ const PlaceholderImage = ({ width, height, style = {} }) => (
 );
 
 /** ------------------------------ Club Modal ------------------------------ */
-const ClubModal = ({ club, onClose }) => {
+const ClubModal = ({ club, onClose, onJoin }) => {
   const leader = club.leader || "Club Leader (TBD)";
   const email = club.email || "club@example.edu";
 
@@ -117,6 +123,11 @@ const ClubModal = ({ club, onClose }) => {
     document.addEventListener("keydown", onEsc);
     return () => document.removeEventListener("keydown", onEsc);
   }, [onEsc]);
+
+  const handleJoinClick = async () => {
+    if (!onJoin) return;
+    await onJoin(club);
+  };
 
   return (
     <div
@@ -277,7 +288,7 @@ const ClubModal = ({ club, onClose }) => {
           <button
             className="btn-primary"
             style={{ width: 258, height: 67, borderRadius: 8 }}
-            onClick={() => alert(`Requested to join "${club.name}"`)}
+            onClick={handleJoinClick}
           >
             Join Club
           </button>
@@ -310,11 +321,16 @@ const ClubModal = ({ club, onClose }) => {
  * Minimal, structured homepage ClubCard:
  * - Base: image + name
  * - Hover overlay: header (name + tags), description, join flow
- * - Join → "Let's go!" + "Cancel" → "Club joined!"
+ * - If already joined, show "Club joined!" straight away on hover
  */
-const ClubCard = ({ club, onCardClick, onJoin }) => {
+const ClubCard = ({ club, onCardClick, onJoin, isJoined }) => {
   const [hovered, setHovered] = useState(false);
-  const [joinState, setJoinState] = useState("idle"); // 'idle' | 'confirm' | 'joined'
+  const [joinState, setJoinState] = useState(isJoined ? "joined" : "idle"); // 'idle' | 'confirm' | 'joined'
+
+  // keep internal state in sync with prop
+  useEffect(() => {
+    setJoinState(isJoined ? "joined" : "idle");
+  }, [isJoined]);
 
   const imageSrc = club.imageUrl || null;
 
@@ -325,19 +341,26 @@ const ClubCard = ({ club, onCardClick, onJoin }) => {
     .map((t) => t.trim())
     .filter(Boolean);
 
-  const handleCardClick = () => {
-    if (onCardClick) onCardClick(club);
-  };
-
   const handleJoinClick = (e) => {
     e.stopPropagation();
     setJoinState("confirm");
   };
 
-  const handleLetsGoClick = (e) => {
+  const handleLetsGoClick = async (e) => {
     e.stopPropagation();
-    setJoinState("joined");
-    if (onJoin) onJoin(club);
+
+    if (!onJoin) {
+      setJoinState("joined");
+      return;
+    }
+
+    const ok = await onJoin(club);
+    if (ok) {
+      setJoinState("joined");
+    } else {
+      // revert back if join failed
+      setJoinState("idle");
+    }
   };
 
   const handleCancelClick = (e) => {
@@ -368,7 +391,6 @@ const ClubCard = ({ club, onCardClick, onJoin }) => {
       aria-label={`${club.name} card`}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      onClick={handleCardClick}
     >
       {/* Base content: image + name */}
       <div>
@@ -541,8 +563,7 @@ const ClubCard = ({ club, onCardClick, onJoin }) => {
                 textTransform: "uppercase",
                 letterSpacing: 0.05,
               }}
-            >
-            </span>
+            ></span>
 
             <div
               style={{
@@ -629,7 +650,6 @@ const ClubCard = ({ club, onCardClick, onJoin }) => {
     </article>
   );
 };
-
 
 /** ------------------------------- Event Card ----------------------------- */
 const EventCard = ({ event }) => {
@@ -852,9 +872,11 @@ const CATEGORIES = [
   "Environmental",
   "Hobbies",
 ];
+
 /** --------------------------------- Page --------------------------------- */
 const HomePage = () => {
   const navigate = useNavigate();
+  const token = useStudentStore((s) => s.token);
 
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All Clubs");
@@ -864,6 +886,9 @@ const HomePage = () => {
   const [clubs, setClubs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  // Which clubs this student has joined
+  const [joinedClubIds, setJoinedClubIds] = useState([]);
 
   // Profile & EditProfile popups
   const [profileOpen, setProfileOpen] = useState(false);
@@ -875,15 +900,15 @@ const HomePage = () => {
   const [confirmMessage, setConfirmMessage] = useState("");
   const confirmActionRef = useRef(() => {});
 
-  // 🔄 New: section refs for scroll
+  // 🔄 section refs for scroll
   const clubsSectionRef = useRef(null);
   const eventsSectionRef = useRef(null);
 
-  // 🔄 New: responsive columns + "see more" state
+  // 🔄 responsive columns + "see more" state
   const [columns, setColumns] = useState(3);
   const [showAllClubs, setShowAllClubs] = useState(false);
 
-  // 🔄 New: update columns based on viewport
+  // 🔄 update columns based on viewport
   useEffect(() => {
     const updateColumns = () => {
       const width = window.innerWidth;
@@ -915,7 +940,7 @@ const HomePage = () => {
         setLoading(true);
         setError("");
 
-        const res = await fetch("http://localhost:5050/api/clubs");
+        const res = await fetch(`${API_BASE}/api/clubs`);
         if (!res.ok) {
           throw new Error(`Failed to load clubs (status ${res.status})`);
         }
@@ -931,7 +956,7 @@ const HomePage = () => {
           description: c.description || "",
           tag: c.tag || "Other",
           imageUrl: c.image
-            ? `http://localhost:5050/${c.image.replace(/^\/+/, "")}`
+            ? `${API_BASE}/${c.image.replace(/^\/+/, "")}`
             : null,
           status: c.status || (c.approved ? "approved" : "pending"),
           leader: c.leader,
@@ -949,6 +974,35 @@ const HomePage = () => {
 
     fetchClubs();
   }, []);
+
+  // 🔥 Fetch joined clubs on mount / when token changes
+  useEffect(() => {
+    if (!token) return;
+
+    const fetchJoinedClubs = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/api/clubs/joined`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await res.json().catch(() => ({}));
+
+        if (!res.ok) {
+          console.error("Failed to fetch joined clubs", data);
+          return;
+        }
+
+        const clubs = data.clubs || [];
+        setJoinedClubIds(clubs.map((c) => c._id || c.id));
+      } catch (err) {
+        console.error("Error fetching joined clubs", err);
+      }
+    };
+
+    fetchJoinedClubs();
+  }, [token]);
 
   const approvedClubs = useMemo(
     () =>
@@ -979,7 +1033,7 @@ const HomePage = () => {
     });
   }, [approvedClubs, search, category]);
 
-  // 🔄 New: only show first 12 clubs unless "See more" clicked
+  // 🔄 only show first 12 clubs unless "See more" clicked
   const visibleClubs = useMemo(() => {
     if (showAllClubs) return filteredClubs;
     return filteredClubs.slice(0, 12); // 4 rows * 3 cards
@@ -996,7 +1050,7 @@ const HomePage = () => {
     setConfirmTitle("Leave Club?");
     setConfirmMessage(`Are you sure you want to leave "${clubName}"?`);
     confirmActionRef.current = async () => {
-      // TODO: call your API to remove the user from the club
+      // TODO: integrate leave API once Profile uses real club IDs
       setConfirmOpen(false);
     };
     setConfirmOpen(true);
@@ -1008,8 +1062,53 @@ const HomePage = () => {
     navigate("/console/clubs");
   }, [navigate]);
 
-  // ✅ called when user confirms "Let's go" on a card
-  const handleJoinClub = (club) => {};
+  // ✅ called when user confirms "Let's go" on a card OR clicks "Join Club" in modal
+  const handleJoinClub = useCallback(
+    async (club) => {
+      if (!token) {
+        navigate("/login");
+        return false;
+      }
+
+      const clubId = club._id || club.id;
+      if (!clubId) {
+        console.error("Club has no id:", club);
+        alert("Cannot join this club: missing ID.");
+        return false;
+      }
+
+      try {
+        const res = await fetch(`${API_BASE}/api/clubs/${clubId}/join`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await res.json().catch(() => ({}));
+
+        if (!res.ok) {
+          console.error("Join failed:", data);
+          alert(data.message || "Could not join club");
+          return false;
+        }
+
+        // ✅ mark this club as joined in state
+        setJoinedClubIds((prev) =>
+          prev.includes(clubId) ? prev : [...prev, clubId]
+        );
+
+        console.log("Joined club:", data);
+        return true;
+      } catch (err) {
+        console.error("Error joining club:", err);
+        alert("Network error joining club");
+        return false;
+      }
+    },
+    [token, navigate]
+  );
 
   return (
     <div
@@ -1469,13 +1568,20 @@ const HomePage = () => {
                       justifyItems: "center",
                     }}
                   >
-                    {visibleClubs.map((club) => (
-                      <ClubCard
-                        key={club.id}
-                        club={club}
-                        onCardClick={setOpenClub}
-                      />
-                    ))}
+                    {visibleClubs.map((club) => {
+                      const clubId = club._id || club.id;
+                      const isJoined = joinedClubIds.includes(clubId);
+
+                      return (
+                        <ClubCard
+                          key={club.id}
+                          club={club}
+                          onCardClick={setOpenClub}
+                          onJoin={handleJoinClub}
+                          isJoined={isJoined}
+                        />
+                      );
+                    })}
                   </div>
 
                   {/* 🔄 "See more clubs" after 4 rows of 3 cards */}
@@ -1565,7 +1671,14 @@ const HomePage = () => {
 
       {/* Club details modal */}
       {openClub && (
-        <ClubModal club={openClub} onClose={() => setOpenClub(null)} />
+        <ClubModal
+          club={openClub}
+          onClose={() => setOpenClub(null)}
+          onJoin={async (club) => {
+            const ok = await handleJoinClub(club);
+            if (ok) setOpenClub(null);
+          }}
+        />
       )}
 
       {/* PROFILE popup */}

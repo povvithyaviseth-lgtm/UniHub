@@ -1,72 +1,99 @@
-// src/components/Profile.jsx (or src/pages/Profile.jsx)
-import React from "react";
+import React, { useEffect, useState } from "react";
 import closeImg from "../../images/Close.png";
-import { useStudentStore } from "../../store/student"; 
+import { useStudentStore } from "../../store/student";
 import { useNavigate } from "react-router-dom";
+
+const API_BASE = "http://localhost:5050";
 
 export default function Profile({
   onClose = () => {},
   onEditProfile = () => {},
-  onLeaveClub = () => {},
   onManageClub = () => {},
 }) {
-  const { student, isAuthenticated } = useStudentStore();
+  const { student, isAuthenticated, token } = useStudentStore();
   const logout = useStudentStore((s) => s.logout);
   const navigate = useNavigate();
 
+  const [joinedClubs, setJoinedClubs] = useState([]);
+  const [leaveModeClubId, setLeaveModeClubId] = useState(null); // which club is in “get outta here” mode
+
+  // fetch real clubs the user joined
+  useEffect(() => {
+    const loadJoinedClubs = async () => {
+      if (!token) return;
+
+      try {
+        const res = await fetch(`${API_BASE}/api/clubs/joined`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          setJoinedClubs(data.clubs || []);
+        }
+      } catch (err) {
+        console.error("Error loading joined clubs:", err);
+      }
+    };
+
+    loadJoinedClubs();
+  }, [token]);
+
   const handleLogout = () => {
-    logout();            // clear store + localStorage
-    navigate("/");  // redirect to login page
+    logout();
+    navigate("/");
   };
 
-  // Fallback if somehow not hydrated / not logged in
+  // Handle leave request
+  const handleLeaveClub = async (clubId) => {
+    try {
+      const res = await fetch(`${API_BASE}/api/clubs/${clubId}/leave`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        // remove from UI list
+        setJoinedClubs((prev) => prev.filter((c) => c._id !== clubId));
+        setLeaveModeClubId(null);
+      } else {
+        alert(data.message || "Failed to leave club");
+      }
+    } catch (err) {
+      console.error("Error leaving club:", err);
+      alert("Network error");
+    }
+  };
+
+  // Name + Email fallback
   const email = student?.email || "";
   const role = student?.role || "";
   const userName =
-    student?.name ||
-    (email ? email.split("@")[0] : "Unknown User");
+    student?.name || (email ? email.split("@")[0] : "Unknown User");
 
   const initials = React.useMemo(() => {
     const source = userName || email || "";
-    if (!source) return "";
     const parts = source
-      .replace(/@.*/, "") // strip domain if email-like
+      .replace(/@.*/, "")
       .split(/[.\s_-]+/)
       .filter(Boolean);
-    if (parts.length === 0) return "";
     if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
     return (parts[0][0] + parts[1][0]).toUpperCase();
   }, [userName, email]);
 
   const isClubOwner = role === "club owner";
 
-  const clubs = React.useMemo(
-    () => [
-      "Robotics Club",
-      "Hiking Club",
-      "Club",
-      "Club",
-      "Club",
-      "Club",
-      "Another Club",
-      "And One More",
-    ],
-    []
-  );
-
-  const events = React.useMemo(
-    () => [
-      "Watch the Minecraft Movie",
-      "Run the 10k Marathon",
-      "Book Club Monthly Meeting",
-      "Book Club Monthly Meeting",
-      "Book Club Monthly Meeting",
-      "Book Club Monthly Meeting",
-      "Extra Event A",
-      "Extra Event B",
-    ],
-    []
-  );
+  // 🔹 nice, short label instead of long role text
+  const roleLabel =
+    role === "club owner"
+      ? "Club Owner"
+      : role === "admin"
+      ? "Admin"
+      : role || "";
 
   return (
     <div
@@ -91,7 +118,6 @@ export default function Profile({
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          gap: 12,
         }}
       >
         <h2
@@ -112,13 +138,9 @@ export default function Profile({
           style={{
             width: 40,
             height: 40,
-            padding: 0,
             background: "transparent",
             border: "none",
             cursor: "pointer",
-            display: "inline-flex",
-            alignItems: "center",
-            justifyContent: "center",
           }}
         >
           <img
@@ -129,14 +151,12 @@ export default function Profile({
               height: "100%",
               objectFit: "contain",
               filter: "brightness(0.7) contrast(1.1)",
-              pointerEvents: "none",
             }}
-            draggable={false}
           />
         </button>
       </div>
 
-      {/* Identity + account actions */}
+      {/* Identity */}
       <div
         style={{
           padding: 20,
@@ -155,15 +175,8 @@ export default function Profile({
             justifyContent: "space-between",
           }}
         >
-          {/* Avatar + name/email */}
-          <div
-            style={{
-              display: "flex",
-              gap: 16,
-              alignItems: "center",
-              flex: 1,
-            }}
-          >
+          {/* Avatar */}
+          <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
             <div
               style={{
                 width: 64,
@@ -177,70 +190,44 @@ export default function Profile({
                 fontSize: 24,
                 fontWeight: 700,
                 color: "#00550A",
-                flexShrink: 0,
               }}
             >
-              {initials || "?"}
+              {initials}
             </div>
 
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 4,
-                minWidth: 0,
-              }}
-            >
+            <div style={{ display: "flex", flexDirection: "column" }}>
               <div
                 style={{
                   fontSize: 20,
                   fontWeight: 700,
                   color: "#111827",
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
                 }}
-                title={userName}
               >
                 {userName}
               </div>
-              <div
-                style={{
-                  fontSize: 14,
-                  fontWeight: 500,
-                  color: "#6B7280",
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                }}
-                title={email}
-              >
-                {email || "No email"}
-              </div>
-              {role && (
+              <div style={{ fontSize: 14, color: "#6B7280" }}>{email}</div>
+
+              {roleLabel && (
                 <span
                   style={{
                     marginTop: 4,
-                    display: "inline-flex",
-                    alignItems: "center",
                     alignSelf: "flex-start",
-                    padding: "2px 8px",
+                    padding: "2px 6px",
                     borderRadius: 999,
                     border: "1px solid #E5E7EB",
-                    fontSize: 11,
-                    textTransform: "uppercase",
-                    letterSpacing: 0.04,
+                    fontSize: 10,
+                    background: "#F3F4F6",
                     color: "#4B5563",
-                    background: "#F9FAFB",
+                    lineHeight: 1.3,
                   }}
                 >
-                  {role}
+                  {roleLabel}
                 </span>
               )}
             </div>
           </div>
 
-          {/* Manage button: only for club owners */}
+          {/* Manage button */}
           {isClubOwner && (
             <button
               className="btn-primary"
@@ -254,7 +241,6 @@ export default function Profile({
                 fontSize: 14,
                 fontWeight: 600,
                 cursor: "pointer",
-                whiteSpace: "nowrap",
               }}
             >
               Manage Your Club
@@ -262,35 +248,27 @@ export default function Profile({
           )}
         </div>
 
-        {/* Account settings row */}
+        {/* Settings */}
         <div
           style={{
             marginTop: 8,
             display: "flex",
-            alignItems: "center",
             justifyContent: "space-between",
-            gap: 8,
           }}
         >
-          <span
-            style={{
-              fontSize: 14,
-              color: "#6B7280",
-            }}
-          >
+          <span style={{ fontSize: 14, color: "#6B7280" }}>
             Account Settings
           </span>
           <button
             className="btn-link"
             onClick={onEditProfile}
             style={{
-              padding: 0,
               background: "none",
               border: "none",
-              fontSize: 14,
-              fontWeight: 600,
               color: "#009C6A",
+              fontSize: 14,
               cursor: "pointer",
+              fontWeight: 600,
             }}
           >
             Edit Profile
@@ -300,125 +278,97 @@ export default function Profile({
 
       {/* My Clubs */}
       <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "baseline",
-          }}
-        >
-          <h3
-            style={{
-              margin: 0,
-              fontSize: 18,
-              fontWeight: 700,
-              color: "#111827",
-            }}
-          >
-            My Clubs
-          </h3>
-        </div>
-
-        <div
-          aria-label="My Clubs"
-          style={{
-            borderRadius: 12,
-            border: "1px solid #E5E7EB",
-            background: "#F9FAFB",
-            maxHeight: 160,
-            overflowY: "auto",
-            padding: 12,
-            display: "flex",
-            flexDirection: "column",
-            gap: 4,
-          }}
-        >
-          {clubs.map((name, i) => (
-            <div
-              key={i}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                gap: 8,
-                padding: "6px 4px",
-              }}
-            >
-              <span
-                style={{
-                  fontSize: 15,
-                  color: "#111827",
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                }}
-              >
-                {name}
-              </span>
-              <button
-                className="btn-link"
-                onClick={() => onLeaveClub(name)}
-                style={{
-                  padding: "4px 8px",
-                  fontSize: 13,
-                  borderRadius: 999,
-                  border: "1px solid #FCA5A5",
-                  background: "rgba(254, 242, 242, 0.9)",
-                  color: "#DC2626",
-                  cursor: "pointer",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                Leave
-              </button>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* My Events */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-        <h3
-          style={{
-            margin: 0,
-            fontSize: 18,
-            fontWeight: 700,
-            color: "#111827",
-          }}
-        >
-          My Events
+        <h3 style={{ margin: 0, fontSize: 18, fontWeight: 700 }}>
+          My Clubs
         </h3>
 
         <div
-          aria-label="My Events"
           style={{
             borderRadius: 12,
             border: "1px solid #E5E7EB",
             background: "#F9FAFB",
-            maxHeight: 160,
+            maxHeight: 200,
             overflowY: "auto",
             padding: 12,
             display: "flex",
             flexDirection: "column",
-            gap: 8,
+            gap: 6,
           }}
         >
-          {events.map((event, i) => (
-            <div
-              key={i}
-              className="panel-cta"
-              style={{
-                padding: "8px 10px",
-                borderRadius: 8,
-                background: "#ffffff",
-                border: "1px solid #E5E7EB",
-                fontSize: 14,
-                color: "#111827",
-              }}
-            >
-              {event}
+          {joinedClubs.length === 0 && (
+            <div style={{ color: "#6B7280", fontSize: 14 }}>
+              You have not joined any clubs yet.
             </div>
-          ))}
+          )}
+
+          {joinedClubs.map((club) => {
+            const isLeaving = leaveModeClubId === club._id;
+
+            return (
+              <div
+                key={club._id}
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  padding: "6px 4px",
+                }}
+              >
+                <span style={{ fontSize: 15, color: "#111827" }}>
+                  {club.name}
+                </span>
+
+                {!isLeaving ? (
+                  <button
+                    onClick={() => setLeaveModeClubId(club._id)}
+                    style={{
+                      padding: "4px 8px",
+                      borderRadius: 999,
+                      border: "1px solid #FCA5A5",
+                      background: "#FEF2F2",
+                      color: "#DC2626",
+                      cursor: "pointer",
+                      fontSize: 13,
+                    }}
+                  >
+                    Leave
+                  </button>
+                ) : (
+                  <div style={{ display: "flex", gap: 6 }}>
+                    <button
+                      onClick={() => handleLeaveClub(club._id)}
+                      style={{
+                        padding: "4px 8px",
+                        borderRadius: 999,
+                        border: "1px solid #DC2626",
+                        background: "#FEE2E2",
+                        color: "#B91C1C",
+                        cursor: "pointer",
+                        fontSize: 13,
+                      }}
+                    >
+                      Get outta here
+                    </button>
+
+                    <button
+                      onClick={() => setLeaveModeClubId(null)}
+                      style={{
+                        padding: "4px 8px",
+                        borderRadius: 999,
+                        border: "1px solid #D1D5DB",
+                        background: "#FFFFFF",
+                        color: "#374151",
+                        cursor: "pointer",
+                        fontSize: 13,
+                      }}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -437,7 +387,6 @@ export default function Profile({
             cursor: "pointer",
           }}
           onClick={handleLogout}
-          disabled={!isAuthenticated}
         >
           Sign Out
         </button>
