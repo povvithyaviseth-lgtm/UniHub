@@ -1,10 +1,12 @@
 // controllers/club.controller.js
+import Club from '../models/club.model.js';
 import { 
   createClubService, 
   getClubsByOwner, 
   getClubsService,
   updateClubService
 } from '../services/club.service.js';
+import mongoose from 'mongoose';
 
 export const createClub = async (req, res) => {
   try {
@@ -120,5 +122,60 @@ export const updateClub = async (req, res)  => {
     res.json(updatedClub);
   } catch (err) {
     res.status(400).json({ message: err.message });
+  }
+};
+
+
+export const getPendingClubRequests = async (req, res) => {
+  try {
+    const clubs = await getClubsService();
+    const pendingClubs = clubs.filter(club => club.status === 'pending');
+    return res.json(pendingClubs);
+  } catch (error) {
+    console.error('Error fetching pending club requests:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+export const setStatusForClub = async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).json({ success: false, message: "Invalid Club Id" });
+  }
+
+  try {
+    const updatedClub = await Club.findByIdAndUpdate(
+      id,
+      { status },
+      { new: true }
+    );
+
+    if (!updatedClub) {
+      return res.status(404).json({ success: false, message: "Club not found" });
+    }
+
+    res.status(200).json({ success: true, data: updatedClub });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Server Error" });
+  }
+};
+
+export const deleteClub = async (req, res) => {
+  const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).json({ success: false, message: "Invalid Club Id" });
+  }
+  try {
+    const deletedClub = await Club.findByIdAndDelete(id);
+    if (!deletedClub) {
+      return res.status(404).json({ success: false, message: "Club not found" });
+    }
+
+    res.status(200).json({ success: true, message: "Club deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Server Error" });
   }
 };

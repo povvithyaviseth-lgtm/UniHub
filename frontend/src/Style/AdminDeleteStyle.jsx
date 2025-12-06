@@ -32,32 +32,28 @@ export const headerText = {
 
 export const listContainer = {
   width: 962,
-  height: 648,
+  height: 625,
   left: 33,
   top: 100,
   position: 'absolute',
-  overflow: 'hidden',
+  overflowY: 'auto',
+  display: 'flex',
   flexDirection: 'column',
-  justifyContent: 'flex-start',
-  alignItems: 'flex-start',
   gap: 10,
-  display: 'inline-flex',
 };
+
 
 export const row = {
   width: 962,
-  height: 70,
+  height: 68,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  padding: '0 27px',
   position: 'relative',
 };
 
 export const clubName = {
-  width: 541,
-  left: 46,
-  top: 23,
-  position: 'absolute',
-  justifyContent: 'center',
-  display: 'flex',
-  flexDirection: 'column',
   color: 'black',
   fontSize: 20,
   fontFamily: 'Inter',
@@ -66,21 +62,15 @@ export const clubName = {
 };
 
 export const deleteButton = {
-  width: 142,
-  height: 59,
-  left: 815,
-  top: 5,
-  position: 'absolute',
-  textAlign: 'center',
-  justifyContent: 'center',
-  display: 'flex',
-  flexDirection: 'column',
   color: '#BF0000',
   fontSize: 20,
   fontFamily: 'Inter',
   fontWeight: '700',
-  wordWrap: 'break-word',
+  cursor: 'pointer',
+  background: 'none',
+  border: 'none',
 };
+
 
 export const divider = {
   width: 962,

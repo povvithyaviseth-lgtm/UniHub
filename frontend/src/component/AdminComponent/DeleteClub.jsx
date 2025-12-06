@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState, useEffect } from "react";
 import {
   container,
   header,
@@ -8,44 +8,74 @@ import {
   clubName,
   deleteButton,
   divider,
-} from '../../style/AdminDeleteStyle.jsx';
+} from "../../style/AdminDeleteStyle.jsx";
+import { ConfirmDeleteClub } from "../ConfimButton.jsx";
 
-const clubs = [
-  "The Robotics Team",
-  "Club Name",
-  "Club Name",
-  "Club Name",
-  "Club Name",
-  "Club Name",
-  "Club Name",
-  "Club Name",
-  "Club Name",
-  "Club Name",
-  "Club Name",
-  "Club Name",
-];
+export default function DeleteClub() {
+  const [clubs, setClubs] = useState([]);
+  const [clubToDelete, setClubToDelete] = useState(null);
 
+  useEffect(() => {
+    const fetchClubs = async () => {
+      try {
+        const response = await fetch("http://localhost:5050/api/clubs");
+        const result = await response.json();
+        setClubs(result.data);
+      } catch (error) {
+        console.error("Error fetching clubs:", error);
+      }
+    };
+    fetchClubs();
+  }, []);
 
-export default function DeleteClub(){
-    return (
+  const handleDeleteClub = async (id) => {
+    try {
+      const response = await fetch("http://localhost:5050/api/clubs/delete/" + id, {
+        method: "DELETE",
+      });
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Server error: ${response.status}\n${errorText}`);
+      }
+      setClubs((prevClubs) => prevClubs.filter((club) => club._id !== id));
+      setClubToDelete(null); // close modal
+    } catch (err) {
+      console.error("Error deleting club:", err.message);
+    }
+  };
+
+  return (
     <div style={container}>
       {/* Header */}
       <div style={header}>
-        <div style={{...headerText, left: 27, top: 19 }}>Club Name</div>
-        <div style={{...headerText, left: 732, top: 19 }}>Actions</div>
+        <div style={headerText}>Club Name</div>
+        <div style={headerText}>Actions</div>
       </div>
 
       {/* Club Rows */}
       <div style={listContainer}>
-        {clubs.map((club, index) => (
-          <div key={index} style={row}>
-            <div style={clubName}>{club}</div>
-            <div style={deleteButton}>Delete Club</div>
+        {clubs.map((club) => (
+          <div key={club._id} style={row}>
+            <div style={clubName}>{club.name}</div>
+            <button
+              style={deleteButton}
+              onClick={() => setClubToDelete(club._id)}
+            >
+              Delete Club
+            </button>
             <div style={{ ...divider, top: 0 }} />
             <div style={{ ...divider, top: 68 }} />
           </div>
         ))}
       </div>
+
+      {/* Confirmation Modal */}
+      {clubToDelete && (
+        <ConfirmDeleteClub
+          onConfirm={() => handleDeleteClub(clubToDelete)}
+          onCancel={() => setClubToDelete(null)}
+        />
+      )}
     </div>
-    )
+  );
 }

@@ -6,7 +6,7 @@ import SignUp from "./pages/Student/SignUp.jsx"
 
 import ClubManagement from "./pages/ClubOwner/ClubManagementPage.jsx"
 import ClubDashboard from "./pages/ClubOwner/ClubDashboard.jsx";
-import AdminPage from "./pages/Admin/AdminPage.jsx"
+import AdminDashboard from "./pages/Admin/AdminDashboard.jsx"
 
 
 
@@ -21,7 +21,7 @@ function App() {
       <Route path="/console/clubs" element={<ClubManagement />} />
       <Route path="/console/clubs/:clubId" element={<ClubDashboard />} />
 
-      <Route path="/adminManage" element={<AdminPage />} />
+      <Route path="/admin/dashboard" element={<AdminDashboard />} />
       
       {/* Add more routes here */}
     </Routes>
