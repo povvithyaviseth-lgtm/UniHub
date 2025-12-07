@@ -116,10 +116,9 @@ export default function ManageAccount() {
                 borderRadius: 22,
                 padding: "18px 22px",
                 display: "grid",
-                gridTemplateColumns: "1fr 180px 140px", // ← PERFECT UNIFORM ALIGNMENT
+                gridTemplateColumns: "1fr auto",  // 2-column layout
                 alignItems: "center",
                 width: 1180,
-                columnGap: 20,
                 boxShadow: "0 4px 12px rgba(0,0,0,0.06)",
                 transition: "transform 0.16s ease, box-shadow 0.16s ease",
               }}
@@ -145,22 +144,33 @@ export default function ManageAccount() {
                 {student.userName || student.email || "Unknown User"}
               </div>
 
-              {/* MIDDLE COLUMN — ROLE BADGE */}
-              <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                <div
-                  onClick={() => !updatingRoleIds.includes(student._id) && handleToggleRole(student)}
+              {/* RIGHT COLUMN — BUTTON GROUP */}
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                }}
+              >
+                {/* CHANGE ROLE BUTTON */}
+                <button
+                  onClick={() =>
+                    !updatingRoleIds.includes(student._id) &&
+                    handleToggleRole(student)
+                  }
                   style={{
                     background:
                       student.role === "club owner" ? "#166534" : "#176b2b",
                     color: "white",
-                    padding: "8px 18px",
-                    borderRadius: 20,
+                    padding: "8px 16px",
+                    borderRadius: 999,
                     fontSize: 14,
                     fontWeight: 600,
                     cursor: updatingRoleIds.includes(student._id) ? "wait" : "pointer",
+                    border: "none",
                     opacity: updatingRoleIds.includes(student._id) ? 0.6 : 1,
                     transition: "background 0.15s ease",
-                    userSelect: "none",
+                    whiteSpace: "nowrap",
                   }}
                   title={`Click to ${
                     student.role === "club owner"
@@ -168,12 +178,10 @@ export default function ManageAccount() {
                       : "promote to club owner"
                   }`}
                 >
-                  {student.role || "student"}
-                </div>
-              </div>
+                  {student.role === "club owner" ? "club owner" : "student"}
+                </button>
 
-              {/* RIGHT COLUMN — DELETE BUTTON */}
-              <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                {/* DELETE BUTTON */}
                 <button
                   style={{
                     padding: "8px 16px",
@@ -181,9 +189,10 @@ export default function ManageAccount() {
                     border: "1px solid #FCA5A5",
                     background: "#FEF2F2",
                     color: "#B91C1C",
-                    fontSize: 13,
+                    fontSize: 14,
                     fontWeight: 600,
                     cursor: "pointer",
+                    whiteSpace: "nowrap",
                   }}
                   onClick={() => setStudentToDelete(student._id)}
                 >
@@ -191,6 +200,7 @@ export default function ManageAccount() {
                 </button>
               </div>
             </article>
+
 
           );
         })}
