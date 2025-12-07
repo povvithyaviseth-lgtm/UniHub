@@ -98,7 +98,7 @@ export default function DeleteClub() {
               alignItems: "center",
               justifyContent: "space-between",
               minHeight: 48,
-              width: 1180,              // stretch across available space
+              width: 1150,              // stretch across available space
               transition: "transform 0.16s ease, box-shadow 0.16s ease",
             }}
             onMouseEnter={(e) => {

@@ -118,7 +118,7 @@ export default function ManageAccount() {
                 display: "grid",
                 gridTemplateColumns: "1fr auto",  // 2-column layout
                 alignItems: "center",
-                width: 1180,
+                width: 1150,
                 boxShadow: "0 4px 12px rgba(0,0,0,0.06)",
                 transition: "transform 0.16s ease, box-shadow 0.16s ease",
               }}
