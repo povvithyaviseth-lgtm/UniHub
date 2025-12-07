@@ -48,8 +48,8 @@ export default function ApproveClub() {
 
   return (
     <main style={mainStyle}>
-      <h1 style={titleStyle}>Admin Console</h1>
-      <h2 style={subtitleStyle}>Waiting For Approval</h2>
+      <h1 style={titleStyle}>Waiting For Approval</h1>
+      <h1 style={titleStyle}></h1>
 
       <div style={cardsWrapper}>
         {clubs.map((club) => (
