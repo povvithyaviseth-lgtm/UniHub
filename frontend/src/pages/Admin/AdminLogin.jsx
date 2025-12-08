@@ -18,7 +18,7 @@ import {
   studentBox,
   studentText,
   studentLink,
-} from "../../style/AdminLoginPageStyle.jsx";
+} from "../../style/AdminLoginPageStyle";
 
 // ✅ Ensure global font + base styles from index.css are applied
 import "../../index.css";
