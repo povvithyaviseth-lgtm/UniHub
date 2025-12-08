@@ -39,7 +39,6 @@ export const titleStyle = {
   flexDirection: "column",
   color: "black",
   fontSize: 64,
-  fontFamily: "Inter, sans-serif",
   fontWeight: 700,
   wordWrap: "break-word",
 };
@@ -55,7 +54,6 @@ export const subtitle = {
   flexDirection: "column",
   color: "#5B5A5A",
   fontSize: 20.03,
-  fontFamily: "Inter, sans-serif",
   fontWeight: 400,
   wordWrap: "break-word",
 };
@@ -67,7 +65,6 @@ export const labelStyle = (left, top) => ({
   position: "absolute",
   color: "#404040",
   fontSize: 20,
-  fontFamily: "Inter, sans-serif",
   fontWeight: 400,
   wordWrap: "break-word",
 });
@@ -101,7 +98,6 @@ export const forgotStyle = {
   position: "absolute",
   color: "#007D99",
   fontSize: 20,
-  fontFamily: "Inter, sans-serif",
   fontWeight: 400,
   wordWrap: "break-word",
 };
@@ -136,7 +132,6 @@ export const signInButton = {
   flexDirection: "column",
   color: "white",
   fontSize: 25.04,
-  fontFamily: "Inter, sans-serif",
   fontWeight: 700,
   wordWrap: "break-word",
   border: "none",
@@ -182,7 +177,6 @@ export const studentText = {
   position: "absolute",
   color: "#404040",
   fontSize: 20,
-  fontFamily: "Inter, sans-serif",
   fontWeight: 400,
   wordWrap: "break-word",
 };
@@ -194,7 +188,6 @@ export const studentLink = {
   position: "absolute",
   color: "#007D99",
   fontSize: 20,
-  fontFamily: "Inter, sans-serif",
   fontWeight: 400,
   wordWrap: "break-word",
   textDecoration: "none",

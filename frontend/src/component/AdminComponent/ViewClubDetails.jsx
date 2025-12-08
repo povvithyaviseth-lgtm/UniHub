@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   overlayStyle,
   popupStyle,
@@ -22,16 +22,26 @@ import {
   leaderTextNormal,
   contactTextBold,
   contactTextLink,
-} from "../../style/AdminClubApproveStyle";
-import { useState } from "react";
+} from "../../Style/AdminClubApproveStyle";
 import { ConfirmApproveClub, ConfirmDenyClub } from "../ConfimButton.jsx";
 
-export const ViewClubDetails = ({ name, img, description, tag, onClose, status, onApprove }) => {
+// ✅ pull in global font + button styles, same as rest of app
+import "../../index.css";
+
+export const ViewClubDetails = ({
+  name,
+  img,
+  description,
+  tag,
+  onClose,
+  status,
+  onApprove,
+}) => {
   // which action is being confirmed: 'approve' | 'deny' | null
   const [confirmAction, setConfirmAction] = useState(null);
 
-  const handleApproveClick = () => setConfirmAction('approve');
-  const handleDenyClick = () => setConfirmAction('deny');
+  const handleApproveClick = () => setConfirmAction("approve");
+  const handleDenyClick = () => setConfirmAction("deny");
 
   const handleConfirmApprove = async () => {
     await onApprove("approved");
@@ -44,8 +54,6 @@ export const ViewClubDetails = ({ name, img, description, tag, onClose, status, 
     setConfirmAction(null);
     onClose();
   };
-
-
 
   return (
     <div style={overlayStyle}>
@@ -98,14 +106,14 @@ export const ViewClubDetails = ({ name, img, description, tag, onClose, status, 
       </div>
 
       {/* Confirmation popup: render only the requested action */}
-      {confirmAction === 'approve' && (
+      {confirmAction === "approve" && (
         <ConfirmApproveClub
           onCancel={() => setConfirmAction(null)}
           onConfirm={handleConfirmApprove}
         />
       )}
 
-      {confirmAction === 'deny' && (
+      {confirmAction === "deny" && (
         <ConfirmDenyClub
           onCancel={() => setConfirmAction(null)}
           onConfirm={handleConfirmDeny}

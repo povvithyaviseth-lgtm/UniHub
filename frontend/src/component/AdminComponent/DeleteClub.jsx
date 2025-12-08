@@ -1,42 +1,40 @@
+// src/component/AdminComponent/DeleteClub.jsx
 import { useState, useEffect } from "react";
-import {
-  container,
-  header,
-  headerText,
-  listContainer,
-  row,
-  clubName,
-  deleteButton,
-  divider,
-} from "../../style/AdminDeleteStyle.jsx";
-import { ConfirmDeleteClub } from "../ConfimButton.jsx";
+import ConfirmDeleteModal from "../ConfirmDeleteModal.jsx";
+import "../../index.css"; // global fonts + animations
 
 export default function DeleteClub() {
   const [clubs, setClubs] = useState([]);
-  const [clubToDelete, setClubToDelete] = useState(null);
+  const [clubToDelete, setClubToDelete] = useState(null); // { _id, name } or null
 
   useEffect(() => {
     const fetchClubs = async () => {
       try {
         const response = await fetch("http://localhost:5050/api/clubs");
         const result = await response.json();
-        setClubs(result.data);
+        setClubs(result.data || []);
       } catch (error) {
         console.error("Error fetching clubs:", error);
       }
     };
+
     fetchClubs();
   }, []);
 
   const handleDeleteClub = async (id) => {
     try {
-      const response = await fetch("http://localhost:5050/api/admins/deleteClub/" + id, {
-        method: "DELETE",
-      });
+      const response = await fetch(
+        "http://localhost:5050/api/admins/deleteClub/" + id,
+        {
+          method: "DELETE",
+        }
+      );
+
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(`Server error: ${response.status}\n${errorText}`);
       }
+
       setClubs((prevClubs) => prevClubs.filter((club) => club._id !== id));
       setClubToDelete(null); // close modal
     } catch (err) {
@@ -45,37 +43,154 @@ export default function DeleteClub() {
   };
 
   return (
-    <div style={container}>
-      {/* Header */}
-      <div style={header}>
-        <div style={headerText}>Club Name</div>
-        <div style={headerText}>Actions</div>
-      </div>
+    <main
+      style={{
+        margin: "40px 0",
+        padding: "0 24px 40px",
+        color: "#111827",
+      }}
+    >
+      {/* Page header */}
+      <header style={{ marginBottom: 24 }}>
+        <h1
+          style={{
+            fontSize: 32,
+            fontWeight: 700,
+            margin: 0,
+            marginBottom: 4,
+          }}
+        >
+          Delete Clubs
+        </h1>
+        <p
+          style={{
+            margin: 0,
+            fontSize: 14,
+            color: "#6B7280",
+          }}
+        >
+          Carefully remove clubs from the system. This action is permanent.
+        </p>
+      </header>
 
-      {/* Club Rows */}
-      <div style={listContainer}>
-        {clubs.map((club) => (
-          <div key={club._id} style={row}>
-            <div style={clubName}>{club.name}</div>
-            <button
-              style={deleteButton}
-              onClick={() => setClubToDelete(club._id)}
+      {/* Long horizontal cards */}
+      <section
+        aria-label="Existing clubs"
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: 10,
+        }}
+      >
+        {clubs.map((club, index) => (
+          <article
+            key={club._id}
+            className="cd-list-item-anim"
+            style={{
+              position: "relative",
+              background: "#FFFFFF",
+              borderRadius: 22,
+              border: "1px solid #E5E7EB",
+              boxShadow: "0 4px 12px rgba(15, 23, 42, 0.06)",
+              padding: 16,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              minHeight: 48,
+              width: 1150,
+              transition:
+                "transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease",
+              animationDelay: `${index * 40}ms`, // staggered entrance
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = "translateY(-2px)";
+              e.currentTarget.style.boxShadow =
+                "0 10px 24px rgba(15, 23, 42, 0.14)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.boxShadow =
+                "0 4px 12px rgba(15, 23, 42, 0.06)";
+            }}
+          >
+            {/* Left: club name */}
+            <div
+              style={{
+                minWidth: 0,
+                marginRight: 16,
+              }}
             >
-              Delete Club
-            </button>
-            <div style={{ ...divider, top: 0 }} />
-            <div style={{ ...divider, top: 68 }} />
-          </div>
-        ))}
-      </div>
+              <h2
+                style={{
+                  margin: 0,
+                  fontSize: 18,
+                  fontWeight: 600,
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+                title={club.name}
+              >
+                {club.name}
+              </h2>
+            </div>
 
-      {/* Confirmation Modal */}
+            {/* Right: delete button */}
+            <div
+              style={{
+                flexShrink: 0,
+              }}
+            >
+              <button
+                type="button"
+                onClick={() =>
+                  setClubToDelete({ _id: club._id, name: club.name })
+                }
+                style={{
+                  padding: "8px 16px",
+                  borderRadius: 999,
+                  border: "1px solid #FCA5A5",
+                  background: "#FEF2F2",
+                  color: "#B91C1C",
+                  fontSize: 13,
+                  fontWeight: 500,
+                  cursor: "pointer",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 6,
+                  transition:
+                    "background-color 0.16s ease, border-color 0.16s ease, transform 0.12s ease",
+                }}
+              >
+                <span>Delete club</span>
+              </button>
+            </div>
+          </article>
+        ))}
+
+        {clubs.length === 0 && (
+          <p
+            style={{
+              fontSize: 14,
+              color: "#9CA3AF",
+            }}
+          >
+            No clubs found.
+          </p>
+        )}
+      </section>
+
+      {/* Reusable delete confirmation modal */}
       {clubToDelete && (
-        <ConfirmDeleteClub
-          onConfirm={() => handleDeleteClub(clubToDelete)}
+        <ConfirmDeleteModal
+          title="Delete club"
+          message={`Are you sure you want to delete "${clubToDelete.name}"? This action cannot be undone.`}
+          confirmLabel="Delete club"
+          cancelLabel="Cancel"
+          onConfirm={() => handleDeleteClub(clubToDelete._id)}
           onCancel={() => setClubToDelete(null)}
         />
       )}
-    </div>
+    </main>
   );
 }

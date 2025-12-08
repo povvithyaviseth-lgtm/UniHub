@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useAdminStore } from "../../store/admin.js";   
+import { useAdminStore } from "../../store/admin.js";
 import {
   containerStyle,
   cardWrapper,
@@ -18,8 +18,10 @@ import {
   studentBox,
   studentText,
   studentLink,
-} from "../../style/AdminLoginPageStyle.jsx";
+} from "../../Style/AdminLoginPageStyle.jsx";
 
+// ✅ Ensure global font + base styles from index.css are applied
+import "../../index.css";
 
 const AdminLogin = () => {
   const {
@@ -33,30 +35,29 @@ const AdminLogin = () => {
   } = useAdminStore();
 
   const handleSignIn = async () => {
-    setError('');
+    setError("");
     setLoading(true);
 
     try {
       const response = await login();
       if (!response) {
-        setError('Login service returned no response');
+        setError("Login service returned no response");
         return;
       }
 
       const { success, message } = response;
       if (!success) {
-        setError(message || 'Login failed');
+        setError(message || "Login failed");
       } else {
-        window.location.href = '/admin/dashboard';
+        window.location.href = "/admin/dashboard";
       }
     } catch (err) {
-      console.error('Login error:', err);
-      setError('Unexpected error occurred.');
+      console.error("Login error:", err);
+      setError("Unexpected error occurred.");
     } finally {
       setLoading(false);
     }
   };
-
 
   return (
     <div style={containerStyle}>
@@ -70,7 +71,9 @@ const AdminLogin = () => {
               type="email"
               placeholder="Enter your email"
               value={credentials.email}
-              onChange={(e) => setCredentials({ ...credentials, email: e.target.value })}
+              onChange={(e) =>
+                setCredentials({ ...credentials, email: e.target.value })
+              }
               style={inputStyle}
             />
           </div>
@@ -80,7 +83,9 @@ const AdminLogin = () => {
               type="password"
               placeholder="Enter your password"
               value={credentials.password}
-              onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
+              onChange={(e) =>
+                setCredentials({ ...credentials, password: e.target.value })
+              }
               style={inputStyle}
             />
           </div>
@@ -88,22 +93,23 @@ const AdminLogin = () => {
           <div style={labelStyle(25, 176)}>Email</div>
           <div style={labelStyle(25, 274)}>Password</div>
 
-          {/* Rename the File */}
           <Link to="/ForgetPassword" style={forgotStyle}>
             Forgot Password?
           </Link>
 
           <div style={signInWrapper}>
             {error && (
-              <div style={{
-                color: "#dc2626",
-                fontSize: "14px",
-                marginBottom: "10px",
-                textAlign: "center",
-                position: "absolute",
-                width: "100%",
-                top: "-25px"
-              }}>
+              <div
+                style={{
+                  color: "#dc2626",
+                  fontSize: "14px",
+                  marginBottom: "10px",
+                  textAlign: "center",
+                  position: "absolute",
+                  width: "100%",
+                  top: "-25px",
+                }}
+              >
                 {error}
               </div>
             )}
@@ -113,14 +119,23 @@ const AdminLogin = () => {
               style={{
                 ...signInButton,
                 opacity: loading ? 0.7 : 1,
-                cursor: loading ? "not-allowed" : "pointer"
+                cursor: loading ? "not-allowed" : "pointer",
               }}
             >
               {loading ? "Signing in..." : "Sign In As Admin"}
             </button>
           </div>
 
-          <div style={{ width: 674, height: 2, left: 25, top: 446, position: "absolute", background: "#E6E6E6" }} />
+          <div
+            style={{
+              width: 674,
+              height: 2,
+              left: 25,
+              top: 446,
+              position: "absolute",
+              background: "#E6E6E6",
+            }}
+          />
 
           <div style={footerBg} />
           <div style={footerInner}>
@@ -136,6 +151,6 @@ const AdminLogin = () => {
       </div>
     </div>
   );
-}
+};
 
 export default AdminLogin;

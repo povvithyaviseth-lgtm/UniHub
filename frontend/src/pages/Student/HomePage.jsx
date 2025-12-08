@@ -21,6 +21,15 @@ import ConfirmDialog from "../../component/ConfirmDialog.jsx";
 import Profile from "../../component/StudentComponent/Profile.jsx";
 import EditProfile from "../../component/StudentComponent/EditProfile.jsx";
 
+// 🔐 student auth store
+import { useStudentStore } from "../../store/student";
+
+// ✅ shared ClubCard (owner + student variants)
+import ClubCard from "../../component/StudentComponent/ClubCard.jsx";
+
+// ✅ backend base URL
+const API_BASE = "http://localhost:5050";
+
 /* ----------------------------- Scale helper ----------------------------- */
 /** Scales fixed-width children to fit the container width (<= maxScale). */
 const ScaleBox = ({ baseWidth, maxScale = 1, style, children }) => {
@@ -104,7 +113,7 @@ const PlaceholderImage = ({ width, height, style = {} }) => (
 );
 
 /** ------------------------------ Club Modal ------------------------------ */
-const ClubModal = ({ club, onClose }) => {
+const ClubModal = ({ club, onClose, onJoin }) => {
   const leader = club.leader || "Club Leader (TBD)";
   const email = club.email || "club@example.edu";
 
@@ -117,6 +126,11 @@ const ClubModal = ({ club, onClose }) => {
     document.addEventListener("keydown", onEsc);
     return () => document.removeEventListener("keydown", onEsc);
   }, [onEsc]);
+
+  const handleJoinClick = async () => {
+    if (!onJoin) return;
+    await onJoin(club);
+  };
 
   return (
     <div
@@ -190,7 +204,7 @@ const ClubModal = ({ club, onClose }) => {
             style={{
               color: "black",
               fontSize: 32,
-              fontFamily: "Inter",
+              fontFamily: "inherit",
               fontWeight: 700,
               lineHeight: 1.2,
             }}
@@ -201,7 +215,7 @@ const ClubModal = ({ club, onClose }) => {
             style={{
               color: "black",
               fontSize: 20,
-              fontFamily: "Inter",
+              fontFamily: "inherit",
               fontWeight: 400,
               lineHeight: 1.35,
             }}
@@ -228,7 +242,7 @@ const ClubModal = ({ club, onClose }) => {
               style={{
                 color: "black",
                 fontSize: 20,
-                fontFamily: "Inter",
+                fontFamily: "inherit",
                 fontWeight: 700,
               }}
             >
@@ -238,7 +252,7 @@ const ClubModal = ({ club, onClose }) => {
               style={{
                 color: "black",
                 fontSize: 20,
-                fontFamily: "Inter",
+                fontFamily: "inherit",
                 fontWeight: 400,
               }}
             >
@@ -250,7 +264,7 @@ const ClubModal = ({ club, onClose }) => {
               style={{
                 color: "black",
                 fontSize: 20,
-                fontFamily: "Inter",
+                fontFamily: "inherit",
                 fontWeight: 700,
               }}
             >
@@ -262,7 +276,7 @@ const ClubModal = ({ club, onClose }) => {
               style={{
                 color: "#007D99",
                 fontSize: 20,
-                fontFamily: "Inter",
+                fontFamily: "inherit",
                 fontWeight: 400,
                 textDecoration: "underline",
               }}
@@ -277,7 +291,7 @@ const ClubModal = ({ club, onClose }) => {
           <button
             className="btn-primary"
             style={{ width: 258, height: 67, borderRadius: 8 }}
-            onClick={() => alert(`Requested to join "${club.name}"`)}
+            onClick={handleJoinClick}
           >
             Join Club
           </button>
@@ -292,7 +306,7 @@ const ClubModal = ({ club, onClose }) => {
               background: "#E1E1E3",
               color: "#6B6767",
               fontSize: 32,
-              fontFamily: "Inter",
+              fontFamily: "inherit",
               fontWeight: 700,
             }}
             onClick={onClose}
@@ -304,332 +318,6 @@ const ClubModal = ({ club, onClose }) => {
     </div>
   );
 };
-
-/** ------------------------------- New Club Card -------------------------- */
-/**
- * Minimal, structured homepage ClubCard:
- * - Base: image + name
- * - Hover overlay: header (name + tags), description, join flow
- * - Join → "Let's go!" + "Cancel" → "Club joined!"
- */
-const ClubCard = ({ club, onCardClick, onJoin }) => {
-  const [hovered, setHovered] = useState(false);
-  const [joinState, setJoinState] = useState("idle"); // 'idle' | 'confirm' | 'joined'
-
-  const imageSrc = club.imageUrl || null;
-
-  // Split tags by comma for display
-  const rawTag = club.tag || "";
-  const tagLines = rawTag
-    .split(",")
-    .map((t) => t.trim())
-    .filter(Boolean);
-
-  const handleCardClick = () => {
-    if (onCardClick) onCardClick(club);
-  };
-
-  const handleJoinClick = (e) => {
-    e.stopPropagation();
-    setJoinState("confirm");
-  };
-
-  const handleLetsGoClick = (e) => {
-    e.stopPropagation();
-    setJoinState("joined");
-    if (onJoin) onJoin(club);
-  };
-
-  const handleCancelClick = (e) => {
-    e.stopPropagation();
-    setJoinState("idle");
-  };
-
-  return (
-    <article
-      style={{
-        position: "relative",
-        background: "#FFFFFF",
-        borderRadius: 26,
-        border: "1.7px solid #E5E7EB",
-        boxShadow: hovered
-          ? "0 10px 24px rgba(15, 23, 42, 0.14)"
-          : "0 4px 12px rgba(15, 23, 42, 0.06)",
-        overflow: "hidden",
-        display: "flex",
-        flexDirection: "column",
-        cursor: "pointer",
-        transition: "transform 0.18s ease, box-shadow 0.18s ease",
-        transform: hovered ? "translateY(-2px)" : "translateY(0)",
-        minHeight: 320,
-        width: "100%",
-        maxWidth: 430,
-      }}
-      aria-label={`${club.name} card`}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      onClick={handleCardClick}
-    >
-      {/* Base content: image + name */}
-      <div>
-        <div
-          style={{
-            position: "relative",
-            margin: 16,
-            marginBottom: 10,
-            borderRadius: 12,
-            overflow: "hidden",
-            background: "#227246",
-            aspectRatio: "16 / 10",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          {imageSrc ? (
-            <img
-              src={imageSrc}
-              alt={`${club.name} cover`}
-              style={{
-                position: "absolute",
-                inset: 0,
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-              }}
-              loading="lazy"
-              onError={(e) => {
-                e.currentTarget.style.display = "none";
-              }}
-            />
-          ) : (
-            <span
-              style={{
-                fontSize: 13,
-                color: "#D1FAE5",
-                padding: 8,
-                textAlign: "center",
-              }}
-            >
-              No image uploaded
-            </span>
-          )}
-        </div>
-
-        <div
-          style={{
-            padding: "0 16px 16px 16px",
-          }}
-        >
-          <div
-            style={{
-              color: "#111827",
-              fontSize: 35,
-              fontWeight: 700,
-              lineHeight: 1.2,
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              textAlign: "center",
-            }}
-          >
-            {club.name}
-          </div>
-        </div>
-      </div>
-
-      {/* Hover overlay */}
-      {hovered && (
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            background: "rgba(255, 255, 255, 0.98)",
-            color: "#0F172A",
-            display: "flex",
-            flexDirection: "column",
-            padding: 16,
-            boxSizing: "border-box",
-          }}
-        >
-          {/* Header: name + tags */}
-          <div
-            style={{
-              marginBottom: 8,
-            }}
-          >
-            <div
-              style={{
-                fontSize: 35,
-                fontWeight: 700,
-                color: "#111827",
-                marginBottom: 10,
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-              }}
-            >
-              {club.name}
-            </div>
-
-            {tagLines.length > 0 && (
-              <div
-                style={{
-                  display: "flex",
-                  flexWrap: "wrap",
-                  gap: 15,
-                }}
-              >
-                {tagLines.map((tag) => (
-                  <span
-                    key={tag}
-                    style={{
-                      padding: "7px 8px",
-                      borderRadius: 999,
-                      border: "1px solid #E5E7EB",
-                      background: "#F9FAFB",
-                      fontSize: 11,
-                      fontWeight: 500,
-                      color: "#006f32ff",
-                    }}
-                  >
-                    #{tag}
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Body: description (scrollable) */}
-          <div
-            style={{
-              fontSize: 16,
-              lineHeight: 1.5,
-              color: "#4B5563",
-              marginBottom: 12,
-              flex: 1,
-              maxHeight: 140,
-              overflowY: "auto",
-            }}
-          >
-            {club.description || "No description provided."}
-          </div>
-
-          {/* Divider */}
-          <div
-            style={{
-              height: 1,
-              background: "#E5E7EB",
-              marginBottom: 10,
-              marginTop: 2,
-            }}
-          />
-
-          {/* Footer: join button flow */}
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              gap: 8,
-            }}
-          >
-            <span
-              style={{
-                fontSize: 11,
-                color: "#9CA3AF",
-                textTransform: "uppercase",
-                letterSpacing: 0.05,
-              }}
-            >
-            </span>
-
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
-              }}
-            >
-              {joinState === "idle" && (
-                <button
-                  onClick={handleJoinClick}
-                  style={{
-                    padding: "9px 30px",
-                    borderRadius: 999,
-                    border: "none",
-                    background: "#0D6C30",
-                    color: "white",
-                    fontWeight: 500,
-                    fontSize: 30,
-                    cursor: "pointer",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  Join
-                </button>
-              )}
-
-              {joinState === "confirm" && (
-                <>
-                  <button
-                    onClick={handleLetsGoClick}
-                    style={{
-                      padding: "9px 20px",
-                      borderRadius: 999,
-                      border: "none",
-                      background: "#105F2D",
-                      color: "white",
-                      fontWeight: 500,
-                      fontSize: 25,
-                      cursor: "pointer",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    Let&apos;s go!
-                  </button>
-                  <button
-                    onClick={handleCancelClick}
-                    style={{
-                      padding: "9px 20px",
-                      borderRadius: 999,
-                      border: "1px solid #D1D5DB",
-                      background: "white",
-                      color: "#374151",
-                      fontWeight: 500,
-                      fontSize: 25,
-                      cursor: "pointer",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    Cancel
-                  </button>
-                </>
-              )}
-
-              {joinState === "joined" && (
-                <span
-                  style={{
-                    padding: "9px 20px",
-                    borderRadius: 999,
-                    background: "#DCFCE7",
-                    color: "#166534",
-                    fontWeight: 600,
-                    fontSize: 25,
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  Club joined!
-                </span>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-    </article>
-  );
-};
-
 
 /** ------------------------------- Event Card ----------------------------- */
 const EventCard = ({ event }) => {
@@ -703,7 +391,7 @@ const EventCard = ({ event }) => {
               alignSelf: "stretch",
               color: "black",
               fontSize: 40,
-              fontFamily: "Inter",
+              fontFamily: "inherit",
               fontWeight: 700,
               lineHeight: 1.1,
             }}
@@ -716,7 +404,7 @@ const EventCard = ({ event }) => {
               style={{
                 color: "#707070",
                 fontSize: 20,
-                fontFamily: "Inter",
+                fontFamily: "inherit",
                 fontWeight: 400,
               }}
             >
@@ -726,7 +414,7 @@ const EventCard = ({ event }) => {
               style={{
                 color: "#00550A",
                 fontSize: 20,
-                fontFamily: "Inter",
+                fontFamily: "inherit",
                 fontWeight: 700,
               }}
             >
@@ -740,7 +428,7 @@ const EventCard = ({ event }) => {
               alignSelf: "stretch",
               color: "black",
               fontSize: 20,
-              fontFamily: "Inter",
+              fontFamily: "inherit",
               fontWeight: 400,
             }}
           >
@@ -793,7 +481,7 @@ const EventCard = ({ event }) => {
               position: "absolute",
               color: "#787878",
               fontSize: 20,
-              fontFamily: "Inter",
+              fontFamily: "inherit",
               fontWeight: 400,
             }}
           >
@@ -824,7 +512,7 @@ const EventCard = ({ event }) => {
             style={{
               color: "#787878",
               fontSize: 20,
-              fontFamily: "Inter",
+              fontFamily: "inherit",
               fontWeight: 400,
             }}
           >
@@ -852,9 +540,11 @@ const CATEGORIES = [
   "Environmental",
   "Hobbies",
 ];
+
 /** --------------------------------- Page --------------------------------- */
 const HomePage = () => {
   const navigate = useNavigate();
+  const token = useStudentStore((s) => s.token);
 
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All Clubs");
@@ -864,6 +554,9 @@ const HomePage = () => {
   const [clubs, setClubs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  // Which clubs this student has joined
+  const [joinedClubIds, setJoinedClubIds] = useState([]);
 
   // Profile & EditProfile popups
   const [profileOpen, setProfileOpen] = useState(false);
@@ -875,15 +568,15 @@ const HomePage = () => {
   const [confirmMessage, setConfirmMessage] = useState("");
   const confirmActionRef = useRef(() => {});
 
-  // 🔄 New: section refs for scroll
-  const clubsSectionRef = useRef(null);
+  // 🔄 section refs for scroll
+  const clubsSectionRef = useRef(null); // still used as marker for category block
   const eventsSectionRef = useRef(null);
 
-  // 🔄 New: responsive columns + "see more" state
+  // 🔄 responsive columns + "see more" state
   const [columns, setColumns] = useState(3);
   const [showAllClubs, setShowAllClubs] = useState(false);
 
-  // 🔄 New: update columns based on viewport
+  // 🔄 update columns based on viewport
   useEffect(() => {
     const updateColumns = () => {
       const width = window.innerWidth;
@@ -901,7 +594,7 @@ const HomePage = () => {
     return () => window.removeEventListener("resize", updateColumns);
   }, []);
 
-  // 🔄 helper for smooth scroll
+  // 🔄 helper for smooth scroll (still used for Events)
   const scrollToSection = (ref) => {
     if (ref.current) {
       ref.current.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -915,7 +608,7 @@ const HomePage = () => {
         setLoading(true);
         setError("");
 
-        const res = await fetch("http://localhost:5050/api/clubs");
+        const res = await fetch(`${API_BASE}/api/clubs`);
         if (!res.ok) {
           throw new Error(`Failed to load clubs (status ${res.status})`);
         }
@@ -931,7 +624,7 @@ const HomePage = () => {
           description: c.description || "",
           tag: c.tag || "Other",
           imageUrl: c.image
-            ? `http://localhost:5050/${c.image.replace(/^\/+/, "")}`
+            ? `${API_BASE}/${c.image.replace(/^\/+/, "")}`
             : null,
           status: c.status || (c.approved ? "approved" : "pending"),
           leader: c.leader,
@@ -949,6 +642,35 @@ const HomePage = () => {
 
     fetchClubs();
   }, []);
+
+  // 🔥 Fetch joined clubs on mount / when token changes
+  useEffect(() => {
+    if (!token) return;
+
+    const fetchJoinedClubs = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/api/clubs/joined`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await res.json().catch(() => ({}));
+
+        if (!res.ok) {
+          console.error("Failed to fetch joined clubs", data);
+          return;
+        }
+
+        const clubs = data.clubs || [];
+        setJoinedClubIds(clubs.map((c) => c._id || c.id));
+      } catch (err) {
+        console.error("Error fetching joined clubs", err);
+      }
+    };
+
+    fetchJoinedClubs();
+  }, [token]);
 
   const approvedClubs = useMemo(
     () =>
@@ -979,7 +701,7 @@ const HomePage = () => {
     });
   }, [approvedClubs, search, category]);
 
-  // 🔄 New: only show first 12 clubs unless "See more" clicked
+  // 🔄 only show first 12 clubs unless "See more" clicked
   const visibleClubs = useMemo(() => {
     if (showAllClubs) return filteredClubs;
     return filteredClubs.slice(0, 12); // 4 rows * 3 cards
@@ -996,7 +718,7 @@ const HomePage = () => {
     setConfirmTitle("Leave Club?");
     setConfirmMessage(`Are you sure you want to leave "${clubName}"?`);
     confirmActionRef.current = async () => {
-      // TODO: call your API to remove the user from the club
+      // TODO: integrate leave API once Profile uses real club IDs
       setConfirmOpen(false);
     };
     setConfirmOpen(true);
@@ -1008,8 +730,53 @@ const HomePage = () => {
     navigate("/console/clubs");
   }, [navigate]);
 
-  // ✅ called when user confirms "Let's go" on a card
-  const handleJoinClub = (club) => {};
+  // ✅ called when user confirms "Confirm" on a card OR clicks "Join Club" in modal
+  const handleJoinClub = useCallback(
+    async (club) => {
+      if (!token) {
+        navigate("/login");
+        return false;
+      }
+
+      const clubId = club._id || club.id;
+      if (!clubId) {
+        console.error("Club has no id:", club);
+        alert("Cannot join this club: missing ID.");
+        return false;
+      }
+
+      try {
+        const res = await fetch(`${API_BASE}/api/clubs/${clubId}/join`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await res.json().catch(() => ({}));
+
+        if (!res.ok) {
+          console.error("Join failed:", data);
+          alert(data.message || "Could not join club");
+          return false;
+        }
+
+        // ✅ mark this club as joined in state
+        setJoinedClubIds((prev) =>
+          prev.includes(clubId) ? prev : [...prev, clubId]
+        );
+
+        console.log("Joined club:", data);
+        return true;
+      } catch (err) {
+        console.error("Error joining club:", err);
+        alert("Network error joining club");
+        return false;
+      }
+    },
+    [token, navigate]
+  );
 
   return (
     <div
@@ -1033,6 +800,7 @@ const HomePage = () => {
           boxSizing: "border-box",
         }}
       >
+        {/* Main content: everything inside fades in + moves up */}
         <div
           style={{
             width: "100%",
@@ -1041,6 +809,8 @@ const HomePage = () => {
             flexDirection: "column",
             alignItems: "center",
             gap: 40,
+            opacity: 0,
+            animation: "fadeInUp 0.45s ease-out forwards",
           }}
         >
           {/* ===== Sticky Header (scaled to fit) ===== */}
@@ -1101,10 +871,12 @@ const HomePage = () => {
                     gap: 28,
                   }}
                 >
-                  {/* 🔄 Clickable "Clubs" */}
+                  {/* 🔄 Clickable "Clubs" → scroll to very top */}
                   <div
                     role="button"
-                    onClick={() => scrollToSection(clubsSectionRef)}
+                    onClick={() =>
+                      window.scrollTo({ top: 0, behavior: "smooth" })
+                    }
                     style={{
                       width: 153,
                       height: 50,
@@ -1113,7 +885,7 @@ const HomePage = () => {
                       justifyContent: "center",
                       color: "#707070",
                       fontSize: 40,
-                      fontFamily: "Inter",
+                      fontFamily: "inherit",
                       fontWeight: 500,
                       cursor: "pointer",
                     }}
@@ -1140,7 +912,7 @@ const HomePage = () => {
                       justifyContent: "center",
                       color: "#707070",
                       fontSize: 40,
-                      fontFamily: "Inter",
+                      fontFamily: "inherit",
                       fontWeight: 500,
                       cursor: "pointer",
                     }}
@@ -1214,7 +986,7 @@ const HomePage = () => {
                       justifyContent: "center",
                       color: "#00550A",
                       fontSize: 24,
-                      fontFamily: "Inter",
+                      fontFamily: "inherit",
                       fontWeight: 700,
                     }}
                   >
@@ -1274,6 +1046,9 @@ const HomePage = () => {
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "center",
+                opacity: 0,
+                animation: "fadeInUp 0.45s ease-out forwards",
+                animationDelay: "0.05s",
               }}
             >
               {/* Search Bar */}
@@ -1313,16 +1088,17 @@ const HomePage = () => {
                   type="text"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Let’s find your people…"
+                  placeholder="Search for clubs…"
+                  className="home-search-input"
                   style={{
                     flex: 1,
                     height: "100%",
                     border: "none",
                     outline: "none",
-                    fontFamily: "Inter",
+                    fontFamily: "inherit",
                     fontWeight: 700,
                     fontSize: 50,
-                    color: "#000000ff",
+                    color: "#000000",
                     background: "transparent",
                   }}
                 />
@@ -1332,27 +1108,36 @@ const HomePage = () => {
 
           {/* ===== Explore by Category / Tag ===== */}
           <div
+            ref={clubsSectionRef}
             style={{
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
               gap: 13,
               width: "100%",
+              opacity: 0,
+              animation: "fadeInUp 0.45s ease-out forwards",
+              animationDelay: "0.1s",
             }}
           >
+            {/* Header: Explore By Category */}
             <div
               style={{
-                height: 14,
                 textAlign: "center",
                 display: "flex",
-                alignItems: "flex-end",
-                color: "black",
-                fontSize: 40,
-                fontFamily: "Inter",
-                fontWeight: 700,
+                alignItems: "center",
+                justifyContent: "center",
+                color: "#000000",
+                fontSize: 36,
+                fontFamily: "inherit",
+                fontWeight: 800,
+                marginTop: 4,
               }}
-            ></div>
+            >
+              Explore By Category
+            </div>
 
+            {/* Tag buttons */}
             <div
               style={{
                 width: "100%",
@@ -1367,7 +1152,6 @@ const HomePage = () => {
             >
               {CATEGORIES.map((cat) => {
                 const isActive = category === cat;
-                const isAll = cat === "All Clubs";
                 return (
                   <button
                     key={cat}
@@ -1381,14 +1165,10 @@ const HomePage = () => {
                       height: 50,
                       borderRadius: 25,
                       border: "1px rgba(0, 0, 0, 0.21) solid",
-                      background: isActive
-                        ? "#00550A"
-                        : isAll
-                        ? "#00550A"
-                        : "white",
-                      color: isActive || isAll ? "white" : "black",
+                      background: isActive ? "#00550A" : "white",
+                      color: isActive ? "white" : "black",
                       fontSize: 20,
-                      fontFamily: "Inter",
+                      fontFamily: "inherit",
                       fontWeight: 500,
                       cursor: "pointer",
                       transition: "filter 0.15s ease",
@@ -1404,14 +1184,16 @@ const HomePage = () => {
           </div>
           {/* ===== End Explore by Category ===== */}
 
-          {/* 🔽 Clubs Section (scroll target) */}
+          {/* 🔽 Clubs Section */}
           <section
-            ref={clubsSectionRef}
             style={{
               width: "100%",
               maxWidth: 1282,
               padding: "0 8px",
               boxSizing: "border-box",
+              opacity: 0,
+              animation: "fadeInUp 0.5s ease-out forwards",
+              animationDelay: "0.15s",
             }}
           >
             <div
@@ -1420,6 +1202,8 @@ const HomePage = () => {
                 flexWrap: "wrap",
                 gap: 28,
                 justifyContent: "center",
+                // Reserve vertical space so Events don't jump when clubs load
+                minHeight: 420,
               }}
             >
               {loading ? (
@@ -1428,7 +1212,7 @@ const HomePage = () => {
                     width: "100%",
                     textAlign: "center",
                     color: "#707070",
-                    fontFamily: "Inter",
+                    fontFamily: "inherit",
                     fontSize: 18,
                   }}
                 >
@@ -1440,7 +1224,7 @@ const HomePage = () => {
                     width: "100%",
                     textAlign: "center",
                     color: "red",
-                    fontFamily: "Inter",
+                    fontFamily: "inherit",
                     fontSize: 18,
                   }}
                 >
@@ -1452,7 +1236,7 @@ const HomePage = () => {
                     width: "100%",
                     textAlign: "center",
                     color: "#707070",
-                    fontFamily: "Inter",
+                    fontFamily: "inherit",
                     fontSize: 18,
                   }}
                 >
@@ -1463,19 +1247,41 @@ const HomePage = () => {
                   {/* 🔄 Responsive grid with up to 3 columns */}
                   <div
                     style={{
+                      width: "100%", // ✅ full row width so single cards don't shrink
                       display: "grid",
                       gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
                       gap: 28,
-                      justifyItems: "center",
+                      alignItems: "stretch",
                     }}
                   >
-                    {visibleClubs.map((club) => (
-                      <ClubCard
-                        key={club.id}
-                        club={club}
-                        onCardClick={setOpenClub}
-                      />
-                    ))}
+                    {visibleClubs.map((club, index) => {
+                      const clubId = club._id || club.id;
+                      const isJoined = joinedClubIds.includes(clubId);
+
+                      // Row-based delay: cards in the same row animate together
+                      const rowIndex = Math.floor(index / columns);
+                      const delaySeconds = rowIndex * 0.08;
+
+                      return (
+                        <div
+                          key={club.id}
+                          style={{
+                            width: "100%",
+                            opacity: 0,
+                            animation: "fadeInUp 0.4s ease-out forwards",
+                            animationDelay: `${delaySeconds}s`,
+                          }}
+                        >
+                          <ClubCard
+                            club={club}
+                            onCardClick={setOpenClub}
+                            onJoin={handleJoinClub}
+                            isJoined={isJoined}
+                            variant="student"
+                          />
+                        </div>
+                      );
+                    })}
                   </div>
 
                   {/* 🔄 "See more clubs" after 4 rows of 3 cards */}
@@ -1497,6 +1303,7 @@ const HomePage = () => {
                           fontSize: 20,
                           fontWeight: 600,
                           cursor: "pointer",
+                          fontFamily: "inherit",
                         }}
                       >
                         See more clubs
@@ -1515,6 +1322,9 @@ const HomePage = () => {
               width: "100%",
               maxWidth: 1282,
               boxSizing: "border-box",
+              opacity: 0,
+              animation: "fadeInUp 0.55s ease-out forwards",
+              animationDelay: "0.2s",
             }}
           >
             {/* Upcoming Events Header */}
@@ -1531,7 +1341,7 @@ const HomePage = () => {
               <div
                 style={{
                   color: "black",
-                  fontFamily: "Inter",
+                  fontFamily: "inherit",
                   fontSize: 40,
                   fontWeight: 700,
                 }}
@@ -1553,8 +1363,17 @@ const HomePage = () => {
                 boxSizing: "border-box",
               }}
             >
-              {mockEvents.map((event) => (
-                <EventCard key={event.id} event={event} />
+              {mockEvents.map((event, index) => (
+                <div
+                  key={event.id}
+                  style={{
+                    opacity: 0,
+                    animation: "fadeInUp 0.45s ease-out forwards",
+                    animationDelay: `${0.25 + index * 0.12}s`,
+                  }}
+                >
+                  <EventCard event={event} />
+                </div>
               ))}
             </div>
           </section>
@@ -1565,52 +1384,65 @@ const HomePage = () => {
 
       {/* Club details modal */}
       {openClub && (
-        <ClubModal club={openClub} onClose={() => setOpenClub(null)} />
+        <ClubModal
+          club={openClub}
+          onClose={() => setOpenClub(null)}
+          onJoin={async (club) => {
+            const ok = await handleJoinClub(club);
+            if (ok) setOpenClub(null);
+          }}
+        />
       )}
 
-      {/* PROFILE popup */}
+      {/* PROFILE popup with smooth animation */}
       <PopUpModals
         open={profileOpen}
         onClose={() => setProfileOpen(false)}
         baseW={598.92}
         baseH={814}
       >
-        <Profile
-          onClose={() => setProfileOpen(false)}
-          onEditProfile={handleOpenEditFromProfile}
-          onLeaveClub={handleProfileLeaveClub}
-          onManageClub={handleManageClub}
-        />
+        <div className="cd-modal-shell">
+          <Profile
+            onClose={() => setProfileOpen(false)}
+            onEditProfile={handleOpenEditFromProfile}
+            onLeaveClub={handleProfileLeaveClub}
+            onManageClub={handleManageClub}
+          />
+        </div>
       </PopUpModals>
 
-      {/* EDIT PROFILE popup */}
+      {/* EDIT PROFILE popup (also animated for consistency) */}
       <PopUpModals
         open={editOpen}
         onClose={() => setEditOpen(false)}
         baseW={733}
         baseH={671}
       >
-        <EditProfile
-          onBack={() => {
-            setEditOpen(false);
-            setProfileOpen(true);
-          }}
-        />
+        <div className="cd-modal-shell">
+          <EditProfile
+            onBack={() => {
+              setEditOpen(false);
+              setProfileOpen(true);
+            }}
+          />
+        </div>
       </PopUpModals>
 
-      {/* CONFIRM DIALOG popup (reusable across the app) */}
+      {/* CONFIRM DIALOG popup (also animated) */}
       <PopUpModals
         open={confirmOpen}
         onClose={() => setConfirmOpen(false)}
         baseW={696}
         baseH={354}
       >
-        <ConfirmDialog
-          title={confirmTitle}
-          message={confirmMessage}
-          onCancel={() => setConfirmOpen(false)}
-          onConfirm={() => confirmActionRef.current?.()}
-        />
+        <div className="cd-modal-shell">
+          <ConfirmDialog
+            title={confirmTitle}
+            message={confirmMessage}
+            onCancel={() => setConfirmOpen(false)}
+            onConfirm={() => confirmActionRef.current?.()}
+          />
+        </div>
       </PopUpModals>
     </div>
   );

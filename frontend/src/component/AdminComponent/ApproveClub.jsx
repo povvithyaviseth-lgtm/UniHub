@@ -1,12 +1,25 @@
-
-import { mainStyle, titleStyle, subtitleStyle, cardsWrapper } from "../../style/AdminApprovalStyle";
-import { ClubPanel } from "./ClubPanel";
+import { mainStyle, titleStyle, cardsWrapper } from "../../Style/AdminApprovalStyle";
 import { useEffect, useState } from "react";
+import ClubCard from "../StudentComponent/ClubCard.jsx"; // 🔁 use shared card
+
+const API_BASE_URL = "http://localhost:5050";
+
+function resolveImageSrc(image) {
+  if (!image) return null;
+
+  // already absolute
+  if (/^https?:\/\//i.test(image)) return image;
+
+  // make sure it has a leading slash
+  let path = image.replace(/\\/g, "/");
+  if (!path.startsWith("/")) path = `/${path}`;
+
+  return `${API_BASE_URL}${path}`;
+}
 
 export default function ApproveClub() {
   const [clubs, setClubs] = useState([]);
 
-  // move fetchClubs outside so it's reusable
   const fetchClubs = async () => {
     try {
       const response = await fetch("/api/admins/ClubRequests");
@@ -39,7 +52,6 @@ export default function ApproveClub() {
       }
 
       await response.json();
-
       await fetchClubs();
     } catch (err) {
       console.error("Error approving club:", err.message);
@@ -48,20 +60,22 @@ export default function ApproveClub() {
 
   return (
     <main style={mainStyle}>
-      <h1 style={titleStyle}>Admin Console</h1>
-      <h2 style={subtitleStyle}>Waiting For Approval</h2>
+      <h1 style={titleStyle}>Waiting For Approval</h1>
+      <h1 style={titleStyle}></h1>
 
       <div style={cardsWrapper}>
-        {clubs.map((club) => (
-          <ClubPanel
-            key={club._id}
-            name={club.name}
-            img={`http://localhost:5050${club.image}`}
-            description={club.description}
-            tag={club.tag}
-            onApprove={(status) => handleApproveClub(club._id, status)}
-          />
-        ))}
+        {clubs.map((club) => {
+          const imageUrl = resolveImageSrc(club.image);
+
+          return (
+            <ClubCard
+              key={club._id}
+              club={{ ...club, imageUrl }}
+              variant="admin"
+              onAdminDecision={(status) => handleApproveClub(club._id, status)}
+            />
+          );
+        })}
       </div>
     </main>
   );
