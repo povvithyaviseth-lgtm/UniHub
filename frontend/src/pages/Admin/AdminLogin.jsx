@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAdminStore } from "../../store/admin.js";
 import {
   containerStyle,
@@ -23,6 +22,8 @@ import {
 
 // ✅ Ensure global font + base styles from index.css are applied
 import "../../index.css";
+
+const navigate = useNavigate();
 
 const AdminLogin = () => {
   const {
