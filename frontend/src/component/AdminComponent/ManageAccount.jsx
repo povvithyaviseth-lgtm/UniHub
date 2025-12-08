@@ -1,5 +1,7 @@
+// src/component/AdminComponent/ManageAccount.jsx
 import { useState, useEffect } from "react";
-import { ConfirmDeleteStudent } from "../ConfimButton.jsx";
+import ConfirmDeleteModal from "../ConfirmDeleteModal.jsx";
+import "../../index.css"; // global fonts + animations
 
 export default function ManageAccount() {
   const [students, setStudents] = useState([]);
@@ -13,7 +15,9 @@ export default function ManageAccount() {
         const response = await fetch(`/api/admins/getStudents`);
         if (!response.ok) {
           const txt = await response.text();
-          throw new Error(`Failed to fetch students: ${response.status} ${txt}`);
+          throw new Error(
+            `Failed to fetch students: ${response.status} ${txt}`
+          );
         }
         const result = await response.json();
         setStudents(Array.isArray(result) ? result : []);
@@ -89,8 +93,6 @@ export default function ManageAccount() {
       style={{
         margin: "40px 0",
         padding: "0 24px 60px",
-        fontFamily:
-          '-apple-system, BlinkMacSystemFont, "Inter", system-ui, sans-serif',
         color: "#111827",
       }}
     >
@@ -98,37 +100,41 @@ export default function ManageAccount() {
         <h1 style={{ fontSize: 32, fontWeight: 700, margin: 0 }}>
           Manage Accounts
         </h1>
-        <p style={{ margin: 0, fontSize: 14, color: "#6B7280" }}>
-        </p>
+        <p style={{ margin: 0, fontSize: 14, color: "#6B7280" }}></p>
       </header>
 
       {/* Student list */}
       <section style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-        {students.map((student) => {
+        {students.map((student, index) => {
           const isUpdating = updatingRoleIds.includes(student._id);
 
           return (
             <article
               key={student._id}
+              className="cd-list-item-anim"
               style={{
                 background: "#FFFFFF",
                 border: "1px solid #E5E7EB",
                 borderRadius: 22,
                 padding: "18px 22px",
                 display: "grid",
-                gridTemplateColumns: "1fr auto",  // 2-column layout
+                gridTemplateColumns: "1fr auto",
                 alignItems: "center",
                 width: 1150,
                 boxShadow: "0 4px 12px rgba(0,0,0,0.06)",
-                transition: "transform 0.16s ease, box-shadow 0.16s ease",
+                transition:
+                  "transform 0.16s ease, box-shadow 0.16s ease, opacity 0.16s ease",
+                animationDelay: `${index * 40}ms`,
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = "translateY(-2px)";
-                e.currentTarget.style.boxShadow = "0 10px 24px rgba(15,23,42,0.14)";
+                e.currentTarget.style.boxShadow =
+                  "0 10px 24px rgba(15,23,42,0.14)";
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.06)";
+                e.currentTarget.style.boxShadow =
+                  "0 4px 12px rgba(0,0,0,0.06)";
               }}
             >
               {/* LEFT COLUMN — USERNAME */}
@@ -154,10 +160,7 @@ export default function ManageAccount() {
               >
                 {/* CHANGE ROLE BUTTON */}
                 <button
-                  onClick={() =>
-                    !updatingRoleIds.includes(student._id) &&
-                    handleToggleRole(student)
-                  }
+                  onClick={() => !isUpdating && handleToggleRole(student)}
                   style={{
                     background:
                       student.role === "club owner" ? "#166534" : "#176b2b",
@@ -166,9 +169,9 @@ export default function ManageAccount() {
                     borderRadius: 999,
                     fontSize: 14,
                     fontWeight: 600,
-                    cursor: updatingRoleIds.includes(student._id) ? "wait" : "pointer",
+                    cursor: isUpdating ? "wait" : "pointer",
                     border: "none",
-                    opacity: updatingRoleIds.includes(student._id) ? 0.6 : 1,
+                    opacity: isUpdating ? 0.6 : 1,
                     transition: "background 0.15s ease",
                     whiteSpace: "nowrap",
                   }}
@@ -200,8 +203,6 @@ export default function ManageAccount() {
                 </button>
               </div>
             </article>
-
-
           );
         })}
 
@@ -217,8 +218,13 @@ export default function ManageAccount() {
         )}
       </section>
 
+      {/* Reusable delete confirmation modal */}
       {studentToDelete && (
-        <ConfirmDeleteStudent
+        <ConfirmDeleteModal
+          title="Delete user"
+          message="Are you sure you want to delete this user? This action cannot be undone."
+          confirmLabel="Delete user"
+          cancelLabel="Cancel"
           onConfirm={() => handleDeleteStudent(studentToDelete)}
           onCancel={() => setStudentToDelete(null)}
         />

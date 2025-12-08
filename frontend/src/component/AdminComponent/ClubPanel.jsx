@@ -1,5 +1,6 @@
 // src/components/.../ClubPanel.jsx
 import { useState } from "react";
+import "../../index.css"; // ✅ ensure global + club-card styles are loaded
 
 export const ClubPanel = ({ name, img, description, tag, onApprove }) => {
   const [hovered, setHovered] = useState(false);
@@ -28,104 +29,46 @@ export const ClubPanel = ({ name, img, description, tag, onApprove }) => {
 
   return (
     <article
-      style={{
-        position: "relative",
-        background: "#FFFFFF",
-        borderRadius: 26,
-        border: "1.7px solid #E5E7EB",
-        boxShadow: hovered
-          ? "0 10px 24px rgba(15, 23, 42, 0.14)"
-          : "0 4px 12px rgba(15, 23, 42, 0.06)",
-        overflow: "hidden",
-        display: "flex",
-        flexDirection: "column",
-        cursor: "pointer",
-        transition: "transform 0.18s ease, box-shadow 0.18s ease",
-        transform: hovered ? "translateY(-2px)" : "translateY(0)",
-        minHeight: 320,
-        width: "100%",
-        maxWidth: 430,
-      }}
+      className="club-card club-card--owner" // ✅ uses your .club-card CSS now
       aria-label={`${name} card`}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
       {/* Base content: image + name */}
-      <div>
-        <div
-          style={{
-            position: "relative",
-            margin: 16,
-            marginBottom: 10,
-            borderRadius: 12,
-            overflow: "hidden",
-            background: "#227246",
-            aspectRatio: "16 / 10",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
+      <div className="club-card-main">
+        <div className="club-card-cover">
           {imageSrc ? (
             <img
               src={imageSrc}
               alt={`${name} cover`}
-              style={{
-                position: "absolute",
-                inset: 0,
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-              }}
+              className="club-card-cover-image"
               loading="lazy"
               onError={(e) => {
                 e.currentTarget.style.display = "none";
               }}
             />
           ) : (
-            <span
-              style={{
-                fontSize: 13,
-                color: "#D1FAE5",
-                padding: 8,
-                textAlign: "center",
-              }}
-            >
+            <span className="club-card-cover-placeholder">
               No image uploaded
             </span>
           )}
         </div>
 
-        <div
-          style={{
-            padding: "0 16px 16px 16px",
-          }}
-        >
-          <div
-            style={{
-              color: "#111827",
-              fontSize: 35,
-              fontWeight: 700,
-              lineHeight: 1.2,
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              textAlign: "center",
-            }}
-          >
-            {name}
-          </div>
+        <div className="club-card-title-wrap">
+          <div className="club-card-title">{name}</div>
         </div>
       </div>
 
       {/* Hover overlay */}
       {hovered && (
         <div
+          className="club-card-overlay"
           style={{
-            position: "absolute",
-            inset: 0,
-            background: "rgba(255, 255, 255, 0.98)",
-            color: "#0F172A",
+            // reuse your fade-up animation used elsewhere
+            opacity: 0,
+            animation: "cdFadeUpList 0.28s ease-out",
+            animationFillMode: "forwards",
+            // plus some spacing tweaks specific to this admin overlay
             display: "flex",
             flexDirection: "column",
             padding: 16,

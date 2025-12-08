@@ -58,7 +58,6 @@ export const clubTitle = {
   height: 38,
   color: "black",
   fontSize: 32,
-  fontFamily: "Inter",
   fontWeight: "700",
   wordWrap: "break-word",
 };
@@ -68,7 +67,6 @@ export const clubDescription = {
   flex: "1 1 0",
   color: "black",
   fontSize: 20,
-  fontFamily: "Inter",
   fontWeight: "400",
   wordWrap: "break-word",
 };
@@ -104,7 +102,6 @@ export const denyBtnText = {
   flexDirection: "column",
   color: "white",
   fontSize: 18.21,
-  fontFamily: "Inter",
   fontWeight: "700",
   wordWrap: "break-word",
 };
@@ -140,7 +137,6 @@ export const approveBtnText = {
   flexDirection: "column",
   color: "white",
   fontSize: 18.21,
-  fontFamily: "Inter",
   fontWeight: "700",
   wordWrap: "break-word",
 };
@@ -176,7 +172,6 @@ export const closeBtnText = {
   flexDirection: "column",
   color: "#6B6767",
   fontSize: 32,
-  fontFamily: "Inter",
   fontWeight: "700",
   wordWrap: "break-word",
 };
@@ -204,7 +199,6 @@ export const divider = {
 export const leaderTextBold = {
   color: "black",
   fontSize: 20,
-  fontFamily: "Inter",
   fontWeight: "700",
   wordWrap: "break-word",
 };
@@ -212,7 +206,6 @@ export const leaderTextBold = {
 export const leaderTextNormal = {
   color: "black",
   fontSize: 20,
-  fontFamily: "Inter",
   fontWeight: "400",
   wordWrap: "break-word",
 };
@@ -220,7 +213,6 @@ export const leaderTextNormal = {
 export const contactTextBold = {
   color: "black",
   fontSize: 20,
-  fontFamily: "Inter",
   fontWeight: "700",
   wordWrap: "break-word",
 };
@@ -228,9 +220,7 @@ export const contactTextBold = {
 export const contactTextLink = {
   color: "#0091A1",
   fontSize: 20,
-  fontFamily: "Inter",
   fontWeight: "400",
   textDecoration: "underline",
   wordWrap: "break-word",
 };
-

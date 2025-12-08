@@ -1,6 +1,7 @@
-// src/components/.../DeleteClub.jsx
+// src/component/AdminComponent/DeleteClub.jsx
 import { useState, useEffect } from "react";
-import { ConfirmDeleteClub } from "../ConfimButton.jsx";
+import ConfirmDeleteModal from "../ConfirmDeleteModal.jsx";
+import "../../index.css"; // global fonts + animations
 
 export default function DeleteClub() {
   const [clubs, setClubs] = useState([]);
@@ -44,11 +45,8 @@ export default function DeleteClub() {
   return (
     <main
       style={{
-        // let it stretch inside your layout, just keep some padding from edges
         margin: "40px 0",
         padding: "0 24px 40px",
-        fontFamily:
-          '-apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif',
         color: "#111827",
       }}
     >
@@ -84,9 +82,10 @@ export default function DeleteClub() {
           gap: 10,
         }}
       >
-        {clubs.map((club) => (
+        {clubs.map((club, index) => (
           <article
             key={club._id}
+            className="cd-list-item-anim"
             style={{
               position: "relative",
               background: "#FFFFFF",
@@ -98,8 +97,10 @@ export default function DeleteClub() {
               alignItems: "center",
               justifyContent: "space-between",
               minHeight: 48,
-              width: 1150,              // stretch across available space
-              transition: "transform 0.16s ease, box-shadow 0.16s ease",
+              width: 1150,
+              transition:
+                "transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease",
+              animationDelay: `${index * 40}ms`, // staggered entrance
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.transform = "translateY(-2px)";
@@ -112,10 +113,10 @@ export default function DeleteClub() {
                 "0 4px 12px rgba(15, 23, 42, 0.06)";
             }}
           >
-            {/* Left: club name (and could add tags later if you want) */}
+            {/* Left: club name */}
             <div
               style={{
-                minWidth: 0, // allow ellipsis
+                minWidth: 0,
                 marginRight: 16,
               }}
             >
@@ -158,7 +159,7 @@ export default function DeleteClub() {
                   alignItems: "center",
                   gap: 6,
                   transition:
-                    "background-color 0.12s ease, border-color 0.12s ease",
+                    "background-color 0.16s ease, border-color 0.16s ease, transform 0.12s ease",
                 }}
               >
                 <span>Delete club</span>
@@ -179,10 +180,13 @@ export default function DeleteClub() {
         )}
       </section>
 
-      {/* Minimal confirmation popup */}
+      {/* Reusable delete confirmation modal */}
       {clubToDelete && (
-        <ConfirmDeleteClub
-          clubName={clubToDelete.name}
+        <ConfirmDeleteModal
+          title="Delete club"
+          message={`Are you sure you want to delete "${clubToDelete.name}"? This action cannot be undone.`}
+          confirmLabel="Delete club"
+          cancelLabel="Cancel"
           onConfirm={() => handleDeleteClub(clubToDelete._id)}
           onCancel={() => setClubToDelete(null)}
         />

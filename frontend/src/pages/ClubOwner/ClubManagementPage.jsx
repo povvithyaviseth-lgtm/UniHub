@@ -2,6 +2,9 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import PopUpModals from "../../component/PopUpModals.jsx";
 import CreateClubPopUp from "../../component/ClubOwnerComponent/CreateClubPopUp.jsx";
+import ClubManagementHeader from "../../component/ClubOwnerComponent/ClubManagementHeader.jsx";
+import ClubsGrid from "../../component/ClubOwnerComponent/ClubsGrid.jsx";
+import "../../index.css"; // ✅ ensure fadeInUp + fonts are available
 
 const API_BASE_URL = "http://localhost:5050";
 
@@ -29,234 +32,6 @@ function resolveImageSrc(image) {
 
   // 3) Prefix with backend host
   return `${API_BASE_URL}${path}`;
-}
-
-// Card component for each club
-function ClubCard({ club }) {
-  const [hovered, setHovered] = React.useState(false);
-  const isPending = club.status === "pending";
-  const imageSrc = resolveImageSrc(club.image);
-  const navigate = useNavigate();
-
-  const handleGoToConsole = () => {
-    // This connects directly to ClubDashboard via your route:
-    // <Route path="/console/clubs/:clubId" element={<ClubDashboard />} />
-    navigate(`/console/clubs/${club._id}`);
-  };
-
-  // Split tags by comma and put each on its own line
-  const rawTag = club.tag || "No tag";
-  const tagLines = rawTag
-    .split(",")
-    .map((t) => t.trim())
-    .filter(Boolean);
-
-  return (
-    <article
-      style={{
-        position: "relative",
-        background: "#fff",
-        borderRadius: 16,
-        boxShadow: hovered
-          ? "0 12px 26px rgba(15, 23, 42, 0.16)"
-          : "0 6px 16px rgba(15, 23, 42, 0.08)",
-        overflow: "hidden",
-        display: "flex",
-        flexDirection: "column",
-        cursor: "pointer",
-        transition: "transform 0.18s ease, box-shadow 0.18s ease",
-        transform: hovered ? "translateY(-3px)" : "translateY(0)",
-        minHeight: 340,
-      }}
-      aria-label={`${club.name} card`}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      onClick={handleGoToConsole}
-    >
-      {/* Base content: image + name */}
-      <div>
-        <div
-          style={{
-            position: "relative",
-            margin: 20,
-            marginBottom: 12,
-            borderRadius: 15,
-            overflow: "hidden",
-            background: "#AEFFD2",
-            aspectRatio: "16 / 10",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          {imageSrc ? (
-            <img
-              src={imageSrc}
-              alt={`${club.name} cover`}
-              style={{
-                position: "absolute",
-                inset: 0,
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-              }}
-              loading="lazy"
-              onError={(e) => {
-                e.currentTarget.style.display = "none";
-              }}
-            />
-          ) : (
-            <span
-              style={{
-                fontSize: 14,
-                color: "#065F46",
-                padding: 8,
-                textAlign: "center",
-              }}
-            >
-              No image uploaded
-            </span>
-          )}
-        </div>
-
-        <div
-          style={{
-            padding: "0 20px 20px 20px",
-          }}
-        >
-          <div
-            style={{
-              color: "#000",
-              fontSize: 32,
-              fontWeight: 800,
-              lineHeight: 3.2,
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              textAlign: "center",
-            }}
-          >
-            {club.name}
-          </div>
-        </div>
-      </div>
-
-      {/* Hover overlay */}
-      {hovered && (
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            background: "#FFFFFF",
-            color: "#0F172A",
-            display: "flex",
-            flexDirection: "column",
-            padding: 20,
-            boxSizing: "border-box",
-            borderRadius: 16,
-            border: "1px solid #E5E7EB",
-          }}
-          onClick={(e) => e.stopPropagation()} // keep card click from firing if you click inside
-        >
-          {/* Tag + Status row */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "flex-start",
-              gap: 8,
-              flexWrap: "wrap",
-              marginBottom: 10,
-              width: "100%",
-            }}
-          >
-            {/* Tags stacked vertically */}
-            <div
-              style={{
-                fontSize: 13,
-                fontWeight: 600,
-                padding: "4px 10px",
-                borderRadius: 10,
-                background: "#ECFDF3",
-                color: "#166534",
-                maxWidth: "60%",
-                display: "flex",
-                flexDirection: "column",
-                lineHeight: 1.3,
-              }}
-            >
-              {tagLines.length > 0 ? (
-                tagLines.map((tag, idx) => (
-                  <span key={idx}>
-                    {tag}
-                    {idx < tagLines.length - 1 ? "," : ""}
-                  </span>
-                ))
-              ) : (
-                <span>No tag</span>
-              )}
-            </div>
-
-            {/* Status pill */}
-            <div
-              style={{
-                marginLeft: "auto",
-                padding: "4px 10px",
-                borderRadius: 999,
-                fontSize: 11,
-                fontWeight: 700,
-                backgroundColor: isPending ? "#F3F4F6" : "#DCFCE7",
-                color: isPending ? "#4B5563" : "#166534",
-                textTransform: "uppercase",
-                letterSpacing: 0.5,
-                whiteSpace: "nowrap",
-              }}
-            >
-              {isPending ? "Pending approval" : "Approved"}
-            </div>
-          </div>
-
-          {/* Scrollable description */}
-          <div
-            style={{
-              fontSize: 17,
-              lineHeight: 1.4,
-              color: "#4B5563",
-              marginBottom: 16,
-              flex: 1,
-              maxHeight: 150,
-              overflowY: "auto",
-            }}
-          >
-            {club.description || "No description provided."}
-          </div>
-
-          {/* Single "More" button to go to that club's console */}
-          <div
-            style={{
-              marginTop: "auto",
-              display: "flex",
-              justifyContent: "flex-end",
-            }}
-          >
-            <button
-              type="button"
-              className="btn-primary"
-              style={{
-                minWidth: 285,
-                height: 60,
-                borderRadius: 999,
-                fontSize: 24,
-                fontWeight: 600,
-              }}
-              onClick={handleGoToConsole}
-            >
-              More
-            </button>
-          </div>
-        </div>
-      )}
-    </article>
-  );
 }
 
 export default function ClubManagement() {
@@ -491,6 +266,9 @@ export default function ClubManagement() {
           flexWrap: "wrap",
           gap: 16,
           alignItems: "stretch",
+          // ✅ Smooth fade-in + move up for the whole page content
+          opacity: 0,
+          animation: "fadeInUp 0.45s ease-out forwards",
         }}
       >
         {/* ================= Main ================= */}
@@ -502,99 +280,38 @@ export default function ClubManagement() {
           }}
           aria-label="Main content"
         >
-          <header
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              alignItems: "center",
-              justifyContent: "space-between",
-              gap: 12,
-              padding: "10px 10px 0",
-            }}
-          >
-            <div>
-              <div
-                style={{
-                  color: "black",
-                  fontSize: 40,
-                  fontWeight: 700,
-                  lineHeight: 1.15,
-                }}
-              >
-                Club Management Console
-              </div>
-            </div>
-
-            <div
-              style={{ display: "flex", flexDirection: "column", gap: "6px" }}
-            >
-              <button
-                type="button"
-                className="btn-primary"
-                style={{
-                  width: "100%",
-                  minWidth: 220,
-                  height: 41,
-                  fontSize: 17,
-                }}
-                onClick={handleGoHome}
-              >
-                Back
-              </button>
-
-              <button
-                type="button"
-                className="btn-primary"
-                style={{
-                  width: "100%",
-                  minWidth: 220,
-                  height: 41,
-                  fontSize: 17,
-                }}
-                onClick={handleOpenCreate}
-              >
-                Create A New Club
-              </button>
-            </div>
-          </header>
+          <ClubManagementHeader
+            onBack={handleGoHome}
+            onCreate={handleOpenCreate}
+          />
 
           {/* Clubs grid */}
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-              gap: 20,
-              padding: 20,
-            }}
-          >
-            {loadingClubs && (
-              <div style={{ fontSize: 18, color: "#707070" }}>
-                Loading your clubs...
-              </div>
-            )}
-
-            {!loadingClubs && clubs.length === 0 && (
-              <div style={{ fontSize: 18, color: "#707070" }}>
-                You don’t manage any clubs yet. Click “Create New Club” to
-                start one!
-              </div>
-            )}
-
-            {!loadingClubs &&
-              clubs.map((club) => <ClubCard key={club._id} club={club} />)}
-          </div>
+          <ClubsGrid
+            loading={loadingClubs}
+            clubs={clubs}
+            resolveImageSrc={resolveImageSrc}
+            onCardClick={(club) => navigate(`/console/clubs/${club._id}`)}
+          />
         </section>
       </div>
 
       {/* ====== CREATE DIALOG ====== */}
       <PopUpModals open={showCreate} onClose={() => setShowCreate(false)}>
-        <CreateClubPopUp
-          title="Create Club"
-          confirmText="Submit"
-          cancelText="Cancel"
-          onCancel={() => setShowCreate(false)}
-          onCreate={handleCreate}
-        />
+        {/* ✅ Smooth fade-in for CREATE modal */}
+        <div
+          style={{
+            opacity: 0,
+            animation: "fadeInUp 0.38s ease-out forwards",
+          }}
+        >
+          <CreateClubPopUp
+            title="Create Club"
+            confirmText="Submit"
+            cancelText="Cancel"
+            onCancel={() => setShowCreate(false)}
+            onCreate={handleCreate}
+          />
+        </div>
       </PopUpModals>
 
       {/* ====== EDIT DIALOG ====== */}
@@ -605,20 +322,28 @@ export default function ClubManagement() {
           setEditingClub(null);
         }}
       >
-        <CreateClubPopUp
-          title="Edit Club"
-          confirmText="Save Changes"
-          cancelText="Cancel"
-          onCancel={() => {
-            setShowEdit(false);
-            setEditingClub(null);
+        {/* ✅ Same smooth fade-in for EDIT modal */}
+        <div
+          style={{
+            opacity: 0,
+            animation: "fadeInUp 0.38s ease-out forwards",
           }}
-          onCreate={handleEdit}
-          initialName={editingClub?.name}
-          initialTag={editingClub?.tag}
-          initialDescription={editingClub?.description}
-          initialImage={editingClub?.image}
-        />
+        >
+          <CreateClubPopUp
+            title="Edit Club"
+            confirmText="Save Changes"
+            cancelText="Cancel"
+            onCancel={() => {
+              setShowEdit(false);
+              setEditingClub(null);
+            }}
+            onCreate={handleEdit}
+            initialName={editingClub?.name}
+            initialTag={editingClub?.tag}
+            initialDescription={editingClub?.description}
+            initialImage={editingClub?.image}
+          />
+        </div>
       </PopUpModals>
     </div>
   );

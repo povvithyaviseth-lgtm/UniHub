@@ -1,23 +1,24 @@
-// AdminConsole.jsx
+// src/pages/Admin/AdminDashboard.jsx (AdminConsole.jsx)
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   containerStyle,
   sidebarStyle,
   welcomeStyle,
-  menuTitleStyle,
-  menuSubtitleStyle,
-} from "../../style/AdminApprovalStyle";
+} from "../../Style/AdminApprovalStyle";
 
 import {
   activeBtn,
   unActiveBtn,
   signoutBtn,
-} from "../../style/ButtonStyle.jsx";
+} from "../../Style/ButtonStyle.jsx";
 
 import ApproveClub from "../../component/AdminComponent/ApproveClub.jsx";
 import DeleteClub from "../../component/AdminComponent/DeleteClub.jsx";
 import ManageAccount from "../../component/AdminComponent/ManageAccount.jsx";
+
+// make sure global fonts / base styles from index.css are applied
+import "../../index.css";
 
 const AdminDashboard = () => {
   const [activationStatus, setActivationStatus] = useState("Approval");
@@ -32,7 +33,7 @@ const AdminDashboard = () => {
     <div
       style={{
         ...containerStyle,
-        minHeight: "100vh", // make whole layout at least viewport height
+        minHeight: "100vh",
       }}
     >
       {/* Sidebar */}
@@ -41,7 +42,7 @@ const AdminDashboard = () => {
           ...sidebarStyle,
           display: "flex",
           flexDirection: "column",
-          minHeight: "100vh", // ensure sidebar stretches full height
+          minHeight: "100vh",
           boxSizing: "border-box",
           padding: "24px 20px",
         }}
@@ -55,39 +56,30 @@ const AdminDashboard = () => {
             display: "flex",
             flexDirection: "column",
             gap: 10,
-            flexGrow: 1, // pushes Sign Out to bottom
+            flexGrow: 1,
           }}
         >
           <button
-            style={{
-              ...(activationStatus === "Approval" ? activeBtn : unActiveBtn),
-              width: "100%",
-              textAlign: "left",
-            }}
+            type="button"
+            style={activationStatus === "Approval" ? activeBtn : unActiveBtn}
             onClick={() => setActivationStatus("Approval")}
           >
             Approve Clubs
           </button>
 
           <button
-            style={{
-              ...(activationStatus === "Delete" ? activeBtn : unActiveBtn),
-              width: "100%",
-              textAlign: "left",
-            }}
+            type="button"
+            style={activationStatus === "Delete" ? activeBtn : unActiveBtn}
             onClick={() => setActivationStatus("Delete")}
           >
             Delete Clubs
           </button>
 
           <button
-            style={{
-              ...(activationStatus === "ManageAccount"
-                ? activeBtn
-                : unActiveBtn),
-              width: "100%",
-              textAlign: "left",
-            }}
+            type="button"
+            style={
+              activationStatus === "ManageAccount" ? activeBtn : unActiveBtn
+            }
             onClick={() => setActivationStatus("ManageAccount")}
           >
             Manage Accounts
@@ -95,14 +87,7 @@ const AdminDashboard = () => {
         </nav>
 
         {/* Sign out at bottom */}
-        <button
-          style={{
-            ...signoutBtn,
-            width: "100%",
-            marginTop: 16,
-          }}
-          onClick={handleSignOut}
-        >
+        <button type="button" style={signoutBtn} onClick={handleSignOut}>
           Sign Out
         </button>
       </aside>

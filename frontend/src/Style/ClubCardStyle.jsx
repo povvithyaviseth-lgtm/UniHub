@@ -1,22 +1,21 @@
 export const cardContainer = {
-  background: 'white',
+  background: "white",
   borderRadius: 12,
-  boxShadow: '0 10px 30px rgba(0,0,0,0.08)',
+  boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
   padding: 16,
-  display: 'grid',
+  display: "grid",
   gap: 8,
 };
 
 export const title = {
-  fontFamily: 'Inter, sans-serif',
   fontWeight: 700,
 };
 
 export const description = {
-  color: '#707070',
+  color: "#707070",
 };
 
 export const memberCount = {
   fontSize: 13,
-  color: '#444',
+  color: "#444",
 };
