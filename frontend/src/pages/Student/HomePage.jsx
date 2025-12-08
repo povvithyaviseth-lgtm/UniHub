@@ -1134,7 +1134,6 @@ const HomePage = () => {
                 marginTop: 4,
               }}
             >
-              Explore By Category
             </div>
 
             {/* Tag buttons */}

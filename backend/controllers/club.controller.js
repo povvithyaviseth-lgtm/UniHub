@@ -3,6 +3,7 @@ import Club from '../models/club.model.js';
 
 import { 
   createClubService, 
+  getClubByIdService, 
   getClubsByOwner, 
   getClubsService,
   updateClubService
@@ -178,5 +179,37 @@ export const deleteClub = async (req, res) => {
     res.status(200).json({ success: true, message: "Club deleted successfully" });
   } catch (error) {
     res.status(500).json({ success: false, message: "Server Error" });
+  }
+};
+
+export const getClubById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const ownerId = req.user?.id; // from auth middleware (route is protected)
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid club ID' });
+    }
+
+    const club = await getClubByIdService(id); // will throw if not found
+
+    // OPTIONAL: make sure only the owner can view their club dashboard.
+    // If you want this endpoint to be public, remove this block.
+    if (ownerId && club.owner && club.owner.toString() !== ownerId) {
+      return res
+        .status(403)
+        .json({ message: 'Not allowed to view this club' });
+    }
+
+    return res.status(200).json({ club });
+  } catch (err) {
+    console.error('Error fetching club by id:', err);
+
+    // if service set statusCode (e.g. 404)
+    const status = err.statusCode || 500;
+    const message =
+      err.statusCode === 404 ? err.message || 'Club not found' : 'Server error fetching club';
+
+    return res.status(status).json({ message });
   }
 };

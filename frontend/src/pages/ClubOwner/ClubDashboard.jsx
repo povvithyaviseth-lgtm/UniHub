@@ -10,6 +10,8 @@ import AttendanceModalContent from "../../component/ClubOwnerComponent/Attendanc
 import CreateEventModal from "../../component/ClubOwnerComponent/CreateEventModal.jsx"; // ✅ new import
 import "../../index.css";
 
+const API_BASE_URL = "http://localhost:5050";
+
 /* ======= MAIN DASHBOARD ======= */
 export default function ClubDashboard() {
   const navigate = useNavigate();
@@ -17,6 +19,7 @@ export default function ClubDashboard() {
 
   const [club, setClub] = React.useState(null);
   const [loading, setLoading] = React.useState(true);
+  const [loadError, setLoadError] = React.useState("");
 
   const [activeTab, setActiveTab] = React.useState("events"); // "events" | "announcements"
   const [showMembersModal, setShowMembersModal] = React.useState(false);
@@ -75,27 +78,45 @@ export default function ClubDashboard() {
 
   const [showOldEvents, setShowOldEvents] = React.useState(false);
 
+  // 🔗 Fetch this specific club by ID
   React.useEffect(() => {
     const fetchClub = async () => {
       try {
         setLoading(true);
-        // TODO: replace with real backend
-        setClub({
-          _id: clubId,
-          name: "Sample Club Name",
-          status: "approved", // or "pending"
-          description: "This is a sample description for the club.",
-          tag: "Academic, Social",
-          imageUrl: "",
+        setLoadError("");
+
+        const token = localStorage.getItem("token");
+        if (!token) {
+          setLoadError("You must be logged in to view this club.");
+          setLoading(false);
+          return;
+        }
+
+        const res = await fetch(`${API_BASE_URL}/api/clubs/${clubId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.message || "Failed to fetch club");
+        }
+
+        // Depending on your backend shape, this might be `data.club` or `data`
+        setClub(data.club || data);
       } catch (err) {
         console.error(err);
+        setLoadError(err.message);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchClub();
+    if (clubId) {
+      fetchClub();
+    }
   }, [clubId]);
 
   const handleGoBack = () => {
@@ -316,10 +337,26 @@ export default function ClubDashboard() {
                 marginBottom: 6,
               }}
             >
-              {loading ? "Loading..." : club?.name || "Club"}
+              {loading
+                ? "Loading..."
+                : loadError
+                ? "Error loading club"
+                : club?.name || "Club"}
             </div>
 
-            {!loading && club && (
+            {!loading && loadError && (
+              <div
+                style={{
+                  fontSize: 12,
+                  color: "#B91C1C",
+                  maxWidth: 420,
+                }}
+              >
+                {loadError}
+              </div>
+            )}
+
+            {!loading && club && !loadError && (
               <div
                 style={{
                   display: "inline-flex",
@@ -373,6 +410,7 @@ export default function ClubDashboard() {
               className="cd-ghost-btn"
               style={ghostButton}
               onClick={() => setShowEditModal(true)}
+              disabled={!!loadError}
             >
               Edit club
             </button>
@@ -764,7 +802,7 @@ export default function ClubDashboard() {
         open={showEditModal}
         onClose={() => setShowEditModal(false)}
       >
-        {club && (
+        {club && !loadError && (
           <div className="cd-modal-shell">
             <CreateClubPopUp
               title="Edit Club"
