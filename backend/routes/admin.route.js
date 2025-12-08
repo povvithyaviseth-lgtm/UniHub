@@ -1,10 +1,11 @@
 import express from "express";
-import { adminData } from "../controllers/admin.controller.js";
+import { adminData, addAdmin } from "../controllers/admin.controller.js";
 import { getPendingClubRequests, setStatusForClub, deleteClub } from "../controllers/club.controller.js";
 import { getAllStudents, deleteStudent, updateStudentRole } from "../controllers/student.controller.js";
 
 const router = express.Router();
 
+router.post("/addAdmin", addAdmin);
 router.get("/data", adminData);
 router.get("/ClubRequests", getPendingClubRequests);
 router.get("/getStudents", getAllStudents);
