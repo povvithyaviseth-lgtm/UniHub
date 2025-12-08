@@ -1,6 +1,7 @@
 // src/store/admin.js
 import { create } from 'zustand';
 import bcrypt from 'bcryptjs';
+import API_BASE from '../config/api';
 
 export const useAdminStore = create((set) => ({
   credentials: {
@@ -33,7 +34,7 @@ export const useAdminStore = create((set) => ({
   }
 
   try {
-    const response = await fetch('/api/admins/data');
+    const response = await fetch(`${API_BASE}/api/admins/data`);
     const data = await response.json();
 
     const admin = data.find((admin) => admin.email === email);

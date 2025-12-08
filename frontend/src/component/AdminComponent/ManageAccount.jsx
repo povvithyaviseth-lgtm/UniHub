@@ -1,5 +1,6 @@
 // src/component/AdminComponent/ManageAccount.jsx
 import { useState, useEffect } from "react";
+import API_BASE from "../../config/api";
 import ConfirmDeleteModal from "../ConfirmDeleteModal.jsx";
 import "../../index.css"; // global fonts + animations
 
@@ -12,7 +13,7 @@ export default function ManageAccount() {
   useEffect(() => {
     const fetchStudents = async () => {
       try {
-        const response = await fetch(`/api/admins/getStudents`);
+        const response = await fetch(`${API_BASE}/api/admins/getStudents`);
         if (!response.ok) {
           const txt = await response.text();
           throw new Error(
@@ -32,7 +33,7 @@ export default function ManageAccount() {
   // Delete student
   const handleDeleteStudent = async (id) => {
     try {
-      const response = await fetch(`/api/admins/deleteStudent/${id}`, {
+      const response = await fetch(`${API_BASE}/api/admins/deleteStudent/${id}`, {
         method: "DELETE",
       });
 
@@ -61,7 +62,7 @@ export default function ManageAccount() {
     setUpdatingRoleIds((prev) => [...prev, id]);
 
     try {
-      const res = await fetch(`/api/admins/updateStudentRole/${id}`, {
+      const res = await fetch(`${API_BASE}/api/admins/updateStudentRole/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ role: newRole }),

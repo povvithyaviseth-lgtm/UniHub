@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import API_BASE from '../config/api';
 
 export const useStudentStore = create((set, get) => {
   // Try to hydrate from localStorage on store creation
@@ -85,7 +86,7 @@ export const useStudentStore = create((set, get) => {
       }
 
       try {
-        const response = await fetch('/api/students/signup', {
+        const response = await fetch(`${API_BASE}/api/students/signup`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -128,7 +129,7 @@ export const useStudentStore = create((set, get) => {
       setLoading(true);
 
       try {
-        const response = await fetch('/api/students/login', {
+        const response = await fetch(`${API_BASE}/api/students/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

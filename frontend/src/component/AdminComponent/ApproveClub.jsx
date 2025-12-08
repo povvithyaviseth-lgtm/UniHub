@@ -1,7 +1,7 @@
 import { mainStyle, titleStyle, cardsWrapper } from "../../Style/AdminApprovalStyle.jsx";
 import { useEffect, useState } from "react";
 import ClubCard from "../StudentComponent/ClubCard.jsx"; // 🔁 use shared card
-import API_BASE_URL from "../../config/api";
+import API_BASE from "../../config/api";
 
 function resolveImageSrc(image) {
   if (!image) return null;
@@ -13,7 +13,7 @@ function resolveImageSrc(image) {
   let path = image.replace(/\\/g, "/");
   if (!path.startsWith("/")) path = `/${path}`;
 
-  return `${API_BASE_URL}${path}`;
+  return `${API_BASE}${path}`;
 }
 
 export default function ApproveClub() {
@@ -21,7 +21,7 @@ export default function ApproveClub() {
 
   const fetchClubs = async () => {
     try {
-      const response = await fetch("/api/admins/ClubRequests");
+      const response = await fetch(`${API_BASE}/api/admins/ClubRequests`);
       const data = await response.json();
       setClubs(data);
     } catch (error) {
@@ -39,7 +39,7 @@ export default function ApproveClub() {
 
   const handleApproveClub = async (id, status) => {
     try {
-      const response = await fetch(`/api/admins/ClubRequests/${id}/status`, {
+      const response = await fetch(`${API_BASE}/api/admins/ClubRequests/${id}/status`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status }),
