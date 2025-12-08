@@ -3,7 +3,7 @@ import closeImg from "../../images/Close.png";
 import { useStudentStore } from "../../store/student";
 import { useNavigate } from "react-router-dom";
 
-import API_BASE from "../../config/api";
+const API_BASE = "http://localhost:5050";
 
 export default function Profile({
   onClose = () => {},

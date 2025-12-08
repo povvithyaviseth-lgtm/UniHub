@@ -6,7 +6,7 @@ import ClubManagementHeader from "../../component/ClubOwnerComponent/ClubManagem
 import ClubsGrid from "../../component/ClubOwnerComponent/ClubsGrid.jsx";
 import "../../index.css"; // ✅ ensure fadeInUp + fonts are available
 
-import API_BASE_URL from "../../config/api";
+const API_BASE_URL = "http://localhost:5050";
 
 /**
  * Turn whatever is stored in `club.image` into a browser-usable src.

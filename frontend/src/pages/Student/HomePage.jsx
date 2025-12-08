@@ -28,7 +28,7 @@ import { useStudentStore } from "../../store/student";
 import ClubCard from "../../component/StudentComponent/ClubCard.jsx";
 
 // ✅ backend base URL
-import API_BASE from "../../config/api";
+const API_BASE = "http://localhost:5050";
 
 /* ----------------------------- Scale helper ----------------------------- */
 /** Scales fixed-width children to fit the container width (<= maxScale). */
