@@ -20,46 +20,12 @@ connectDB();
 const app = express();
 app.use(express.json());
 
-// ---- CORS + Preflight (robust + echo what browser asks) ----
-app.use(cors({
-  origin: ['http://localhost:3000', 'https://unihub-10wy.onrender.com'], // allow only your frontend
-  credentials: true
-}));
-
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
-
-  // Log once so we can see what's hitting the server
-  console.log(`[${req.method}] ${req.path}  Origin=${origin || 'none'}`);
-
-  if (isDevLocal(origin)) {
-    // Always reflect back the requesting origin for dev
-    res.setHeader('Access-Control-Allow-Origin', origin || '*');
-    res.setHeader('Vary', 'Origin');
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-
-    // Echo the requested method/headers for preflight to avoid mismatches
-    const reqMethod = req.headers['access-control-request-method'];
-    const reqHeaders = req.headers['access-control-request-headers'];
-
-    res.setHeader(
-      'Access-Control-Allow-Methods',
-      reqMethod ? reqMethod : 'GET,POST,PUT,DELETE,OPTIONS,PATCH'
-    );
-    res.setHeader(
-      'Access-Control-Allow-Headers',
-      reqHeaders ? reqHeaders : 'Content-Type, Authorization'
-    );
-  }
-
-  // Short-circuit preflight so it never reaches routes/middleware
-  if (req.method === 'OPTIONS') {
-    return res.sendStatus(204);
-  }
-
-  next();
-});
-// ------------------------------------------------------------
+// Simple, robust CORS: reflect the request origin and allow credentials.
+// This will set `Access-Control-Allow-Origin` to the request's Origin header
+// which is suitable for development and controlled deployments.
+app.use(cors({ origin: true, credentials: true }));
+// Ensure preflight requests are handled
+app.options('*', cors({ origin: true, credentials: true }));
 
 app.use("/images", express.static(path.join(__dirname, "images")));
 
