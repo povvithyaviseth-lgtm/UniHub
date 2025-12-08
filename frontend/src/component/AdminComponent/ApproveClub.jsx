@@ -1,8 +1,7 @@
 import { mainStyle, titleStyle, cardsWrapper } from "../../Style/AdminApprovalStyle";
 import { useEffect, useState } from "react";
 import ClubCard from "../StudentComponent/ClubCard.jsx"; // 🔁 use shared card
-
-const API_BASE_URL = "http://localhost:5050";
+import API_BASE_URL from "../../config/api";
 
 function resolveImageSrc(image) {
   if (!image) return null;
