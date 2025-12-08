@@ -9,6 +9,8 @@ import studentRoutes from './routes/student.route.js';
 import adminRoutes from './routes/admin.route.js';
 import membershipRoutes from './routes/membership.route.js';
 
+import cors from 'cors';
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -20,7 +22,8 @@ app.use(express.json());
 
 // ---- CORS + Preflight (robust + echo what browser asks) ----
 app.use(cors({
-    origin: '*'
+  origin: ['http://localhost:3000', 'https://unihub-10wy.onrender.com'], // allow only your frontend
+  credentials: true
 }));
 
 app.use((req, res, next) => {
