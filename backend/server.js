@@ -19,16 +19,9 @@ const app = express();
 app.use(express.json());
 
 // ---- CORS + Preflight (robust + echo what browser asks) ----
-const isDevLocal = (origin) => {
-  if (!origin) return true; // tools or same-origin
-  try {
-    const u = new URL(origin);
-    const isLocalhost = u.hostname === 'localhost' || u.hostname === '127.0.0.1';
-    return isLocalhost && u.protocol === 'http:'; // allow any localhost port in dev
-  } catch {
-    return false;
-  }
-};
+app.use(cors({
+    origin: '*'
+}));
 
 app.use((req, res, next) => {
   const origin = req.headers.origin;
