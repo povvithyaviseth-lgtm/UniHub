@@ -23,9 +23,8 @@ import {
 // ✅ Ensure global font + base styles from index.css are applied
 import "../../index.css";
 
-const navigate = useNavigate();
-
 const AdminLogin = () => {
+  const navigate = useNavigate();
   const {
     credentials,
     setCredentials,
