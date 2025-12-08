@@ -13,7 +13,7 @@ body {
   margin: 0;
   background: #F8FAFC;
   /* 👇 global font for the whole app */
-  font-family: monospace, system-ui, sans-serif;
+  font-family: Inter, system-ui, Inter;
 }
 
 /* Reusable button styles */

@@ -736,7 +736,7 @@ export default function ClubDashboard() {
         </div>
       </div>
 
-      {/* ======= VIEW MEMBERS MODAL ======= */}
+      {/* ======= VIEW MEMBERS MODAL (now animated) ======= */}
       <PopUpModals
         open={showMembersModal}
         onClose={() => {
@@ -744,17 +744,19 @@ export default function ClubDashboard() {
           setConfirmKickId(null);
         }}
       >
-        <MembersModalContent
-          members={members}
-          confirmKickId={confirmKickId}
-          onKickClick={handleKickClick}
-          onCancelKick={handleCancelKick}
-          onConfirmKick={handleConfirmKick}
-          onClose={() => {
-            setShowMembersModal(false);
-            setConfirmKickId(null);
-          }}
-        />
+        <div className="cd-modal-shell">
+          <MembersModalContent
+            members={members}
+            confirmKickId={confirmKickId}
+            onKickClick={handleKickClick}
+            onCancelKick={handleCancelKick}
+            onConfirmKick={handleConfirmKick}
+            onClose={() => {
+              setShowMembersModal(false);
+              setConfirmKickId(null);
+            }}
+          />
+        </div>
       </PopUpModals>
 
       {/* ======= EDIT CLUB MODAL ======= */}
@@ -784,10 +786,12 @@ export default function ClubDashboard() {
         open={showCreateEventModal}
         onClose={() => setShowCreateEventModal(false)}
       >
-        <CreateEventModal
-          onSave={handleCreateEventSave}
-          onCancel={() => setShowCreateEventModal(false)}
-        />
+        <div className="cd-modal-shell">
+          <CreateEventModal
+            onSave={handleCreateEventSave}
+            onCancel={() => setShowCreateEventModal(false)}
+          />
+        </div>
       </PopUpModals>
 
       {/* ======= MARK ATTENDANCE MODAL ======= */}
