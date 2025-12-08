@@ -5,13 +5,13 @@ import {
   containerStyle,
   sidebarStyle,
   welcomeStyle,
-} from "../../Style/AdminApprovalStyle";
+} from "../../style/AdminApprovalStyle";
 
 import {
   activeBtn,
   unActiveBtn,
   signoutBtn,
-} from "../../Style/ButtonStyle.jsx";
+} from "../../style/ButtonStyle.jsx";
 
 import ApproveClub from "../../component/AdminComponent/ApproveClub.jsx";
 import DeleteClub from "../../component/AdminComponent/DeleteClub.jsx";

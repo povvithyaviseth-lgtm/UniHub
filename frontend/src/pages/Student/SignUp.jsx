@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useStudentStore } from '../../store/student.js';
-import * as styles from '../../Style/signUpPageStyle.jsx';
+import * as styles from '../../style/signUpPageStyle.jsx';
 
 const SignUp = () => {
   const {

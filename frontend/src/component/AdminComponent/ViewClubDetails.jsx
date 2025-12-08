@@ -22,7 +22,7 @@ import {
   leaderTextNormal,
   contactTextBold,
   contactTextLink,
-} from "../../Style/AdminClubApproveStyle";
+} from "../../style/AdminClubApproveStyle";
 import { ConfirmApproveClub, ConfirmDenyClub } from "../ConfimButton.jsx";
 
 // ✅ pull in global font + button styles, same as rest of app
