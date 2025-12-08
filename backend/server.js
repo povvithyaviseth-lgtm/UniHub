@@ -24,8 +24,21 @@ app.use(express.json());
 // This will set `Access-Control-Allow-Origin` to the request's Origin header
 // which is suitable for development and controlled deployments.
 app.use(cors({ origin: true, credentials: true }));
-// Ensure preflight requests are handled
-app.options('*', cors({ origin: true, credentials: true }));
+
+// Lightweight preflight responder: set common CORS headers and short-circuit OPTIONS.
+app.use((req, res, next) => {
+	const origin = req.headers.origin || '*';
+	res.setHeader('Access-Control-Allow-Origin', origin);
+	res.setHeader('Access-Control-Allow-Credentials', 'true');
+	res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS,PATCH');
+	res.setHeader('Access-Control-Allow-Headers', req.headers['access-control-request-headers'] || 'Content-Type, Authorization');
+
+	if (req.method === 'OPTIONS') {
+		return res.sendStatus(204);
+	}
+
+	next();
+});
 
 app.use("/images", express.static(path.join(__dirname, "images")));
 
