@@ -1,4 +1,4 @@
-import { mainStyle, titleStyle, cardsWrapper } from "../../style/AdminApprovalStyle";
+import { mainStyle, titleStyle, cardsWrapper } from "../../Style/AdminApprovalStyle.jsx";
 import { useEffect, useState } from "react";
 import ClubCard from "../StudentComponent/ClubCard.jsx"; // 🔁 use shared card
 import API_BASE_URL from "../../config/api";
