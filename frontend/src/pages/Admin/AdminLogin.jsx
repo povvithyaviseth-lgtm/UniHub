@@ -49,7 +49,7 @@ const AdminLogin = () => {
       if (!success) {
         setError(message || "Login failed");
       } else {
-        window.location.href = "/admin/dashboard";
+        navigate("/admin/dashboard");
       }
     } catch (err) {
       console.error("Login error:", err);
