@@ -127,7 +127,7 @@ const AdminLogin = () => {
             <div style={studentBox}>
               <div style={studentText}>Are you a Student?</div>
 
-              <Link to="/" style={studentLink}>
+              <Link to="/StudentLogin" style={studentLink}>
                 Click to go to Student Login
               </Link>
             </div>

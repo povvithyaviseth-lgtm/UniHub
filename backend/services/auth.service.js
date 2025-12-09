@@ -2,22 +2,21 @@ import bcrypt from 'bcryptjs';
 import Student from '../models/student.model.js';
 
 class AuthService {
+
   static async #hashPassword(password) {
     const saltRounds = 10;
-    const hashed = await bcrypt.hash(password, saltRounds);
-    return hashed;
+    return bcrypt.hash(password, saltRounds);
   }
 
   static async #checkUserExists(email) {
     const user = await Student.findOne({ email });
     return !!user;
-  } 
+  }
 
+  // SIGNUP
   static async userSignUp(email, password) {
     const exists = await this.#checkUserExists(email);
-    if (exists) {
-      throw new Error('User already exists');
-    }
+    if (exists) throw new Error('User already exists');
 
     const hashedPassword = await this.#hashPassword(password);
     const newUser = new Student({ email, password: hashedPassword });
@@ -25,10 +24,19 @@ class AuthService {
     return true;
   }
 
+  // ⭐ LOGIN
+  static async userLogin(email, password) {
+    const student = await Student.findOne({ email });
+    if (!student) return null;
+
+    const isMatch = await bcrypt.compare(password, student.password);
+    if (!isMatch) return null;
+
+    return student;  // return student object if login successful
+  }
 }
 
 export default AuthService;
-
 
 /* 
 TODO: Change this into standalone functions

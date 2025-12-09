@@ -1,13 +1,24 @@
 import express from 'express';
 import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { connectDB } from './config/db.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+dotenv.config({path: path.join(__dirname, ".env")});
+console.log("Loaded MONGO_URI:", process.env.MONGO_URI);
+
+connectDB();
 
 import clubsRoutes from './routes/club.route.js';
 import studentRoutes from './routes/student.route.js';
 import adminRoutes from './routes/admin.route.js';
+import announcementRoutes from "./routes/announcement.route.js";
 
-dotenv.config();
-connectDB();
+
+
 
 const app = express();
 app.use(express.json());
@@ -63,7 +74,7 @@ app.use((req, res, next) => {
 app.use('/api/students', studentRoutes);
 app.use('/api/admins', adminRoutes);
 app.use('/api', clubsRoutes);
-
+app.use("/api/announcements", announcementRoutes);
 // 404
 app.use((req, res) => res.status(404).json({ message: 'Route not found' }));
 

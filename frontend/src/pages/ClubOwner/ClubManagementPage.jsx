@@ -155,6 +155,7 @@ export default function ClubManagement() {
                   fontWeight: 700,
                   fontSize: 17,
                 }}
+                onClick={() => navigate("/ManageAnnouncement")} // ⬅️ added
               >
                 Announcements &nbsp; &gt;
               </button>
