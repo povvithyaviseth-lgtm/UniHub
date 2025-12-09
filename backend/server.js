@@ -47,8 +47,7 @@ app.use("/images", express.static(path.join(__dirname, "images")));
 app.use('/api/students', studentRoutes);
 app.use('/api/admins', adminRoutes);
 app.use('/api/clubs', clubsRoutes);
-app.use('/api/membership', membershipRoutes);
-app.use('/api/events', eventsRoutes);
+app.use('/api/clubs', membershipRoutes);
 
 // 404
 app.use((req, res) => res.status(404).json({ message: 'Route not found' }));
