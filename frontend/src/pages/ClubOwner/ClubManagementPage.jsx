@@ -1,3 +1,4 @@
+// src/pages/ClubOwner/ClubManagementPage.jsx
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import PopUpModals from "../../component/PopUpModals.jsx";
@@ -6,7 +7,7 @@ import ClubManagementHeader from "../../component/ClubOwnerComponent/ClubManagem
 import ClubsGrid from "../../component/ClubOwnerComponent/ClubsGrid.jsx";
 import "../../index.css"; // ✅ ensure fadeInUp + fonts are available
 
-import API_BASE_URL from "../../config/api";
+const API_BASE_URL = "http://localhost:5050";
 
 /**
  * Turn whatever is stored in `club.image` into a browser-usable src.
@@ -243,6 +244,12 @@ export default function ClubManagement() {
     </div>
   );
 
+  // 🔗 Helper that navigates to a club's dashboard
+  const goToClubDashboard = (club) => {
+    if (!club?._id) return;
+    navigate(`/console/clubs/${club._id}`);
+  };
+
   return (
     <div
       style={{
@@ -290,7 +297,10 @@ export default function ClubManagement() {
             loading={loadingClubs}
             clubs={clubs}
             resolveImageSrc={resolveImageSrc}
-            onCardClick={(club) => navigate(`/console/clubs/${club._id}`)}
+            // Clicking the card itself
+            onCardClick={goToClubDashboard}
+            // Clicking the card's "More" button (if ClubsGrid supports it)
+            onMoreClick={goToClubDashboard}
           />
         </section>
       </div>

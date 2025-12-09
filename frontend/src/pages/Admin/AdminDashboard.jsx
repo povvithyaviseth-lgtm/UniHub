@@ -5,7 +5,7 @@ import {
   containerStyle,
   sidebarStyle,
   welcomeStyle,
-} from "../../Style/AdminApprovalStyle.jsx";
+} from "../../Style/AdminApprovalStyle";
 
 import {
   activeBtn,

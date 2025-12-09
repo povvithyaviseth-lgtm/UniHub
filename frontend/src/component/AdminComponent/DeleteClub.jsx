@@ -1,6 +1,5 @@
 // src/component/AdminComponent/DeleteClub.jsx
 import { useState, useEffect } from "react";
-import API_BASE from "../../config/api";
 import ConfirmDeleteModal from "../ConfirmDeleteModal.jsx";
 import "../../index.css"; // global fonts + animations
 
@@ -11,7 +10,7 @@ export default function DeleteClub() {
   useEffect(() => {
     const fetchClubs = async () => {
       try {
-        const response = await fetch(`${API_BASE}/api/clubs`);
+        const response = await fetch("http://localhost:5050/api/clubs");
         const result = await response.json();
         setClubs(result.data || []);
       } catch (error) {
@@ -24,9 +23,12 @@ export default function DeleteClub() {
 
   const handleDeleteClub = async (id) => {
     try {
-      const response = await fetch(`${API_BASE}/api/admins/deleteClub/${id}`, {
-        method: "DELETE",
-      });
+      const response = await fetch(
+        "http://localhost:5050/api/admins/deleteClub/" + id,
+        {
+          method: "DELETE",
+        }
+      );
 
       if (!response.ok) {
         const errorText = await response.text();

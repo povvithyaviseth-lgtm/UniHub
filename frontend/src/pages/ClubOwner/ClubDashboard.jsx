@@ -7,8 +7,10 @@ import EventRowCard from "../../component/ClubOwnerComponent/EventRowCard.jsx";
 import AnnouncementItem from "../../component/ClubOwnerComponent/AnnouncementItem.jsx";
 import MembersModalContent from "../../component/ClubOwnerComponent/MembersModalContent.jsx";
 import AttendanceModalContent from "../../component/ClubOwnerComponent/AttendanceModalContent.jsx";
-import CreateEventModal from "../../component/ClubOwnerComponent/CreateEventModal.jsx"; // ✅ new import
+import CreateEventModal from "../../component/ClubOwnerComponent/CreateEventModal.jsx";
 import "../../index.css";
+
+const API_BASE_URL = "http://localhost:5050";
 
 /* ======= MAIN DASHBOARD ======= */
 export default function ClubDashboard() {
@@ -17,6 +19,7 @@ export default function ClubDashboard() {
 
   const [club, setClub] = React.useState(null);
   const [loading, setLoading] = React.useState(true);
+  const [loadError, setLoadError] = React.useState("");
 
   const [activeTab, setActiveTab] = React.useState("events"); // "events" | "announcements"
   const [showMembersModal, setShowMembersModal] = React.useState(false);
@@ -35,28 +38,15 @@ export default function ClubDashboard() {
   ]);
   const [confirmKickId, setConfirmKickId] = React.useState(null);
 
-  // Single Valorant-style sample event to match homepage vibe
-  const [events, setEvents] = React.useState([
-    {
-      id: 1,
-      title: "Monthly Valorant Tournament (Team of 5 Required)",
-      date: "2025-10-18",
-      startTime: "12:00",
-      endTime: "23:30",
-      location: "Discord Server",
-      isOnline: true,
-      link: "https://discord.gg/your-server",
-      capacity: 40,
-      description:
-        "Competitive Valorant tournament—bring your five-stack or spectate. Everyone’s welcome!",
-      status: "published",
-    },
-  ]);
+  // 🔹 Events now come from backend
+  const [events, setEvents] = React.useState([]);
+  const [eventsError, setEventsError] = React.useState("");
+  const [eventsLoading, setEventsLoading] = React.useState(false);
 
   // eventId -> { [memberId]: boolean }
   const [attendanceByEvent, setAttendanceByEvent] = React.useState({});
 
-  // simple announcements
+  // simple announcements (still local-only)
   const [announcements, setAnnouncements] = React.useState([
     {
       id: 1,
@@ -75,27 +65,80 @@ export default function ClubDashboard() {
 
   const [showOldEvents, setShowOldEvents] = React.useState(false);
 
+  // 🔗 Fetch this specific club by ID
   React.useEffect(() => {
     const fetchClub = async () => {
       try {
         setLoading(true);
-        // TODO: replace with real backend
-        setClub({
-          _id: clubId,
-          name: "Sample Club Name",
-          status: "approved", // or "pending"
-          description: "This is a sample description for the club.",
-          tag: "Academic, Social",
-          imageUrl: "",
+        setLoadError("");
+
+        const token = localStorage.getItem("token");
+        if (!token) {
+          setLoadError("You must be logged in to view this club.");
+          setLoading(false);
+          return;
+        }
+
+        const res = await fetch(`${API_BASE_URL}/api/clubs/${clubId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.message || "Failed to fetch club");
+        }
+
+        // Depending on your backend shape, this might be `data.club` or `data`
+        setClub(data.club || data);
       } catch (err) {
         console.error(err);
+        setLoadError(err.message);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchClub();
+    if (clubId) {
+      fetchClub();
+    }
+  }, [clubId]);
+
+  // 🔗 Fetch events for this club
+  React.useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        if (!clubId) return;
+        setEventsLoading(true);
+        setEventsError("");
+
+        const res = await fetch(`${API_BASE_URL}/api/events/club/${clubId}`);
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.message || "Failed to fetch events");
+        }
+
+        const eventsFromApi = data.events || [];
+
+        // Normalize backend `_id` to `id` so EventRowCard & local logic still work
+        const normalized = eventsFromApi.map((ev) => ({
+          ...ev,
+          id: ev._id || ev.id,
+        }));
+
+        setEvents(normalized);
+      } catch (err) {
+        console.error("Error fetching events:", err);
+        setEventsError(err.message);
+      } finally {
+        setEventsLoading(false);
+      }
+    };
+
+    fetchEvents();
   }, [clubId]);
 
   const handleGoBack = () => {
@@ -132,18 +175,57 @@ export default function ClubDashboard() {
     setConfirmKickId(null);
   };
 
-  const handleCreateEventSave = (payload) => {
-    setEvents((prev) => [
-      ...prev,
-      {
-        id: Date.now(),
-        ...payload,
-      },
-    ]);
-    setShowCreateEventModal(false);
+  // 🔹 Create event → call backend
+  const handleCreateEventSave = async (payload) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        window.alert("You must be logged in to create an event.");
+        return;
+      }
+
+      const { title, date, startTime, location, description, imageFile } =
+        payload;
+
+      const formData = new FormData();
+      if (title) formData.append("title", title);
+      if (date) formData.append("date", date);
+      if (startTime) formData.append("startTime", startTime);
+      if (location) formData.append("location", location);
+      if (description) formData.append("description", description);
+      if (imageFile) formData.append("image", imageFile); // field name must match multer.single("image")
+
+      const res = await fetch(`${API_BASE_URL}/api/events/${clubId}`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          // ❗ do NOT set Content-Type here; browser will set multipart boundary
+        },
+        body: formData,
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Failed to create event");
+      }
+
+      const saved = data.event;
+
+      const normalized = {
+        ...saved,
+        id: saved._id || saved.id,
+      };
+
+      setEvents((prev) => [...prev, normalized]);
+      setShowCreateEventModal(false);
+    } catch (err) {
+      console.error("Error creating event:", err);
+      window.alert(err.message || "Failed to create event");
+    }
   };
 
-  // draft <-> published toggle
+  // draft <-> published toggle (local-only for now)
   const handleToggleEventStatus = (eventId) => {
     setEvents((prev) =>
       prev.map((ev) =>
@@ -157,6 +239,7 @@ export default function ClubDashboard() {
     );
   };
 
+  // delete event (currently local-only; can be wired to backend later)
   const handleDeleteEvent = (eventId) => {
     const ok = window.confirm("Delete this event? This cannot be undone.");
     if (!ok) return;
@@ -316,10 +399,26 @@ export default function ClubDashboard() {
                 marginBottom: 6,
               }}
             >
-              {loading ? "Loading..." : club?.name || "Club"}
+              {loading
+                ? "Loading..."
+                : loadError
+                ? "Error loading club"
+                : club?.name || "Club"}
             </div>
 
-            {!loading && club && (
+            {!loading && loadError && (
+              <div
+                style={{
+                  fontSize: 12,
+                  color: "#B91C1C",
+                  maxWidth: 420,
+                }}
+              >
+                {loadError}
+              </div>
+            )}
+
+            {!loading && club && !loadError && (
               <div
                 style={{
                   display: "inline-flex",
@@ -373,6 +472,7 @@ export default function ClubDashboard() {
               className="cd-ghost-btn"
               style={ghostButton}
               onClick={() => setShowEditModal(true)}
+              disabled={!!loadError}
             >
               Edit club
             </button>
@@ -528,7 +628,27 @@ export default function ClubDashboard() {
                 </div>
 
                 {/* Event list */}
-                {(eventsToRender || []).length === 0 ? (
+                {eventsLoading ? (
+                  <div
+                    style={{
+                      fontSize: 13,
+                      color: "#6B7280",
+                      paddingTop: 8,
+                    }}
+                  >
+                    Loading events...
+                  </div>
+                ) : eventsError ? (
+                  <div
+                    style={{
+                      fontSize: 13,
+                      color: "#B91C1C",
+                      paddingTop: 8,
+                    }}
+                  >
+                    {eventsError}
+                  </div>
+                ) : (eventsToRender || []).length === 0 ? (
                   <div
                     style={{
                       marginTop: 8,
@@ -592,7 +712,7 @@ export default function ClubDashboard() {
                   >
                     {eventsToRender.map((ev, index) => (
                       <div
-                        key={ev.id}
+                        key={ev.id || ev._id}
                         className="cd-list-item-anim"
                         style={{ animationDelay: `${index * 40}ms` }}
                       >
@@ -764,7 +884,7 @@ export default function ClubDashboard() {
         open={showEditModal}
         onClose={() => setShowEditModal(false)}
       >
-        {club && (
+        {club && !loadError && (
           <div className="cd-modal-shell">
             <CreateClubPopUp
               title="Edit Club"

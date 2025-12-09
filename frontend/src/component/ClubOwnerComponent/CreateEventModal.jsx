@@ -1,363 +1,330 @@
+// src/component/ClubOwnerComponent/CreateEventModal.jsx
 import React from "react";
 
-/**
- * CreateEventModal
- * - Visual-only modal content for creating an event.
- * - Intended to be rendered inside <PopUpModals>.
- *
- * Props:
- *  - onSave(payload)   → called when form is valid and user clicks "Save event"
- *  - onCancel()        → called when user cancels/closes the modal
- */
 export default function CreateEventModal({ onSave, onCancel }) {
   const [title, setTitle] = React.useState("");
   const [date, setDate] = React.useState("");
   const [startTime, setStartTime] = React.useState("");
-  const [endTime, setEndTime] = React.useState("");
   const [location, setLocation] = React.useState("");
-  const [isOnline, setIsOnline] = React.useState(false);
-  const [link, setLink] = React.useState("");
-  const [capacity, setCapacity] = React.useState("");
   const [description, setDescription] = React.useState("");
-  const [errors, setErrors] = React.useState({});
+  const [imageFile, setImageFile] = React.useState(null);
 
-  const handleSubmit = () => {
-    const newErrors = {};
-    if (!title.trim()) newErrors.title = "Event name is required";
-    if (!date) newErrors.date = "Date is required";
-    if (!startTime) newErrors.startTime = "Start time is required";
+  const [submitting, setSubmitting] = React.useState(false);
+  const [error, setError] = React.useState("");
 
-    setErrors(newErrors);
-    if (Object.keys(newErrors).length > 0) return;
+  // 🔊 Debug: this proves this file is actually being used
+  React.useEffect(() => {
+    console.log("✅ CreateEventModal (updated) mounted");
+  }, []);
 
-    onSave?.({
-      title: title.trim(),
-      date,
-      startTime,
-      endTime: endTime || null,
-      location: location.trim(),
-      isOnline,
-      link: link.trim(),
-      capacity: capacity ? Number(capacity) : null,
-      description: description.trim(),
-      status: "draft",
-    });
+  const handleFileChange = (e) => {
+    const file = e.target.files && e.target.files[0];
+    setImageFile(file || null);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    if (!title.trim()) {
+      setError("Event title is required");
+      return;
+    }
+    if (!date) {
+      setError("Event date is required");
+      return;
+    }
+    if (!location.trim()) {
+      setError("Event location is required");
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+      await onSave({
+        title: title.trim(),
+        date,
+        startTime,
+        location: location.trim(),
+        description: description.trim(),
+        imageFile,
+      });
+    } catch (err) {
+      console.error(err);
+      setError(err.message || "Failed to create event");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
     <div
-      className="cd-modal-shell"
       style={{
-        width: "min(92vw, 560px)",
-        maxHeight: "min(92vh, 660px)",
+        width: "100%",
+        maxWidth: 520,
+        padding: 20,
+        borderRadius: 18,
         background: "#FFFFFF",
-        borderRadius: 16,
-        overflow: "hidden",
+        boxShadow: "0 20px 60px rgba(15,23,42,0.24)",
+        boxSizing: "border-box",
         display: "flex",
         flexDirection: "column",
-        boxShadow: "0 24px 60px rgba(15,23,42,0.25)",
+        gap: 16,
       }}
     >
-      {/* Header */}
       <div
         style={{
-          background: "#00550A",
-          minHeight: 56,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: "14px 20px",
-        }}
-      >
-        <h2
-          style={{
-            margin: 0,
-            color: "white",
-            fontWeight: 600,
-            fontSize: 20,
-          }}
-        >
-          Create event
-        </h2>
-        <button
-          type="button"
-          onClick={onCancel}
-          style={{
-            border: "none",
-            background: "rgba(255,255,255,0.1)",
-            borderRadius: 999,
-            padding: "4px 10px",
-            color: "#E5E7EB",
-            fontSize: 12,
-            cursor: "pointer",
-          }}
-        >
-          Close
-        </button>
-      </div>
-
-      {/* Body */}
-      <div
-        style={{
-          padding: 20,
-          display: "flex",
-          flexDirection: "column",
-          gap: 16,
-          fontSize: 14,
+          fontSize: 20,
+          fontWeight: 700,
           color: "#111827",
         }}
       >
-        {/* Event name */}
+        Create event 
+      </div>
+
+      {error && (
+        <div
+          style={{
+            fontSize: 13,
+            color: "#B91C1C",
+            background: "#FEF2F2",
+            borderRadius: 8,
+            padding: "8px 10px",
+          }}
+        >
+          {error}
+        </div>
+      )}
+
+      <form
+        onSubmit={handleSubmit}
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: 12,
+        }}
+      >
+        {/* Title */}
         <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-          <label style={{ fontWeight: 500 }}>Event name *</label>
+          <label
+            style={{
+              fontSize: 13,
+              fontWeight: 500,
+              color: "#111827",
+            }}
+          >
+            Event name<span style={{ color: "#DC2626" }}> *</span>
+          </label>
           <input
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="Weekly study session"
+            placeholder="Monthly Valorant Tournament"
             style={{
-              borderRadius: 12,
-              border: errors.title ? "1px solid #DC2626" : "1px solid #D1D5DB",
-              padding: "10px 12px",
+              borderRadius: 10,
+              border: "1px solid #E5E7EB",
+              padding: "8px 10px",
               fontSize: 14,
+              outline: "none",
             }}
           />
-          {errors.title && (
-            <span style={{ fontSize: 12, color: "#DC2626" }}>
-              {errors.title}
-            </span>
-          )}
         </div>
 
-        {/* Date & time */}
+        {/* Date + Start time */}
         <div
           style={{
-            display: "grid",
-            gridTemplateColumns: "1.1fr 1fr 1fr",
-            gap: 10,
+            display: "flex",
+            gap: 12,
+            flexWrap: "wrap",
           }}
         >
-          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            <label style={{ fontWeight: 500 }}>Date *</label>
+          <div
+            style={{
+              flex: "1 1 160px",
+              display: "flex",
+              flexDirection: "column",
+              gap: 4,
+            }}
+          >
+            <label
+              style={{
+                fontSize: 13,
+                fontWeight: 500,
+                color: "#111827",
+              }}
+            >
+              Date<span style={{ color: "#DC2626" }}> *</span>
+            </label>
             <input
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
               style={{
-                borderRadius: 12,
-                border: errors.date ? "1px solid #DC2626" : "1px solid #D1D5DB",
-                padding: "10px 12px",
+                borderRadius: 10,
+                border: "1px solid #E5E7EB",
+                padding: "8px 10px",
                 fontSize: 14,
+                outline: "none",
               }}
             />
-            {errors.date && (
-              <span style={{ fontSize: 12, color: "#DC2626" }}>
-                {errors.date}
-              </span>
-            )}
           </div>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            <label style={{ fontWeight: 500 }}>Start *</label>
+          <div
+            style={{
+              flex: "1 1 140px",
+              display: "flex",
+              flexDirection: "column",
+              gap: 4,
+            }}
+          >
+            <label
+              style={{
+                fontSize: 13,
+                fontWeight: 500,
+                color: "#111827",
+              }}
+            >
+              Start time
+            </label>
             <input
               type="time"
               value={startTime}
               onChange={(e) => setStartTime(e.target.value)}
               style={{
-                borderRadius: 12,
-                border: errors.startTime
-                  ? "1px solid #DC2626"
-                  : "1px solid #D1D5DB",
-                padding: "10px 12px",
+                borderRadius: 10,
+                border: "1px solid #E5E7EB",
+                padding: "8px 10px",
                 fontSize: 14,
-              }}
-            />
-            {errors.startTime && (
-              <span style={{ fontSize: 12, color: "#DC2626" }}>
-                {errors.startTime}
-              </span>
-            )}
-          </div>
-
-          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            <label style={{ fontWeight: 500 }}>End</label>
-            <input
-              type="time"
-              value={endTime}
-              onChange={(e) => setEndTime(e.target.value)}
-              style={{
-                borderRadius: 12,
-                border: "1px solid #D1D5DB",
-                padding: "10px 12px",
-                fontSize: 14,
+                outline: "none",
               }}
             />
           </div>
         </div>
 
-        {/* Location / online toggle */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          <div
+        {/* Location */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+          <label
             style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              gap: 12,
+              fontSize: 13,
+              fontWeight: 500,
+              color: "#111827",
             }}
           >
-            <div
-              style={{
-                flex: 1,
-                display: "flex",
-                flexDirection: "column",
-                gap: 4,
-              }}
-            >
-              <label style={{ fontWeight: 500 }}>Location</label>
-              <input
-                type="text"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                placeholder="Room 204, Science Building"
-                style={{
-                  borderRadius: 12,
-                  border: "1px solid #D1D5DB",
-                  padding: "10px 12px",
-                  fontSize: 14,
-                }}
-              />
-            </div>
-
-            <button
-              type="button"
-              onClick={() => setIsOnline((prev) => !prev)}
-              style={{
-                whiteSpace: "nowrap",
-                borderRadius: 999,
-                border: "1px solid #D1D5DB",
-                padding: "8px 14px",
-                fontSize: 12,
-                fontWeight: 500,
-                background: isOnline ? "#ECFDF3" : "#F9FAFB",
-                color: isOnline ? "#15803D" : "#4B5563",
-                cursor: "pointer",
-              }}
-            >
-              {isOnline ? "Online event" : "In-person"}
-            </button>
-          </div>
-
-          {isOnline && (
-            <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-              <label style={{ fontWeight: 500 }}>Join link</label>
-              <input
-                type="url"
-                value={link}
-                onChange={(e) => setLink(e.target.value)}
-                placeholder="Zoom / Meet link"
-                style={{
-                  borderRadius: 12,
-                  border: "1px solid #D1D5DB",
-                  padding: "10px 12px",
-                  fontSize: 14,
-                }}
-              />
-            </div>
-          )}
-        </div>
-
-        {/* Capacity */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-          <label style={{ fontWeight: 500 }}>
-            Capacity{" "}
-            <span style={{ fontWeight: 400, color: "#6B7280" }}>
-              (optional)
-            </span>
+            Location<span style={{ color: "#DC2626" }}> *</span>
           </label>
           <input
-            type="number"
-            min="1"
-            value={capacity}
-            onChange={(e) => setCapacity(e.target.value)}
-            placeholder="30"
+            type="text"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            placeholder="Campus room, Discord server, etc."
             style={{
-              borderRadius: 12,
-              border: "1px solid #D1D5DB",
-              padding: "10px 12px",
+              borderRadius: 10,
+              border: "1px solid #E5E7EB",
+              padding: "8px 10px",
               fontSize: 14,
-              maxWidth: 160,
+              outline: "none",
             }}
           />
         </div>
 
         {/* Description */}
         <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-          <label style={{ fontWeight: 500 }}>
-            Description{" "}
-            <span style={{ fontWeight: 400, color: "#6B7280" }}>
-              (what should people expect?)
-            </span>
+          <label
+            style={{
+              fontSize: 13,
+              fontWeight: 500,
+              color: "#111827",
+            }}
+          >
+            Description
           </label>
           <textarea
-            rows={4}
+            rows={3}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder="Short summary of the event..."
+            placeholder="Tell members what this event is about..."
             style={{
+              borderRadius: 10,
+              border: "1px solid #E5E7EB",
+              padding: "8px 10px",
+              fontSize: 13,
               resize: "vertical",
-              borderRadius: 12,
-              border: "1px solid #D1D5DB",
-              padding: "10px 12px",
-              fontSize: 14,
+              minHeight: 70,
+              outline: "none",
             }}
           />
         </div>
-      </div>
 
-      {/* Footer actions */}
-      <div
-        style={{
-          padding: 14,
-          borderTop: "1px solid #E5E7EB",
-          display: "flex",
-          justifyContent: "flex-end",
-          gap: 8,
-          background: "#F9FAFB",
-        }}
-      >
-        <button
-          type="button"
-          onClick={onCancel}
+        {/* Image upload */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+          <label
+            style={{
+              fontSize: 13,
+              fontWeight: 500,
+              color: "#111827",
+            }}
+          >
+            Event image
+            <span style={{ fontWeight: 400, color: "#6B7280" }}>
+              {" "}
+
+            </span>
+          </label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            style={{
+              fontSize: 13,
+            }}
+          />
+        </div>
+
+        {/* Buttons */}
+        <div
           style={{
-            borderRadius: 999,
-            border: "1px solid #D1D5DB",
-            background: "#FFFFFF",
-            padding: "8px 16px",
-            fontSize: 13,
-            fontWeight: 500,
-            cursor: "pointer",
-            color: "#374151",
+            display: "flex",
+            justifyContent: "flex-end",
+            gap: 8,
+            marginTop: 8,
           }}
         >
-          Cancel
-        </button>
-        <button
-          type="button"
-          onClick={handleSubmit}
-          style={{
-            borderRadius: 999,
-            border: "none",
-            background: "#00550A",
-            padding: "8px 18px",
-            fontSize: 13,
-            fontWeight: 600,
-            cursor: "pointer",
-            color: "#FFFFFF",
-          }}
-        >
-          Save event
-        </button>
-      </div>
+          <button
+            type="button"
+            onClick={onCancel}
+            style={{
+              borderRadius: 999,
+              border: "1px solid #E5E7EB",
+              background: "#F9FAFB",
+              padding: "8px 14px",
+              fontSize: 13,
+              fontWeight: 500,
+              cursor: "pointer",
+              color: "#111827",
+            }}
+            disabled={submitting}
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            style={{
+              borderRadius: 999,
+              border: "none",
+              background: "#00550A",
+              padding: "8px 16px",
+              fontSize: 13,
+              fontWeight: 600,
+              cursor: "pointer",
+              color: "#F9FAFB",
+              opacity: submitting ? 0.75 : 1,
+            }}
+            disabled={submitting}
+          >
+            {submitting ? "Creating..." : "Create event"}
+          </button>
+        </div>
+      </form>
     </div>
   );
 }

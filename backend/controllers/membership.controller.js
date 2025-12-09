@@ -7,7 +7,7 @@ import {
 } from '../services/membership.service.js';
 
 /**
- * POST /api/clubs/:id/join
+ * POST /api/membership/:id/join
  * Logged-in student joins an approved club.
  */
 export const joinClub = async (req, res) => {
@@ -56,7 +56,7 @@ export const joinClub = async (req, res) => {
 };
 
 /**
- * POST /api/clubs/:id/leave
+ * POST /api/membership/:id/leave
  * Logged-in student leaves a club (membership doc is deleted).
  */
 export const leaveClub = async (req, res) => {
@@ -91,7 +91,7 @@ export const leaveClub = async (req, res) => {
 };
 
 /**
- * GET /api/clubs/joined
+ * GET /api/membership/joined
  * All clubs the current student is a member of.
  */
 export const getJoinedClubs = async (req, res) => {

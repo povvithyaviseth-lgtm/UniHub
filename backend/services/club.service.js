@@ -60,3 +60,20 @@ export async function updateClubService(clubId, ownerId, data) {
   // If club is null, either it doesn't exist or the user isn't the owner
   return club;
 }
+
+// Get a single club by ID
+export async function getClubByIdService(clubId) {
+  if (!clubId) {
+    throw new Error("Club ID is required");
+  }
+
+  const club = await Club.findById(clubId);
+
+  if (!club) {
+    const err = new Error("Club not found");
+    err.statusCode = 404;
+    throw err;
+  }
+
+  return club;
+}

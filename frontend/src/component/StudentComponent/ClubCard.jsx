@@ -357,7 +357,7 @@ const ClubCard = ({
                         whiteSpace: "nowrap",
                       }}
                     >
-                      Confirm
+                      Let's go!
                     </button>
                     <button
                       onClick={handleCancelClick}
