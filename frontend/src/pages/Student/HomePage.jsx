@@ -450,26 +450,6 @@ const EventCard = ({ event }) => {
             >
               Open to All
             </div>
-            <div
-              style={{
-                fontSize: 14,
-                fontFamily: "inherit",
-                color: "#6B7280",
-                display: "flex",
-                alignItems: "center",
-                gap: 6,
-              }}
-            >
-              <span
-                style={{
-                  width: 8,
-                  height: 8,
-                  borderRadius: 999,
-                  background: "#16A34A",
-                }}
-              />
-              {event.when}
-            </div>
           </div>
 
           {/* Title */}
@@ -523,6 +503,8 @@ const EventCard = ({ event }) => {
                 flexDirection: "column",
                 gap: 6,
                 minWidth: 0,
+                marginLeft: "auto", 
+                textAlign: "right",
               }}
             >
               <div
