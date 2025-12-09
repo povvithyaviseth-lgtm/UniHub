@@ -1,12 +1,21 @@
 // src/components/.../ClubPanel.jsx
 import { useState } from "react";
+import API_BASE from "../../config/api";
 import "../../index.css"; // ✅ ensure global + club-card styles are loaded
 
 export const ClubPanel = ({ name, img, description, tag, onApprove }) => {
   const [hovered, setHovered] = useState(false);
   const [actionState, setActionState] = useState("idle"); // 'idle' | 'approved' | 'denied'
 
-  const imageSrc = img || null;
+  // Ensure image URLs from the backend are absolute. If `img` is already an absolute URL use it as-is,
+  // otherwise prefix with the backend `API_BASE` so the browser requests the image from the API host.
+  const imageSrc = (() => {
+    if (!img) return null;
+    if (/^https?:\/\//i.test(img)) return img;
+    // normalize leading slash
+    const path = img.startsWith("/") ? img : `/${img}`;
+    return `${API_BASE}${path}`;
+  })();
 
   // Split tags by comma for display
   const rawTag = tag || "";

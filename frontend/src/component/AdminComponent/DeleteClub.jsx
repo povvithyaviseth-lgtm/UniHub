@@ -11,6 +11,7 @@ export default function DeleteClub() {
   useEffect(() => {
     const fetchClubs = async () => {
       try {
+        console.log('Fetching clubs from', `${API_BASE}/api/clubs`);
         const response = await fetch(`${API_BASE}/api/clubs`);
         const result = await response.json();
         setClubs(result.data || []);
@@ -24,12 +25,9 @@ export default function DeleteClub() {
 
   const handleDeleteClub = async (id) => {
     try {
-      const response = await fetch(
-        `${API_BASE}/api/admins/deleteClub/` + id,
-        {
-          method: "DELETE",
-        }
-      );
+      const url = `${API_BASE}/api/admins/deleteClub/${id}`;
+      console.log('Deleting club with id', id, 'URL=', url);
+      const response = await fetch(url, { method: 'DELETE' });
 
       if (!response.ok) {
         const errorText = await response.text();
