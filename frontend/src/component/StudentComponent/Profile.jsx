@@ -23,7 +23,7 @@ export default function Profile({
       if (!token) return;
 
       try {
-        const res = await fetch(`${API_BASE}/api/clubs/joined`, {
+        const res = await fetch(`${API_BASE}/api/membership/joined`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -47,7 +47,7 @@ export default function Profile({
   // Handle leave request
   const handleLeaveClub = async (clubId) => {
     try {
-      const res = await fetch(`${API_BASE}/api/clubs/${clubId}/leave`, {
+      const res = await fetch(`${API_BASE}/api/membership/${clubId}/leave`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,

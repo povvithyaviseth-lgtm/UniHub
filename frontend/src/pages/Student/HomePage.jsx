@@ -649,7 +649,7 @@ const HomePage = () => {
 
     const fetchJoinedClubs = async () => {
       try {
-        const res = await fetch(`${API_BASE}/api/clubs/joined`, {
+        const res = await fetch(`${API_BASE}/api/membership/joined`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -746,7 +746,7 @@ const HomePage = () => {
       }
 
       try {
-        const res = await fetch(`${API_BASE}/api/clubs/${clubId}/join`, {
+        const res = await fetch(`${API_BASE}/api/membership/${clubId}/join`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
