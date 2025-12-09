@@ -73,31 +73,43 @@ const ScaleBox = ({ baseWidth, maxScale = 1, style, children }) => {
   );
 };
 
-/** ----------------------------------------------------------------
- * Mock Events (clubs now come from backend)
- * ---------------------------------------------------------------- */
-const mockEvents = [
-  {
-    id: "e1",
-    title: "Monthly Valorant Tournament (Team of 5 Required)",
-    hostedBy: "Esports Club",
-    description:
-      "Competitive Valorant tournament—bring your five-stack or spectate. Everyone’s welcome!",
-    when: "Thu, Oct 18 | 12:00 PM – 12:30 AM",
-    location: "Discord Server",
-    imageUrl: null,
-  },
-  {
-    id: "e2",
-    title: "Go Hiking at Lake Tahoe",
-    hostedBy: "Hiking Club",
-    description:
-      "Join our day trip to Lake Tahoe. Hike, snack, and soak in the views. All levels welcome.",
-    when: "Sat, Oct 1 | 5:00 PM – 9:30 AM",
-    location: "Lake Tahoe",
-    imageUrl: null,
-  },
-];
+/* ------------------------- Event date formatting ------------------------ */
+
+const formatEventDateTime = (date, startTime, endTime) => {
+  if (!date && !startTime && !endTime) return "Date & time TBA";
+
+  let dateLabel = "Date TBA";
+  if (date) {
+    const d = new Date(date);
+    if (!Number.isNaN(d.getTime())) {
+      dateLabel = d.toLocaleDateString(undefined, {
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+      });
+    }
+  }
+
+  const toTimeLabel = (timeStr) => {
+    if (!timeStr) return null;
+    const [hStr, mStr] = timeStr.split(":");
+    const h = Number(hStr);
+    const m = Number(mStr || 0);
+    if (Number.isNaN(h)) return timeStr; // already a nice string
+    const dt = new Date();
+    dt.setHours(h, m || 0, 0, 0);
+    return dt.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+  };
+
+  const startLabel = toTimeLabel(startTime);
+  const endLabel = toTimeLabel(endTime);
+
+  if (!startLabel && !endLabel) return dateLabel;
+  if (startLabel && !endLabel) return `${dateLabel} · ${startLabel}`;
+  if (!startLabel && endLabel) return `${dateLabel} · Ends ${endLabel}`;
+
+  return `${dateLabel} · ${startLabel} – ${endLabel}`;
+};
 
 /** Light-green placeholder “image” */
 const PlaceholderImage = ({ width, height, style = {} }) => (
@@ -322,201 +334,279 @@ const ClubModal = ({ club, onClose, onJoin }) => {
 /** ------------------------------- Event Card ----------------------------- */
 const EventCard = ({ event }) => {
   const BASE_W = 1220;
+  const [hovered, setHovered] = useState(false);
 
   return (
     <ScaleBox baseWidth={BASE_W} style={{ maxWidth: "100%" }}>
       <div
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
         style={{
           width: 1220,
-          height: 318,
-          position: "relative",
+          minHeight: 260,
           background: "white",
-          boxShadow: "0px 27px 38px rgba(0, 0, 0, 0.17)",
+          borderRadius: 24,
           overflow: "hidden",
-          borderRadius: 20,
+          boxShadow: hovered
+            ? "0px 32px 60px rgba(0, 0, 0, 0.20)"
+            : "0px 20px 40px rgba(0, 0, 0, 0.12)",
+          display: "flex",
+          transform: hovered ? "translateY(-6px)" : "translateY(0)",
+          transition:
+            "transform 0.18s ease-out, box-shadow 0.18s ease-out, background 0.18s ease-out",
+          cursor: "pointer",
+          position: "relative",
         }}
       >
+        {/* accent strip */}
+        <div
+          style={{
+            width: 6,
+            alignSelf: "stretch",
+            background:
+              "linear-gradient(180deg, #16A34A 0%, #22C55E 45%, #BBF7D0 100%)",
+          }}
+        />
+
         {/* Left image */}
         <div
           style={{
-            width: 295,
-            height: 318,
-            left: 0,
-            top: 0,
-            position: "absolute",
+            flex: "0 0 295px",
+            maxWidth: 295,
+            height: "100%",
+            position: "relative",
             overflow: "hidden",
-            borderRadius: 18.8,
           }}
         >
           {event.imageUrl ? (
             <img
               src={event.imageUrl}
               alt={`${event.title} poster`}
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+              }}
             />
           ) : (
             <PlaceholderImage width="100%" height="100%" />
           )}
+
+          {/* Club badge over image */}
+          {event.hostedBy && (
+            <div
+              style={{
+                position: "absolute",
+                left: 14,
+                bottom: 14,
+                padding: "6px 12px",
+                borderRadius: 999,
+                background: "rgba(15,118,61,0.92)",
+                color: "white",
+                fontSize: 14,
+                fontFamily: "inherit",
+                fontWeight: 600,
+                maxWidth: "90%",
+                whiteSpace: "nowrap",
+                textOverflow: "ellipsis",
+                overflow: "hidden",
+              }}
+            >
+              {event.hostedBy}
+            </div>
+          )}
         </div>
 
-        {/* White strip */}
+        {/* Right content */}
         <div
           style={{
-            width: 36,
-            height: 318,
-            left: 266,
-            top: 0,
-            position: "absolute",
-            background: "white",
-          }}
-        />
-
-        {/* Content */}
-        <div
-          style={{
-            width: 901,
-            height: 294,
-            left: 302,
-            top: 12,
-            position: "absolute",
-            display: "inline-flex",
+            flex: 1,
+            padding: "20px 28px 22px",
+            display: "flex",
             flexDirection: "column",
-            justifyContent: "flex-start",
-            alignItems: "flex-start",
-            gap: 6,
+            gap: 12,
           }}
         >
+          {/* Top row: date chip + "Upcoming" */}
           <div
             style={{
-              alignSelf: "stretch",
-              color: "black",
-              fontSize: 40,
+              display: "flex",
+              alignItems: "center",
+              gap: 10,
+              flexWrap: "wrap",
+            }}
+          >
+            <div
+              style={{
+                padding: "6px 14px",
+                borderRadius: 999,
+                background: "#DCFCE7",
+                color: "#166534",
+                fontSize: 14,
+                fontWeight: 600,
+                fontFamily: "inherit",
+                whiteSpace: "nowrap",
+              }}
+            >
+              Upcoming
+            </div>
+            <div
+              style={{
+                fontSize: 14,
+                fontFamily: "inherit",
+                color: "#6B7280",
+                display: "flex",
+                alignItems: "center",
+                gap: 6,
+              }}
+            >
+              <span
+                style={{
+                  width: 8,
+                  height: 8,
+                  borderRadius: 999,
+                  background: "#16A34A",
+                }}
+              />
+              {event.when}
+            </div>
+          </div>
+
+          {/* Title */}
+          <div
+            style={{
+              color: "#020617",
+              fontSize: 28,
               fontFamily: "inherit",
               fontWeight: 700,
-              lineHeight: 1.1,
+              lineHeight: 1.25,
             }}
           >
             {event.title}
           </div>
 
-          <div style={{ alignSelf: "stretch" }}>
-            <span
+          {/* Description */}
+          {event.description && (
+            <div
               style={{
-                color: "#707070",
-                fontSize: 20,
+                color: "#111827",
+                fontSize: 16,
                 fontFamily: "inherit",
                 fontWeight: 400,
+                lineHeight: 1.5,
+                maxHeight: 72,
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                display: "-webkit-box",
+                WebkitLineClamp: 3,
+                WebkitBoxOrient: "vertical",
               }}
             >
-              Hosted by:
-            </span>
-            <span
+              {event.description}
+            </div>
+          )}
+
+          {/* Bottom row: when/where + CTA */}
+          <div
+            style={{
+              marginTop: "auto",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: 16,
+              flexWrap: "wrap",
+            }}
+          >
+            <div
               style={{
-                color: "#00550A",
-                fontSize: 20,
-                fontFamily: "inherit",
-                fontWeight: 700,
+                display: "flex",
+                flexDirection: "column",
+                gap: 6,
+                minWidth: 0,
               }}
             >
-              {" "}
-              {event.hostedBy}
-            </span>
-          </div>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  color: "#4B5563",
+                  fontSize: 15,
+                  fontFamily: "inherit",
+                }}
+              >
+                <div
+                  aria-hidden
+                  style={{
+                    width: 22,
+                    height: 22,
+                    borderRadius: 8,
+                    background: "#BBF7D0",
+                  }}
+                />
+                <span
+                  style={{
+                    whiteSpace: "nowrap",
+                    textOverflow: "ellipsis",
+                    overflow: "hidden",
+                    maxWidth: 350,
+                  }}
+                >
+                  {event.when}
+                </span>
+              </div>
 
-          <div
-            style={{
-              alignSelf: "stretch",
-              color: "black",
-              fontSize: 20,
-              fontFamily: "inherit",
-              fontWeight: 400,
-            }}
-          >
-            {event.description}
-          </div>
-        </div>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  color: "#4B5563",
+                  fontSize: 15,
+                  fontFamily: "inherit",
+                }}
+              >
+                <div
+                  aria-hidden
+                  style={{
+                    width: 22,
+                    height: 22,
+                    borderRadius: 8,
+                    background: "#E5E7EB",
+                  }}
+                />
+                <span
+                  style={{
+                    whiteSpace: "nowrap",
+                    textOverflow: "ellipsis",
+                    overflow: "hidden",
+                    maxWidth: 350,
+                  }}
+                >
+                  Location: {event.location}
+                </span>
+              </div>
+            </div>
 
-        {/* CTA */}
-        <div
-          style={{
-            width: 257,
-            height: 59,
-            left: 946,
-            top: 254,
-            position: "absolute",
-          }}
-        >
-          <button
-            className="btn-primary"
-            style={{
-              width: "100%",
-              height: 50,
-              borderRadius: 10,
-              position: "absolute",
-              left: 0,
-              top: 5,
-            }}
-          >
-            View Details
-          </button>
-        </div>
-
-        {/* When & Where */}
-        <div
-          style={{
-            width: 614,
-            height: 64,
-            left: 324,
-            top: 251,
-            position: "absolute",
-            overflow: "hidden",
-          }}
-        >
-          <div
-            style={{
-              width: 551,
-              height: 28,
-              left: 1,
-              top: 37,
-              position: "absolute",
-              color: "#787878",
-              fontSize: 20,
-              fontFamily: "inherit",
-              fontWeight: 400,
-            }}
-          >
-            Location: {event.location}
-          </div>
-        </div>
-
-        <div
-          style={{
-            left: 300,
-            top: 256,
-            position: "absolute",
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 8,
-          }}
-        >
-          <div
-            style={{
-              width: 24,
-              height: 24,
-              borderRadius: 6,
-              background: "#AEFFD2",
-            }}
-            aria-hidden
-          />
-          <div
-            style={{
-              color: "#787878",
-              fontSize: 20,
-              fontFamily: "inherit",
-              fontWeight: 400,
-            }}
-          >
-            {event.when}
+            <div style={{ flexShrink: 0 }}>
+              <button
+                type="button"
+                className="btn-primary"
+                style={{
+                  minWidth: 190,
+                  height: 50,
+                  borderRadius: 999,
+                  padding: "0 26px",
+                  fontSize: 16,
+                  fontWeight: 600,
+                  fontFamily: "inherit",
+                }}
+                // TODO: wire up once you have an event details page
+                // onClick={() => navigate(`/events/${event.id}`)}
+              >
+                View Details
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -554,6 +644,11 @@ const HomePage = () => {
   const [clubs, setClubs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  // Events from backend
+  const [events, setEvents] = useState([]);
+  const [eventsLoading, setEventsLoading] = useState(true);
+  const [eventsError, setEventsError] = useState("");
 
   // Which clubs this student has joined
   const [joinedClubIds, setJoinedClubIds] = useState([]);
@@ -643,6 +738,56 @@ const HomePage = () => {
     fetchClubs();
   }, []);
 
+  // 🔥 Fetch events from backend (uses getAllEventsService on server)
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        setEventsLoading(true);
+        setEventsError("");
+
+        const res = await fetch(`${API_BASE}/api/events`);
+        if (!res.ok) {
+          throw new Error(`Failed to load events (status ${res.status})`);
+        }
+
+        const json = await res.json();
+        const apiEvents = json.data || json.events || [];
+
+        const normalized = apiEvents.map((e) => {
+          // Backend: Event.find({}).populate("club","name image")
+          const club = e.club || {};
+          const when = formatEventDateTime(e.date, e.startTime, e.endTime);
+
+          const imageFromEvent = e.image
+            ? `${API_BASE}/${String(e.image).replace(/^\/+/, "")}`
+            : null;
+          const imageFromClub = club.image
+            ? `${API_BASE}/${String(club.image).replace(/^\/+/, "")}`
+            : null;
+
+          return {
+            id: e._id || e.id,
+            title: e.title || e.name || "Untitled Event",
+            hostedBy: club.name || "Student Club",
+            description: e.description || "",
+            when,
+            location: e.location || "Location TBA",
+            imageUrl: imageFromEvent || imageFromClub || null,
+          };
+        });
+
+        setEvents(normalized);
+      } catch (err) {
+        console.error("Error loading events:", err);
+        setEventsError(err.message || "Error loading events");
+      } finally {
+        setEventsLoading(false);
+      }
+    };
+
+    fetchEvents();
+  }, []);
+
   // 🔥 Fetch joined clubs on mount / when token changes
   useEffect(() => {
     if (!token) return;
@@ -683,9 +828,7 @@ const HomePage = () => {
     const term = search.trim().toLowerCase();
 
     return approvedClubs.filter((c) => {
-      const matchesText = term
-        ? c.name.toLowerCase().includes(term)
-        : true;
+      const matchesText = term ? c.name.toLowerCase().includes(term) : true;
 
       const allTags = (c.tag || "")
         .split(",")
@@ -1133,8 +1276,7 @@ const HomePage = () => {
                 fontWeight: 800,
                 marginTop: 4,
               }}
-            >
-            </div>
+            ></div>
 
             {/* Tag buttons */}
             <div
@@ -1349,7 +1491,7 @@ const HomePage = () => {
               </div>
             </div>
 
-            {/* Events List (each scales to width) */}
+            {/* Events List (uses backend data) */}
             <div
               style={{
                 width: "100%",
@@ -1362,18 +1504,56 @@ const HomePage = () => {
                 boxSizing: "border-box",
               }}
             >
-              {mockEvents.map((event, index) => (
+              {eventsLoading ? (
                 <div
-                  key={event.id}
                   style={{
-                    opacity: 0,
-                    animation: "fadeInUp 0.45s ease-out forwards",
-                    animationDelay: `${0.25 + index * 0.12}s`,
+                    width: "100%",
+                    textAlign: "center",
+                    color: "#707070",
+                    fontFamily: "inherit",
+                    fontSize: 18,
                   }}
                 >
-                  <EventCard event={event} />
+                  Loading events…
                 </div>
-              ))}
+              ) : eventsError ? (
+                <div
+                  style={{
+                    width: "100%",
+                    textAlign: "center",
+                    color: "red",
+                    fontFamily: "inherit",
+                    fontSize: 18,
+                  }}
+                >
+                  {eventsError}
+                </div>
+              ) : events.length === 0 ? (
+                <div
+                  style={{
+                    width: "100%",
+                    textAlign: "center",
+                    color: "#707070",
+                    fontFamily: "inherit",
+                    fontSize: 18,
+                  }}
+                >
+                  No upcoming events yet. Check back soon!
+                </div>
+              ) : (
+                events.map((event, index) => (
+                  <div
+                    key={event.id}
+                    style={{
+                      opacity: 0,
+                      animation: "fadeInUp 0.45s ease-out forwards",
+                      animationDelay: `${0.25 + index * 0.12}s`,
+                    }}
+                  >
+                    <EventCard event={event} />
+                  </div>
+                ))
+              )}
             </div>
           </section>
 
