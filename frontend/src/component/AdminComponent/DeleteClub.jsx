@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import ConfirmDeleteModal from "../ConfirmDeleteModal.jsx";
 import "../../index.css"; // global fonts + animations
+import API_BASE from "../../config/api.js";
 
 export default function DeleteClub() {
   const [clubs, setClubs] = useState([]);
