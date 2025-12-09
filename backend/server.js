@@ -8,6 +8,7 @@ import clubsRoutes from './routes/club.route.js';
 import studentRoutes from './routes/student.route.js';
 import adminRoutes from './routes/admin.route.js';
 import membershipRoutes from './routes/membership.route.js';
+import eventsRoutes from './routes/event.route.js';
 
 import cors from 'cors';
 
@@ -47,6 +48,7 @@ app.use('/api/students', studentRoutes);
 app.use('/api/admins', adminRoutes);
 app.use('/api/clubs', clubsRoutes);
 app.use('/api/membership', membershipRoutes);
+app.use('/api/events', eventsRoutes);
 
 // 404
 app.use((req, res) => res.status(404).json({ message: 'Route not found' }));

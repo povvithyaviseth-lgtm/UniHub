@@ -1,16 +1,23 @@
 // src/component/ClubOwnerComponent/EventRowCard.jsx
 import React from "react";
 
-/**
- * Presentational card for a single event row in the club dashboard.
- * VISUALS:
- * - Matches the inline event card from the green design version
- * - Title, date/time/location chips, description preview
- * - Status pill (Draft / Posted)
- * - Actions: RSVP / Mark attendance / Post-Edit / Delete
- *
- * Behavior is controlled via callback props passed from the page.
- */
+const API_BASE_URL = "http://localhost:5050";
+
+function resolveImageSrc(image) {
+  if (!image) return null;
+
+  // already an absolute URL
+  if (/^https?:\/\//i.test(image)) {
+    return image;
+  }
+
+  let path = image.replace(/\\/g, "/");
+  if (!path.startsWith("/")) {
+    path = `/${path}`;
+  }
+  return `${API_BASE_URL}${path}`;
+}
+
 export default function EventRowCard({
   event,
   onRSVP,
@@ -18,218 +25,203 @@ export default function EventRowCard({
   onToggleStatus,
   onDelete,
 }) {
-  if (!event) return null;
+  const {
+    id,
+    _id,
+    title,
+    date,
+    startTime,
+    location,
+    description,
+    image,
+    status = "published",
+  } = event || {};
 
-  const isPublished = event.status === "published";
+  const eventId = id || _id;
+  const imageSrc = resolveImageSrc(image);
 
-  const dateStr = event.date
-    ? new Date(event.date + "T00:00:00").toLocaleDateString(undefined, {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-      })
-    : "";
-
-  const timeStr = event.startTime
-    ? `${event.startTime.slice(0, 5)}${
-        event.endTime ? ` – ${event.endTime.slice(0, 5)}` : ""
-      }`
-    : "";
-
-  const primaryLabel = isPublished ? "Edit" : "Post";
-
-  // Button styles exactly as in the green version
-  const pillButton = {
-    borderRadius: 999,
-    padding: "6px 12px",
-    border: "none",
-    fontSize: 12,
-    fontWeight: 500,
-    cursor: "pointer",
+  const handleToggleStatusClick = () => {
+    if (!eventId) return;
+    onToggleStatus && onToggleStatus(eventId);
   };
 
-  const subtleTextButton = {
-    border: "none",
-    background: "transparent",
-    padding: 0,
-    fontSize: 13,
-    fontWeight: 500,
-    cursor: "pointer",
-    color: "#4B5563",
+  const handleDeleteClick = () => {
+    if (!eventId) return;
+    onDelete && onDelete(eventId);
   };
 
-  const dangerTextButton = {
-    ...subtleTextButton,
-    color: "#B91C1C",
+  const handleAttendanceClick = () => {
+    onOpenAttendance && onOpenAttendance(event);
   };
+
+  const handleRSVPClick = () => {
+    onRSVP && onRSVP(event);
+  };
+
+  const isDraft = status === "draft";
 
   return (
     <div
       style={{
-        borderRadius: 18,
-        border: "1px solid #E5E7EB",
-        background: "#FFFFFF",
-        padding: 16,
         display: "flex",
-        flexDirection: "column",
-        gap: 10,
+        alignItems: "stretch",
+        gap: 12,
+        padding: 12,
+        borderRadius: 16,
+        border: "1px solid #E5E7EB",
+        background: "#F9FAFB",
       }}
     >
+      {/* Image */}
+      {imageSrc && (
+        <div
+          style={{
+            flex: "0 0 96px",
+            height: 72,
+            borderRadius: 12,
+            overflow: "hidden",
+            background: "#E5E7EB",
+          }}
+        >
+          <img
+            src={imageSrc}
+            alt={title || "Event image"}
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              display: "block",
+            }}
+          />
+        </div>
+      )}
+
+      {/* Main info */}
       <div
         style={{
+          flex: 1,
           display: "flex",
-          justifyContent: "space-between",
-          alignItems: "flex-start",
-          gap: 12,
+          flexDirection: "column",
+          gap: 4,
         }}
       >
-        <div style={{ flex: 1, minWidth: 0 }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+          }}
+        >
           <div
             style={{
-              fontSize: 16,
+              fontSize: 15,
               fontWeight: 600,
               color: "#111827",
-              wordBreak: "break-word",
             }}
           >
-            {event.title}
+            {title || "Untitled event"}
           </div>
 
-          <div
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: 10,
-              fontSize: 12,
-              color: "#6B7280",
-              marginTop: 6,
-            }}
-          >
-            {dateStr && (
-              <span
-                style={{
-                  padding: "4px 8px",
-                  borderRadius: 999,
-                  background: "#F3F4F6",
-                }}
-              >
-                {dateStr}
-              </span>
-            )}
-            {timeStr && (
-              <span
-                style={{
-                  padding: "4px 8px",
-                  borderRadius: 999,
-                  background: "#F3F4F6",
-                }}
-              >
-                {timeStr}
-              </span>
-            )}
-            {event.location && (
-              <span
-                style={{
-                  padding: "4px 8px",
-                  borderRadius: 999,
-                  background: "#F3F4F6",
-                  whiteSpace: "nowrap",
-                  textOverflow: "ellipsis",
-                  overflow: "hidden",
-                  maxWidth: 220,
-                }}
-              >
-                {event.location}
-              </span>
-            )}
-          </div>
-
-          {event.description && (
-            <p
-              style={{
-                margin: 8,
-                marginLeft: 0,
-                fontSize: 13,
-                color: "#4B5563",
-                maxHeight: 44,
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-              }}
-            >
-              {event.description}
-            </p>
-          )}
         </div>
 
-        {/* Status pill */}
-        <span
+        <div
           style={{
-            fontSize: 11,
-            padding: "4px 10px",
-            borderRadius: 999,
-            background: isPublished ? "#ECFDF3" : "#F3F4F6",
-            color: isPublished ? "#15803D" : "#6B7280",
-            whiteSpace: "nowrap",
-            fontWeight: 500,
+            fontSize: 12,
+            color: "#6B7280",
           }}
         >
-          {isPublished ? "Posted" : "Draft"}
-        </span>
+          {date && (
+            <span>
+              {date}
+              {startTime ? ` · ${startTime}` : ""}
+            </span>
+          )}
+          {date && location && " · "}
+          {location && <span>{location}</span>}
+        </div>
+
+        {description && (
+          <div
+            style={{
+              fontSize: 12,
+              color: "#4B5563",
+              marginTop: 2,
+              maxWidth: 520,
+            }}
+          >
+            {description}
+          </div>
+        )}
       </div>
 
-      {/* Actions row: RSVP / Mark attendance / Edit-Post / Delete */}
+      {/* Actions */}
       <div
         style={{
           display: "flex",
-          justifyContent: "flex-end",
-          gap: 10,
-          marginTop: 4,
-          flexWrap: "wrap",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          alignItems: "flex-end",
+          gap: 6,
         }}
       >
-        {/* RSVP */}
         <button
           type="button"
+          onClick={handleRSVPClick}
           style={{
-            ...pillButton,
-            background: "#EEF2FF",
-            color: "#3730A3",
+            borderRadius: 999,
+            border: "1px solid #E5E7EB",
+            background: "#FFFFFF",
+            padding: "4px 10px",
+            fontSize: 11,
+            fontWeight: 500,
+            cursor: "pointer",
+            color: "#111827",
           }}
-          onClick={() => onRSVP && onRSVP(event)}
         >
-          RSVP
+          View RSVPs
         </button>
 
-        {/* Mark attendance */}
         <button
           type="button"
+          onClick={handleAttendanceClick}
           style={{
-            ...pillButton,
+            borderRadius: 999,
+            border: "1px solid #DCFCE7",
             background: "#ECFDF3",
+            padding: "4px 10px",
+            fontSize: 11,
+            fontWeight: 500,
+            cursor: "pointer",
             color: "#166534",
           }}
-          onClick={() => onOpenAttendance && onOpenAttendance(event)}
         >
           Mark attendance
         </button>
 
-        {/* Post / Edit */}
-        <button
-          type="button"
-          style={subtleTextButton}
-          onClick={() => onToggleStatus && onToggleStatus(event.id)}
+        <div
+          style={{
+            display: "flex",
+            gap: 6,
+            marginTop: 4,
+          }}
         >
-          {primaryLabel}
-        </button>
-
-        {/* Delete */}
-        <button
-          type="button"
-          style={dangerTextButton}
-          onClick={() => onDelete && onDelete(event.id)}
-        >
-          Delete
-        </button>
+    
+          <button
+            type="button"
+            onClick={handleDeleteClick}
+            style={{
+              borderRadius: 999,
+              border: "1px solid #FECACA",
+              background: "#FEF2F2",
+              padding: "3px 8px",
+              fontSize: 11,
+              cursor: "pointer",
+              color: "#B91C1C",
+            }}
+          >
+            Delete
+          </button>
+        </div>
       </div>
     </div>
   );
