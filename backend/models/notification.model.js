@@ -2,10 +2,24 @@ import mongoose from "mongoose";
 
 const notificationSchema = new mongoose.Schema(
   {
-    clubId: { type: mongoose.Schema.Types.ObjectId, ref: "Club", required: true },
-    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "Student", required: true },
+    student: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Student",
+      required: true,
+    },
 
-    // These match your Notification UI
+    clubId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Club",
+      required: true,
+    },
+
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Student",
+      required: true,
+    },
+
     title: { type: String, required: true },
     clubName: { type: String, required: true },
     dateTime: { type: String, required: true },
@@ -17,9 +31,10 @@ const notificationSchema = new mongoose.Schema(
       default: "event",
     },
 
-    readBy: [
-      { type: mongoose.Schema.Types.ObjectId, ref: "Student" }
-    ],
+    checked: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

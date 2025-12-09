@@ -1587,7 +1587,15 @@ const HomePage = () => {
             onConfirm={() => confirmActionRef.current?.()}
           />
         </div>
+        
       </PopUpModals>
+      {/* NOTIFICATIONS POPUP */}
+{notificationsOpen && (
+  <Notification
+    isOpen={notificationsOpen}
+    onClose={() => setNotificationsOpen(false)}
+  />
+)}
     </div>
   );
 };

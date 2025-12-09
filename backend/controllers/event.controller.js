@@ -1,6 +1,8 @@
 // controllers/event.controller.js
 import Notification from "../models/notification.model.js";
 import Club from "../models/club.model.js";
+import ClubMembership from "../models/membership.model.js";
+
 import mongoose from "mongoose";
 import {
   createEventService,
@@ -50,7 +52,7 @@ export const createEventController = async (req, res) => {
     // ------------------------------
 
     // Get club name for notification
-    const club = await Club.findById(clubId);
+   /* const club = await Club.findById(clubId);
 
     // Format event datetime string
     const dateTime = `${date || "Date TBA"} ${startTime || ""}`.trim();
@@ -64,9 +66,39 @@ export const createEventController = async (req, res) => {
       clubName: club?.name || "A Club",
       dateTime,                     // clean date string
       location: location || "Location TBA",
-    });
+    });*/
 
     // ------------------------------
+    // ------------------------------
+// 2️⃣ SEND NOTIFICATIONS TO ALL CLUB MEMBERS
+// ------------------------------
+
+// Get club name for notification
+const club = await Club.findById(clubId);
+
+// Format event datetime
+const dateTime = `${date || "Date TBA"} ${startTime || ""}`.trim();
+
+// 1. Find all students who joined this club
+const members = await Membership.find({ club: clubId }).select("student");
+
+// 2. Build one notification per student
+const notifications = members.map((m) => ({
+  student: m.student,               // << who receives the notification
+  clubId,
+  createdBy: ownerId,
+  type: "event",
+  title: `New Event: ${title}`,
+  clubName: club?.name || "A Club",
+  dateTime,
+  location: location || "Location TBA",
+  checked: false,
+}));
+
+// 3. Insert them into DB
+if (notifications.length > 0) {
+  await Notification.insertMany(notifications);
+}
 
     return res.status(201).json({
       message: "Event created successfully",

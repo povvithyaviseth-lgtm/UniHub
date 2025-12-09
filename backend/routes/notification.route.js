@@ -1,32 +1,50 @@
 import express from "express";
 import { auth } from "../middleware/auth.middleware.js";
 import Notification from "../models/notification.model.js";
-import { getNotificationsByClub, markAsRead } from "../services/notification.service.js";
 
 const router = express.Router();
 
-// GET notifications for a club
+/**
+ * GET /api/notifications
+ * Get all notifications for the logged-in student
+ */
 router.get("/", auth, async (req, res) => {
   try {
-    const notifications = await Notification.find().sort({ createdAt: -1 });
-    res.json({ notifications });
+    const studentId = req.user.id;
+
+    const notifications = await Notification.find({ student: studentId })
+      .sort({ createdAt: -1 }); // newest first
+
+    res.status(200).json({ notifications });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error("❌ Error fetching notifications:", err);
+    res.status(500).json({ message: "Server error fetching notifications" });
   }
 });
 
-
-// Mark a notification as read
+/**
+ * PUT /api/notifications/:id/read
+ * Mark a notification as read for the logged-in student
+ */
 router.put("/:id/read", auth, async (req, res) => {
   try {
-    const updated = await Notification.findByIdAndUpdate(
-      req.params.id,
-      { $addToSet: { readBy: req.user.id } },
+    const studentId = req.user.id;
+    const notificationId = req.params.id;
+
+    const updated = await Notification.findOneAndUpdate(
+      { _id: notificationId, student: studentId }, // ensure student owns it
+      { checked: true },
       { new: true }
     );
-    res.json({ notification: updated });
+
+    if (!updated) {
+      return res.status(404).json({ message: "Notification not found or not owned by user" });
+    }
+
+    res.status(200).json({ notification: updated });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error("❌ Error marking notification read:", err);
+    res.status(500).json({ message: "Server error updating notification" });
   }
 });
 
