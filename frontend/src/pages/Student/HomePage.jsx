@@ -448,7 +448,7 @@ const EventCard = ({ event }) => {
                 whiteSpace: "nowrap",
               }}
             >
-              Upcoming
+              Open to All
             </div>
             <div
               style={{
@@ -586,26 +586,6 @@ const EventCard = ({ event }) => {
                   Location: {event.location}
                 </span>
               </div>
-            </div>
-
-            <div style={{ flexShrink: 0 }}>
-              <button
-                type="button"
-                className="btn-primary"
-                style={{
-                  minWidth: 190,
-                  height: 50,
-                  borderRadius: 999,
-                  padding: "0 26px",
-                  fontSize: 16,
-                  fontWeight: 600,
-                  fontFamily: "inherit",
-                }}
-                // TODO: wire up once you have an event details page
-                // onClick={() => navigate(`/events/${event.id}`)}
-              >
-                View Details
-              </button>
             </div>
           </div>
         </div>
