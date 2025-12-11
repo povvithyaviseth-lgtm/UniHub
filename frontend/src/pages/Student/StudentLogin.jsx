@@ -4,9 +4,16 @@ import { useNavigate } from "react-router-dom";
 import { useStudentStore } from "../../store/student"; // ⬅️ adjust path if needed
 import "../../index.css"; // ✅ use global font + button styles
 
+// 🆕 Import the modal wrapper and content
+import PopUpModals from "../../component/PopUpModals.jsx"; 
+import PasswordRecovery from "../../component/PasswordRecovery.jsx"; 
+
 const StudentLogin = () => {
   const navigate = useNavigate();
   const [isAdminHovered, setIsAdminHovered] = useState(false);
+  
+  // 🆕 State for the Password Recovery Modal
+  const [isRecoveryOpen, setIsRecoveryOpen] = useState(false);
 
   const {
     credentials,
@@ -30,8 +37,8 @@ const StudentLogin = () => {
   };
 
   const handleForgotPasswordClick = () => {
-    console.log("Navigate to forgot password");
-    // navigate("/forgot-password"); // when built
+    // 🆕 ACTION: Open the Password Recovery Modal
+    setIsRecoveryOpen(true);
   };
 
   return (
@@ -59,7 +66,6 @@ const StudentLogin = () => {
             boxSizing: "border-box",
             display: "flex",
             flexDirection: "column",
-            gap: "10px",
             alignItems: "center",
             justifyContent: "center",
             padding: "125px 56px",
@@ -242,8 +248,8 @@ const StudentLogin = () => {
                     lineHeight: "normal",
                     left: "25px",
                     right: "25px",
-                    fontSize: "20px",
                     color: "#404040",
+                    fontSize: "20px",
                     top: "274px",
                     margin: 0,
                   }}
@@ -518,6 +524,17 @@ const StudentLogin = () => {
           </div>
         </div>
       </div>
+      
+      {/* 🆕 PASSWORD RECOVERY POPUP */}
+      <PopUpModals
+        open={isRecoveryOpen}
+        onClose={() => setIsRecoveryOpen(false)}
+        // Adjust these to match the desired size of your modal content
+        baseW={450}
+        baseH={420} 
+      >
+        <PasswordRecovery onClose={() => setIsRecoveryOpen(false)} />
+      </PopUpModals>
     </div>
   );
 };
