@@ -31,11 +31,10 @@ export default function ClubDashboard() {
   const [showAttendanceModal, setShowAttendanceModal] = React.useState(false);
   const [attendanceEvent, setAttendanceEvent] = React.useState(null);
 
-  const [members, setMembers] = React.useState([
-    { id: 1, email: "student1@example.edu" },
-    { id: 2, email: "student2@example.edu" },
-    { id: 3, email: "student3@example.edu" },
-  ]);
+  // 🔹 Members from backend
+  const [members, setMembers] = React.useState([]);
+  const [membersLoading, setMembersLoading] = React.useState(false);
+  const [membersError, setMembersError] = React.useState("");
   const [confirmKickId, setConfirmKickId] = React.useState(null);
 
   // 🔹 Events now come from backend
@@ -141,6 +140,58 @@ export default function ClubDashboard() {
     fetchEvents();
   }, [clubId]);
 
+  // 🔗 Fetch members for this club (owner view)
+  React.useEffect(() => {
+    const fetchMembers = async () => {
+      try {
+        if (!clubId) return;
+        setMembersLoading(true);
+        setMembersError("");
+
+        const token = localStorage.getItem("token");
+        if (!token) {
+          setMembersError("You must be logged in to view members.");
+          setMembers([]);
+          return;
+        }
+
+        const res = await fetch(
+          `${API_BASE_URL}/api/membership/${clubId}/members`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.message || "Failed to fetch members");
+        }
+
+        const membersFromApi = data.members || [];
+
+        // Normalize `_id` to `id` and make sure we have an email field
+        const normalized = membersFromApi.map((m) => ({
+          id: m._id || m.id,
+          email: m.email || m.schoolEmail || "unknown@example.edu",
+          name: m.name || m.fullName || "",
+        }));
+
+        setMembers(normalized);
+      } catch (err) {
+        console.error("Error fetching members:", err);
+        setMembersError(err.message);
+        setMembers([]);
+      } finally {
+        setMembersLoading(false);
+      }
+    };
+
+    fetchMembers();
+  }, [clubId]);
+
   const handleGoBack = () => {
     navigate("/console/clubs");
   };
@@ -170,9 +221,38 @@ export default function ClubDashboard() {
     setConfirmKickId(null);
   };
 
-  const handleConfirmKick = (memberId) => {
-    setMembers((prev) => prev.filter((m) => m.id !== memberId));
-    setConfirmKickId(null);
+  // 🔥 Call backend to actually kick the member
+  const handleConfirmKick = async (memberId) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        window.alert("You must be logged in as the club owner.");
+        return;
+      }
+
+      const res = await fetch(
+        `${API_BASE_URL}/api/membership/${clubId}/members/${memberId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Failed to remove member");
+      }
+
+      // Update local state
+      setMembers((prev) => prev.filter((m) => m.id !== memberId));
+      setConfirmKickId(null);
+    } catch (err) {
+      console.error("Error kicking member:", err);
+      window.alert(err.message || "Failed to remove member");
+    }
   };
 
   // 🔹 Create event → call backend
@@ -466,16 +546,6 @@ export default function ClubDashboard() {
             >
               Members
             </button>
-
-            <button
-              type="button"
-              className="cd-ghost-btn"
-              style={ghostButton}
-              onClick={() => setShowEditModal(true)}
-              disabled={!!loadError}
-            >
-              Edit club
-            </button>
           </div>
         </header>
 
@@ -595,19 +665,7 @@ export default function ClubDashboard() {
                     }}
                   >
                     {/* Old events toggle button */}
-                    <button
-                      type="button"
-                      style={{
-                        ...softOutlineButton,
-                        background: showOldEvents ? "#00550A" : "#F9FAFB",
-                        color: showOldEvents ? "#F9FAFB" : "#111827",
-                        transition:
-                          "background-color 160ms ease, color 160ms ease, border-color 160ms ease",
-                      }}
-                      onClick={() => setShowOldEvents((prev) => !prev)}
-                    >
-                      {showOldEvents ? "Show upcoming" : "Old events"}
-                    </button>
+                    {/* (you can re-enable this UI if you want) */}
 
                     <button
                       type="button"
@@ -856,7 +914,7 @@ export default function ClubDashboard() {
         </div>
       </div>
 
-      {/* ======= VIEW MEMBERS MODAL (now animated) ======= */}
+      {/* ======= VIEW MEMBERS MODAL (now wired to backend) ======= */}
       <PopUpModals
         open={showMembersModal}
         onClose={() => {
@@ -865,8 +923,11 @@ export default function ClubDashboard() {
         }}
       >
         <div className="cd-modal-shell">
+          {/* You can show loading/error text inside the modal if you want */}
           <MembersModalContent
             members={members}
+            membersLoading={membersLoading}
+            membersError={membersError}
             confirmKickId={confirmKickId}
             onKickClick={handleKickClick}
             onCancelKick={handleCancelKick}

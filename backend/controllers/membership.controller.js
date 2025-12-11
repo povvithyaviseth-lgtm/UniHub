@@ -4,6 +4,8 @@ import {
   joinClubService,
   leaveClubService,
   getJoinedClubsService,
+  getMembersService,
+  kickMemberService,
 } from '../services/membership.service.js';
 
 /**
@@ -110,5 +112,66 @@ export const getJoinedClubs = async (req, res) => {
     return res
       .status(500)
       .json({ message: 'Server error fetching joined clubs' });
+  }
+};
+
+/**
+ * GET /api/membership/:id/members
+ * Get all members of a specific club.
+ */
+export const getClubMembers = async (req, res) => {
+  try {
+    const clubId = req.params.id;
+
+    if (!mongoose.Types.ObjectId.isValid(clubId)) {
+      return res.status(400).json({ message: 'Invalid club id' });
+    }
+
+    const members = await getMembersService(clubId);
+
+    return res.status(200).json({ members });
+  } catch (error) {
+    console.error('Error fetching club members:', error);
+
+    if (error.message === 'Club not found') {
+      return res.status(404).json({ message: 'Club not found' });
+    }
+
+    return res
+      .status(500)
+      .json({ message: 'Server error fetching club members' });
+  }
+};
+
+export const kickMember = async (req, res) => {
+  try {
+    const ownerId = req.user.id;      // set by auth middleware
+    const clubId = req.params.id;
+    const memberId = req.params.memberId;
+
+    const membership = await kickMemberService(ownerId, clubId, memberId);
+
+    return res.status(200).json({
+      message: 'Member removed from club',
+      membership,
+    });
+  } catch (error) {
+    console.error('Error kicking member:', error);
+
+    if (error.message === 'Club not found') {
+      return res.status(404).json({ message: 'Club not found' });
+    }
+
+    if (error.message === 'Not authorized') {
+      return res.status(403).json({ message: 'Not authorized' });
+    }
+
+    if (error.message === 'Membership not found') {
+      return res.status(404).json({ message: 'Membership not found' });
+    }
+
+    return res
+      .status(500)
+      .json({ message: 'Server error kicking member' });
   }
 };
