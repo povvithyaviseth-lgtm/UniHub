@@ -118,12 +118,8 @@ const AdminLogin = () => {
           <div style={labelStyle(25, 176)}>Email</div>
           <div style={labelStyle(25, 274)}>Password</div>
 
-          {/* 🔄 Replaced Link with a Button to open the modal */}
-          <button 
-            type="button" 
-            onClick={handleForgotPasswordClick} 
-            style={forgotButtonStyle}
-          >
+          {/* Rename the File */}
+          <Link to="/ForgetPassword" style={forgotStyle}>
             Forgot Password?
           </button>
 

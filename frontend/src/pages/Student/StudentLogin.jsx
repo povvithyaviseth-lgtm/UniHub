@@ -37,8 +37,7 @@ const StudentLogin = () => {
   };
 
   const handleForgotPasswordClick = () => {
-    // 🆕 ACTION: Open the Password Recovery Modal
-    setIsRecoveryOpen(true);
+    console.log('Navigate to forgot password');
   };
 
   return (
