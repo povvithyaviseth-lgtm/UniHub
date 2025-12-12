@@ -3,7 +3,7 @@ import AdminLogin from "./pages/Admin/AdminLogin.jsx"
 import StudentLogin from "./pages/Student/StudentLogin.jsx"   
 import HomePage from "./pages/Student/HomePage.jsx"
 import SignUp from "./pages/Student/SignUp.jsx"
-import ClubManagement from "./pages/ClubOwner/ClubOwnerDashboard.jsx"
+import ClubManagement from "./pages/ClubOwner/ClubDashboard.jsx"
 
 
 function App() {

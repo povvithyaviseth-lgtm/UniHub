@@ -118,11 +118,6 @@ const AdminLogin = () => {
           <div style={labelStyle(25, 176)}>Email</div>
           <div style={labelStyle(25, 274)}>Password</div>
 
-          {/* Rename the File */}
-          <Link to="/ForgetPassword" style={forgotStyle}>
-            Forgot Password?
-          </button>
-
           <div style={signInWrapper}>
             {error && (
               <div
@@ -175,17 +170,6 @@ const AdminLogin = () => {
           </div>
         </div>
       </div>
-      
-      {/* 🆕 PASSWORD RECOVERY POPUP */}
-      <PopUpModals
-        open={isRecoveryOpen}
-        onClose={() => setIsRecoveryOpen(false)}
-        // These base dimensions were set for the PasswordRecovery content
-        baseW={450}
-        baseH={420} 
-      >
-        <PasswordRecovery onClose={() => setIsRecoveryOpen(false)} />
-      </PopUpModals>
     </div>
   );
 };
