@@ -1,4 +1,5 @@
 import React from "react";
+import { useParams } from "react-router-dom";
 
 /**
  * @typedef {Object} Announcement
@@ -374,12 +375,16 @@ const Sidebar = () => {
 };
 
 export default function ManageAnnouncements() {
+  const { clubId } = useParams();
   const [announcements, setAnnouncements] = React.useState([]);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [editingAnnouncement, setEditingAnnouncement] = React.useState(null);
   const [isLoading, setIsLoading] = React.useState(true);
-const [clubId] = React.useState("692e33da8351a2554a468208");
-const [userId] = React.useState("6913b724892b63bd6c62b8d3");
+//const [clubId] = React.useState("692e33da8351a2554a468208");
+//const [clubId] = React.useState("693bcf03b9207d81906d4631");
+//const [userId] = React.useState("6913b724892b63bd6c62b8d3");
+
+const [userId] = React.useState("691894d8892b63bd6c62b8e5");
 
   // Fetch announcements on component mount
   React.useEffect(() => {

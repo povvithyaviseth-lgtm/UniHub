@@ -2,7 +2,7 @@ import React from "react";
 
 /**
  * @typedef {Object} Notification
- * @property {string} id
+ * @property {string} _id
  * @property {string} title
  * @property {string} clubName
  * @property {string} dateTime
@@ -109,12 +109,18 @@ const NotificationCard = ({ notification, onToggle }) => {
         role="checkbox"
         aria-checked={notification.checked}
         tabIndex={0}
-        onKeyDown={(e) => {
+        /*onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
             onToggle(notification.id);
           }
-        }}
+        }}*/
+       onKeyDown={(e) => {
+  if (e.key === "Enter" || e.key === " ") {
+    e.preventDefault();
+    onToggle(notification._id);  // ✔ correct
+  }
+}}
       >
         {notification.checked && (
           <span style={{ color: "white", fontSize: 16, lineHeight: 1 }}>✓</span>
@@ -207,7 +213,7 @@ const NotificationPopup = ({ isOpen, onClose, notifications, onToggle }) => {
           ) : (
             notifications.map((notification) => (
               <NotificationCard
-                key={notification.id}
+                key={notification._id}
                 notification={notification}
                 onToggle={onToggle}
               />
@@ -287,6 +293,7 @@ React.useEffect(() => {
     });
 
     const data = await res.json();
+    console.log("Fetched notifications:", data);
     setNotifications(data.notifications || []);
   }
 

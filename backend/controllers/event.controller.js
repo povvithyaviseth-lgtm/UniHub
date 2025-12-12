@@ -77,10 +77,18 @@ export const createEventController = async (req, res) => {
 const club = await Club.findById(clubId);
 
 // Format event datetime
-const dateTime = `${date || "Date TBA"} ${startTime || ""}`.trim();
+//const dateTime = `${date || "Date TBA"} ${startTime || ""}`.trim();
+const dateTime = date && startTime 
+  ? `${date} ${startTime}` 
+  : date 
+    ? `${date}` 
+    : startTime 
+      ? `${startTime}` 
+      : "Date/Time TBA";
 
 // 1. Find all students who joined this club
-const members = await Membership.find({ club: clubId }).select("student");
+const members = await ClubMembership.find({ club: clubId }).select("student");
+console.log("📘 MEMBERS FOUND:", members);
 
 // 2. Build one notification per student
 const notifications = members.map((m) => ({
@@ -94,10 +102,21 @@ const notifications = members.map((m) => ({
   location: location || "Location TBA",
   checked: false,
 }));
+console.log("📬 NOTIFICATIONS TO INSERT:", notifications);
 
 // 3. Insert them into DB
-if (notifications.length > 0) {
+/*if (notifications.length > 0) {
   await Notification.insertMany(notifications);
+}*/
+if (notifications.length > 0) {
+  try {
+    const inserted = await Notification.insertMany(notifications);
+    console.log("📢 NOTIFICATIONS INSERTED:", inserted);
+  } catch (err) {
+    console.error("❌ NOTIFICATION INSERT FAILED:", err);
+  }
+} else {
+  console.log("⚠️ NO MEMBERS — NO NOTIFICATIONS CREATED");
 }
 
     return res.status(201).json({

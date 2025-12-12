@@ -47,7 +47,7 @@ export default function ClubDashboard() {
   const [attendanceByEvent, setAttendanceByEvent] = React.useState({});
 
   // simple announcements (still local-only)
-  const [announcements, setAnnouncements] = React.useState([
+  /*const [announcements, setAnnouncements] = React.useState([
     {
       id: 1,
       text: "First meeting this Thursday! Snacks provided.",
@@ -60,7 +60,8 @@ export default function ClubDashboard() {
       createdAt: "2025-09-05",
       status: "draft",
     },
-  ]);
+  ]);*/
+  const [announcements, setAnnouncements] = React.useState([]);
   const [newAnnouncement, setNewAnnouncement] = React.useState("");
 
   const [showOldEvents, setShowOldEvents] = React.useState(false);
@@ -140,6 +141,26 @@ export default function ClubDashboard() {
 
     fetchEvents();
   }, [clubId]);
+  React.useEffect(() => {
+  async function loadAnnouncements() {
+    try {
+      const token = localStorage.getItem("token");
+
+      const res = await fetch(`${API_BASE_URL}/api/announcements/${clubId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+      setAnnouncements(data.announcements || []);
+    } catch (err) {
+      console.error("Error fetching announcements:", err);
+    }
+  }
+
+  loadAnnouncements();
+}, [clubId]);
 
   const handleGoBack = () => {
     navigate("/console/clubs");
@@ -278,7 +299,7 @@ export default function ClubDashboard() {
   };
 
   // announcement actions
-  const handleAddAnnouncement = () => {
+  /*const handleAddAnnouncement = () => {
     const trimmed = newAnnouncement.trim();
     if (!trimmed) return;
     setAnnouncements((prev) => [
@@ -291,12 +312,47 @@ export default function ClubDashboard() {
       ...prev,
     ]);
     setNewAnnouncement("");
-  };
+  };*/
+  const handleAddAnnouncement = async () => {
+  const trimmed = newAnnouncement.trim();
+  if (!trimmed) return;
+
+  try {
+    const token = localStorage.getItem("token");
+
+    const res = await fetch(`${API_BASE_URL}/api/announcements/${clubId}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        title: trimmed,
+        body: trimmed,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.message || "Failed to create announcement");
+    }
+
+    // Add the new announcement to the UI
+    setAnnouncements((prev) => [data.announcement, ...prev]);
+
+    // Clear input box
+    setNewAnnouncement("");
+  } catch (err) {
+    console.error("Error creating announcement:", err);
+    alert(err.message);
+  }
+};
 
   const handleToggleAnnouncementStatus = (id) => {
     setAnnouncements((prev) =>
       prev.map((a) =>
-        a.id === id
+        a._id === id
           ? {
               ...a,
               status: a.status === "published" ? "draft" : "published",
@@ -309,7 +365,7 @@ export default function ClubDashboard() {
   const handleDeleteAnnouncement = (id) => {
     const ok = window.confirm("Delete this announcement?");
     if (!ok) return;
-    setAnnouncements((prev) => prev.filter((a) => a.id !== id));
+    setAnnouncements((prev) => prev.filter((a) => a._id !== id));
   };
 
   const initialTags = club?.tag
@@ -815,15 +871,21 @@ export default function ClubDashboard() {
                   >
                     {announcements.map((a, index) => (
                       <div
-                        key={a.id}
+                        key={a._id}
                         className="cd-list-item-anim"
                         style={{ animationDelay: `${index * 40}ms` }}
                       >
-                        <AnnouncementItem
-                          announcement={a}
-                          onToggleStatus={handleToggleAnnouncementStatus}
-                          onDelete={handleDeleteAnnouncement}
-                        />
+                       <AnnouncementItem
+                      announcement={{
+                         id: a._id,                            // backend _id → UI id
+                         text: a.title || a.body,              // backend title/body → UI text
+                          title: a.title,                       // keep title if component needs it
+                        body: a.body,                         // keep body if needed
+                        createdAt: a.createdAt?.slice(0, 10), // format date
+                      }}
+                       onToggleStatus={handleToggleAnnouncementStatus}
+                       onDelete={handleDeleteAnnouncement}
+/>
                       </div>
                     ))}
                   </div>

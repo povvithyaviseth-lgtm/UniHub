@@ -23,7 +23,7 @@ function App() {
       <Route path="/console/clubs/:clubId" element={<ClubDashboard />} />
 
       <Route path="/admin/dashboard" element={<AdminDashboard />} />
-      <Route path="/console/announcements" element={<ManageAnnouncements />} />
+      <Route path="/console/announcements/:clubId" element={<ManageAnnouncements />} />
       
       {/* Add more routes here */}
     </Routes>

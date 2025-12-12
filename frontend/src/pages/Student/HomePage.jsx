@@ -1590,12 +1590,7 @@ const HomePage = () => {
         
       </PopUpModals>
       {/* NOTIFICATIONS POPUP */}
-{notificationsOpen && (
-  <Notification
-    isOpen={notificationsOpen}
-    onClose={() => setNotificationsOpen(false)}
-  />
-)}
+   <Notification />
     </div>
   );
 };
