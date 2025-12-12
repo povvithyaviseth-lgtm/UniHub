@@ -86,3 +86,12 @@ export const updateStudentRole = async (req, res) => {
     return res.status(500).json({ success: false, message: 'Server error' });
   }
 };
+
+export const checkUserExists = async (req, res) => {
+  const exist = await student.findOne({ email: req.params.email });
+  if (exist) {
+    return res.json({ exists: true });
+  } else {
+    return res.json({ exists: false });
+  }
+};

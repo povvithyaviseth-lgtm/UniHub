@@ -37,7 +37,7 @@ const StudentLogin = () => {
   };
 
   const handleForgotPasswordClick = () => {
-    console.log('Navigate to forgot password');
+    setIsRecoveryOpen(true);
   };
 
   return (

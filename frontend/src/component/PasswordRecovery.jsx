@@ -3,12 +3,18 @@ import React, { useState } from "react";
 const PasswordRecovery = ({ onClose }) => {
   const [email, setEmail] = useState("");
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!email) {
       alert("Please enter your email.");
       return;
     }
     // Replace with your actual recovery API call
+    const response = await fetch(`api/students/exists/${email}`);
+    const data = await response.json();
+    if(!data.exists) {
+      alert("Email not found. Please check and try again.");
+      return;
+    }
     alert(`Password recovery link sent to: ${email}`);
     onClose(); // optionally close after submit
   };
@@ -18,6 +24,7 @@ const PasswordRecovery = ({ onClose }) => {
       style={{
         width: 779,
         height: 330,
+        right: 160,
         position: "relative",
         background: "white",
         boxShadow: "0px 15px 30px rgba(0, 0, 0, 0.25)",
