@@ -11,6 +11,7 @@ import membershipRoutes from './routes/membership.route.js';
 import eventsRoutes from './routes/event.route.js';
 import announcementRoutes from './routes/announcement.route.js';
 import notificationRoutes from './routes/notification.route.js';
+import rsvpRoutes from "./routes/rsvp.route.js";
 
 import cors from 'cors';
 
@@ -54,6 +55,7 @@ app.use('/api/membership', membershipRoutes);
 app.use('/api/events', eventsRoutes);
 app.use('/api/announcements', announcementRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use("/api/rsvps", rsvpRoutes);
 // 404
 app.use((req, res) => res.status(404).json({ message: 'Route not found' }));
 

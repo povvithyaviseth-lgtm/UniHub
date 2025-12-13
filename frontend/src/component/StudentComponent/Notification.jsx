@@ -10,7 +10,7 @@ import React from "react";
  * @property {boolean} checked
  */
 
-const NotificationCard = ({ notification, onToggle }) => {
+const NotificationCard = ({ notification, onToggle, onRsvp }) => {
   return (
     <div
       style={{
@@ -89,6 +89,25 @@ const NotificationCard = ({ notification, onToggle }) => {
             {notification.location}
           </p>
         </div>
+        {/* RSVP Button */}
+{notification.type === "event" && (
+  <button
+    onClick={() => onRsvp(notification)}
+    style={{
+      marginTop: 10,
+      padding: "8px 14px",
+      background: notification.rsvp ? "#16A34A" : "#00550A",
+      color: "white",
+      borderRadius: 6,
+      border: "none",
+      cursor: "pointer",
+      fontWeight: 600,
+      fontSize: 14,
+    }}
+  >
+    {notification.rsvp ? "Going ✓" : "RSVP"}
+  </button>
+)}
       </div>
 
       <div
@@ -130,7 +149,7 @@ const NotificationCard = ({ notification, onToggle }) => {
   );
 };
 
-const NotificationPopup = ({ isOpen, onClose, notifications, onToggle }) => {
+const NotificationPopup = ({ isOpen, onClose, notifications, onToggle,onRsvp }) => {
   if (!isOpen) return null;
 
   return (
@@ -216,6 +235,7 @@ const NotificationPopup = ({ isOpen, onClose, notifications, onToggle }) => {
                 key={notification._id}
                 notification={notification}
                 onToggle={onToggle}
+                onRsvp={onRsvp}
               />
             ))
           )}
@@ -296,6 +316,7 @@ export default function Notification({ isOpen, onClose }) {
   }, [isOpen]);
 
   const handleToggle = async (id) => {
+    
     const token = localStorage.getItem("token");
 
     await fetch(`http://localhost:5050/api/notifications/${id}/read`, {
@@ -303,17 +324,43 @@ export default function Notification({ isOpen, onClose }) {
       headers: { Authorization: `Bearer ${token}` },
     });
 
+
     setNotifications((prev) =>
       prev.map((n) => (n._id === id ? { ...n, checked: true } : n))
     );
   };
+  // ⭐ RSVP Function (NOT inside handleToggle)
+const onRsvp = async (notification) => {
+  const token = localStorage.getItem("token");
+
+  const res = await fetch("http://localhost:5050/api/rsvps", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      eventId: notification.eventId,
+    }),
+  });
+
+  const data = await res.json();
+  console.log("RSVP submitted:", data);
+
+  setNotifications((prev) =>
+    prev.map((n) =>
+      n._id === notification._id ? { ...n, rsvp: true } : n
+    )
+  );
+};
 
   return (
-    <NotificationPopup
-      isOpen={isOpen}
-      onClose={onClose}
-      notifications={notifications}
-      onToggle={handleToggle}
-    />
-  );
+  <NotificationPopup
+    isOpen={isOpen}
+    onClose={onClose}
+    notifications={notifications}
+    onToggle={handleToggle}
+    onRsvp={onRsvp}   // ⭐ ADD THIS
+  />
+);
 }
