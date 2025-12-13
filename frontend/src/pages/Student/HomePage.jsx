@@ -96,7 +96,7 @@ const formatEventDateTime = (date, startTime, endTime) => {
     const [hStr, mStr] = timeStr.split(":");
     const h = Number(hStr);
     const m = Number(mStr || 0);
-    if (Number.isNaN(h)) return timeStr; // already a nice string
+    if (Number.isNaN(h)) return timeStr;
     const dt = new Date();
     dt.setHours(h, m || 0, 0, 0);
     return dt.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
@@ -428,7 +428,7 @@ const EventCard = ({ event }) => {
             gap: 12,
           }}
         >
-          {/* Top row: date chip + "Upcoming" */}
+          {/* Top row: tag */}
           <div
             style={{
               display: "flex",
@@ -487,7 +487,7 @@ const EventCard = ({ event }) => {
             </div>
           )}
 
-          {/* Bottom row: when/where + CTA */}
+          {/* Bottom row: when/where */}
           <div
             style={{
               marginTop: "auto",
@@ -504,7 +504,7 @@ const EventCard = ({ event }) => {
                 flexDirection: "column",
                 gap: 6,
                 minWidth: 0,
-                marginLeft: "auto", 
+                marginLeft: "auto",
                 textAlign: "right",
               }}
             >
@@ -604,23 +604,24 @@ const HomePage = () => {
   const [openClub, setOpenClub] = useState(null);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+
   useEffect(() => {
-  async function loadUnread() {
-    const token = localStorage.getItem("token");
-    if (!token) return;
+    async function loadUnread() {
+      const token = localStorage.getItem("token");
+      if (!token) return;
 
-    const res = await fetch("http://localhost:5050/api/notifications", {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+      const res = await fetch("http://localhost:5050/api/notifications", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-    const data = await res.json();
-    const list = data.notifications || [];
+      const data = await res.json();
+      const list = data.notifications || [];
 
-    setUnreadCount(list.filter(n => !n.checked).length);
-  }
+      setUnreadCount(list.filter((n) => !n.checked).length);
+    }
 
-  loadUnread();
-}, []);
+    loadUnread();
+  }, []);
 
   // Clubs from backend
   const [clubs, setClubs] = useState([]);
@@ -645,24 +646,24 @@ const HomePage = () => {
   const [confirmMessage, setConfirmMessage] = useState("");
   const confirmActionRef = useRef(() => {});
 
-  // 🔄 section refs for scroll
-  const clubsSectionRef = useRef(null); // still used as marker for category block
+  // section refs for scroll
+  const clubsSectionRef = useRef(null);
   const eventsSectionRef = useRef(null);
 
-  // 🔄 responsive columns + "see more" state
+  // responsive columns + "see more" state
   const [columns, setColumns] = useState(3);
   const [showAllClubs, setShowAllClubs] = useState(false);
 
-  // 🔄 update columns based on viewport
+  // update columns based on viewport
   useEffect(() => {
     const updateColumns = () => {
       const width = window.innerWidth;
       if (width >= 1024) {
-        setColumns(3); // desktop
+        setColumns(3);
       } else if (width >= 640) {
-        setColumns(2); // tablet
+        setColumns(2);
       } else {
-        setColumns(1); // phone
+        setColumns(1);
       }
     };
 
@@ -671,14 +672,14 @@ const HomePage = () => {
     return () => window.removeEventListener("resize", updateColumns);
   }, []);
 
-  // 🔄 helper for smooth scroll (still used for Events)
+  // helper for smooth scroll (used by header "Events")
   const scrollToSection = (ref) => {
     if (ref.current) {
       ref.current.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   };
 
-  // 🔥 Fetch clubs from backend on mount
+  // Fetch clubs
   useEffect(() => {
     const fetchClubs = async () => {
       try {
@@ -693,10 +694,9 @@ const HomePage = () => {
         const json = await res.json();
         const apiClubs = json.data || json.clubs || [];
 
-        // Normalize to what the UI expects
         const normalized = apiClubs.map((c) => ({
           id: c._id || c.id,
-          _id: c._id, // keep for consistency if needed
+          _id: c._id,
           name: c.name,
           description: c.description || "",
           tag: c.tag || "Other",
@@ -720,7 +720,7 @@ const HomePage = () => {
     fetchClubs();
   }, []);
 
-  // 🔥 Fetch events from backend (uses getAllEventsService on server)
+  // Fetch events
   useEffect(() => {
     const fetchEvents = async () => {
       try {
@@ -736,7 +736,6 @@ const HomePage = () => {
         const apiEvents = json.data || json.events || [];
 
         const normalized = apiEvents.map((e) => {
-          // Backend: Event.find({}).populate("club","name image")
           const club = e.club || {};
           const when = formatEventDateTime(e.date, e.startTime, e.endTime);
 
@@ -748,7 +747,7 @@ const HomePage = () => {
             : null;
 
           return {
-            id: e._id || e.id,
+            id: e._id || e.id, // 👈 this must match notification.eventId
             title: e.title || e.name || "Untitled Event",
             hostedBy: club.name || "Student Club",
             description: e.description || "",
@@ -770,7 +769,7 @@ const HomePage = () => {
     fetchEvents();
   }, []);
 
-  // 🔥 Fetch joined clubs on mount / when token changes
+  // Fetch joined clubs
   useEffect(() => {
     if (!token) return;
 
@@ -805,7 +804,7 @@ const HomePage = () => {
     [clubs]
   );
 
-  // 🔍 Search + tag filters
+  // Search + tag filters
   const filteredClubs = useMemo(() => {
     const term = search.trim().toLowerCase();
 
@@ -826,19 +825,19 @@ const HomePage = () => {
     });
   }, [approvedClubs, search, category]);
 
-  // 🔄 only show first 12 clubs unless "See more" clicked
+  // only show first 12 clubs unless "See more" clicked
   const visibleClubs = useMemo(() => {
     if (showAllClubs) return filteredClubs;
-    return filteredClubs.slice(0, 12); // 4 rows * 3 cards
+    return filteredClubs.slice(0, 12);
   }, [filteredClubs, showAllClubs]);
 
-  // When Profile wants to open EditProfile:
+  // Profile -> Edit
   const handleOpenEditFromProfile = () => {
     setProfileOpen(false);
     setEditOpen(true);
   };
 
-  // When Profile asks to confirm leaving a club:
+  // Profile wants to leave a club
   const handleProfileLeaveClub = (clubName) => {
     setConfirmTitle("Leave Club?");
     setConfirmMessage(`Are you sure you want to leave "${clubName}"?`);
@@ -849,13 +848,13 @@ const HomePage = () => {
     setConfirmOpen(true);
   };
 
-  // Navigate to Club Management (parent controls routing)
+  // Manage club
   const handleManageClub = useCallback(() => {
     setProfileOpen(false);
     navigate("/console/clubs");
   }, [navigate]);
 
-  // ✅ called when user confirms "Confirm" on a card OR clicks "Join Club" in modal
+  // Join club
   const handleJoinClub = useCallback(
     async (club) => {
       if (!token) {
@@ -887,7 +886,6 @@ const HomePage = () => {
           return false;
         }
 
-        // ✅ mark this club as joined in state
         setJoinedClubIds((prev) =>
           prev.includes(clubId) ? prev : [...prev, clubId]
         );
@@ -902,6 +900,31 @@ const HomePage = () => {
     },
     [token, navigate]
   );
+
+  // 🔥 Called by Notification when user clicks RSVP on a notification
+  const handleGoToEventFromNotification = (eventId) => {
+    // Small delay so the popup can close visually first
+    setTimeout(() => {
+      if (typeof document === "undefined") return;
+
+      if (eventId) {
+        const el = document.getElementById(`event-${eventId}`);
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "center" });
+          return;
+        }
+      }
+
+      // Fallback: scroll to the events section
+      const eventsSection = document.getElementById("events-section");
+      if (eventsSection) {
+        eventsSection.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+    }, 100);
+  };
 
   return (
     <div
@@ -925,7 +948,7 @@ const HomePage = () => {
           boxSizing: "border-box",
         }}
       >
-        {/* Main content: everything inside fades in + moves up */}
+        {/* Main content */}
         <div
           style={{
             width: "100%",
@@ -938,7 +961,7 @@ const HomePage = () => {
             animation: "fadeInUp 0.45s ease-out forwards",
           }}
         >
-          {/* ===== Sticky Header (scaled to fit) ===== */}
+          {/* ===== Sticky Header ===== */}
           <div
             style={{
               position: "sticky",
@@ -996,7 +1019,7 @@ const HomePage = () => {
                     gap: 28,
                   }}
                 >
-                  {/* 🔄 Clickable "Clubs" → scroll to very top */}
+                  {/* "Clubs" */}
                   <div
                     role="button"
                     onClick={() =>
@@ -1025,7 +1048,7 @@ const HomePage = () => {
                       borderRadius: 1,
                     }}
                   />
-                  {/* 🔄 Clickable "Events" */}
+                  {/* "Events" */}
                   <div
                     role="button"
                     onClick={() => scrollToSection(eventsSectionRef)}
@@ -1048,63 +1071,63 @@ const HomePage = () => {
 
                 {/* Right: bell */}
                 <div
-  onClick={() => setNotificationsOpen(true)}
-  style={{
-    position: "absolute",
-    right: 240,
-    top: "50%",
-    transform: "translateY(-50%)",
-    width: 65,
-    height: 64,
-    padding: 5,
-    background: "#F0F0F0",
-    borderRadius: 25,
-    display: "inline-flex",
-    justifyContent: "center",
-    alignItems: "center",
-    cursor: "pointer",
-  }}
->
-  {/* Bell Icon */}
-  <div
-    style={{
-      width: 40,
-      height: 40,
-      backgroundColor: "#00550A",
-      WebkitMaskImage: `url(${bellIcon})`,
-      maskImage: `url(${bellIcon})`,
-      WebkitMaskRepeat: "no-repeat",
-      maskRepeat: "no-repeat",
-      WebkitMaskPosition: "center",
-      maskPosition: "center",
-      WebkitMaskSize: "contain",
-      maskSize: "contain",
-    }}
-  />
+                  onClick={() => setNotificationsOpen(true)}
+                  style={{
+                    position: "absolute",
+                    right: 240,
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    width: 65,
+                    height: 64,
+                    padding: 5,
+                    background: "#F0F0F0",
+                    borderRadius: 25,
+                    display: "inline-flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    cursor: "pointer",
+                  }}
+                >
+                  {/* Bell Icon */}
+                  <div
+                    style={{
+                      width: 40,
+                      height: 40,
+                      backgroundColor: "#00550A",
+                      WebkitMaskImage: `url(${bellIcon})`,
+                      maskImage: `url(${bellIcon})`,
+                      WebkitMaskRepeat: "no-repeat",
+                      maskRepeat: "no-repeat",
+                      WebkitMaskPosition: "center",
+                      maskPosition: "center",
+                      WebkitMaskSize: "contain",
+                      maskSize: "contain",
+                    }}
+                  />
 
-  {/* 🔴 UNREAD BADGE */}
-  {unreadCount > 0 && (
-    <div
-      style={{
-        position: "absolute",
-        top: -4,
-        right: -4,
-        background: "red",
-        color: "white",
-        width: 20,
-        height: 20,
-        borderRadius: "50%",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        fontSize: 12,
-        fontWeight: "bold",
-      }}
-    >
-      {unreadCount}
-    </div>
-  )}
-</div>
+                  {/* Unread badge */}
+                  {unreadCount > 0 && (
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: -4,
+                        right: -4,
+                        background: "red",
+                        color: "white",
+                        width: 20,
+                        height: 20,
+                        borderRadius: "50%",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: 12,
+                        fontWeight: "bold",
+                      }}
+                    >
+                      {unreadCount}
+                    </div>
+                  )}
+                </div>
 
                 {/* Right: profile chip */}
                 <button
@@ -1198,7 +1221,6 @@ const HomePage = () => {
                 animationDelay: "0.05s",
               }}
             >
-              {/* Search Bar */}
               <div
                 style={{
                   width: "100%",
@@ -1267,7 +1289,6 @@ const HomePage = () => {
               animationDelay: "0.1s",
             }}
           >
-            {/* Header: Explore By Category */}
             <div
               style={{
                 textAlign: "center",
@@ -1282,7 +1303,6 @@ const HomePage = () => {
               }}
             ></div>
 
-            {/* Tag buttons */}
             <div
               style={{
                 width: "100%",
@@ -1302,7 +1322,7 @@ const HomePage = () => {
                     key={cat}
                     onClick={() => {
                       setCategory(cat);
-                      setShowAllClubs(false); // reset pagination when filter changes
+                      setShowAllClubs(false);
                     }}
                     style={{
                       minWidth: 120,
@@ -1347,7 +1367,6 @@ const HomePage = () => {
                 flexWrap: "wrap",
                 gap: 28,
                 justifyContent: "center",
-                // Reserve vertical space so Events don't jump when clubs load
                 minHeight: 420,
               }}
             >
@@ -1389,10 +1408,9 @@ const HomePage = () => {
                 </div>
               ) : (
                 <>
-                  {/* 🔄 Responsive grid with up to 3 columns */}
                   <div
                     style={{
-                      width: "100%", // ✅ full row width so single cards don't shrink
+                      width: "100%",
                       display: "grid",
                       gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
                       gap: 28,
@@ -1403,7 +1421,6 @@ const HomePage = () => {
                       const clubId = club._id || club.id;
                       const isJoined = joinedClubIds.includes(clubId);
 
-                      // Row-based delay: cards in the same row animate together
                       const rowIndex = Math.floor(index / columns);
                       const delaySeconds = rowIndex * 0.08;
 
@@ -1429,7 +1446,6 @@ const HomePage = () => {
                     })}
                   </div>
 
-                  {/* 🔄 "See more clubs" after 4 rows of 3 cards */}
                   {!showAllClubs && filteredClubs.length > 12 && (
                     <div
                       style={{
@@ -1462,6 +1478,7 @@ const HomePage = () => {
 
           {/* 🔽 Events Section (scroll target) */}
           <section
+            id="events-section"
             ref={eventsSectionRef}
             style={{
               width: "100%",
@@ -1495,7 +1512,7 @@ const HomePage = () => {
               </div>
             </div>
 
-            {/* Events List (uses backend data) */}
+            {/* Events List */}
             <div
               style={{
                 width: "100%",
@@ -1548,6 +1565,7 @@ const HomePage = () => {
                 events.map((event, index) => (
                   <div
                     key={event.id}
+                    id={`event-${event.id}`}
                     style={{
                       opacity: 0,
                       animation: "fadeInUp 0.45s ease-out forwards",
@@ -1577,7 +1595,7 @@ const HomePage = () => {
         />
       )}
 
-      {/* PROFILE popup with smooth animation */}
+      {/* PROFILE popup */}
       <PopUpModals
         open={profileOpen}
         onClose={() => setProfileOpen(false)}
@@ -1594,7 +1612,7 @@ const HomePage = () => {
         </div>
       </PopUpModals>
 
-      {/* EDIT PROFILE popup (also animated for consistency) */}
+      {/* EDIT PROFILE popup */}
       <PopUpModals
         open={editOpen}
         onClose={() => setEditOpen(false)}
@@ -1611,7 +1629,7 @@ const HomePage = () => {
         </div>
       </PopUpModals>
 
-      {/* CONFIRM DIALOG popup (also animated) */}
+      {/* CONFIRM DIALOG popup */}
       <PopUpModals
         open={confirmOpen}
         onClose={() => setConfirmOpen(false)}
@@ -1626,13 +1644,14 @@ const HomePage = () => {
             onConfirm={() => confirmActionRef.current?.()}
           />
         </div>
-        
       </PopUpModals>
+
       {/* NOTIFICATIONS POPUP */}
-<Notification 
-    isOpen={notificationsOpen}
-    onClose={() => setNotificationsOpen(false)}
-/>
+      <Notification
+        isOpen={notificationsOpen}
+        onClose={() => setNotificationsOpen(false)}
+        onGoToEvent={handleGoToEventFromNotification}
+      />
     </div>
   );
 };

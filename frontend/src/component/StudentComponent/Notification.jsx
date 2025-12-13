@@ -8,6 +8,9 @@ import React from "react";
  * @property {string} dateTime
  * @property {string} location
  * @property {boolean} checked
+ * @property {string} [type]      // e.g. "event"
+ * @property {string} [eventId]   // backend event _id that matches HomePage events
+ * @property {boolean} [rsvp]     // whether user already RSVP'd
  */
 
 const NotificationCard = ({ notification, onToggle, onRsvp }) => {
@@ -25,7 +28,14 @@ const NotificationCard = ({ notification, onToggle, onRsvp }) => {
         position: "relative",
       }}
     >
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 4 }}>
+      <div
+        style={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          gap: 4,
+        }}
+      >
         <h3
           style={{
             margin: 0,
@@ -89,25 +99,38 @@ const NotificationCard = ({ notification, onToggle, onRsvp }) => {
             {notification.location}
           </p>
         </div>
+
         {/* RSVP Button */}
-{notification.type === "event" && (
-  <button
-    onClick={() => onRsvp(notification)}
-    style={{
-      marginTop: 10,
-      padding: "8px 14px",
-      background: notification.rsvp ? "#16A34A" : "#00550A",
-      color: "white",
-      borderRadius: 6,
-      border: "none",
-      cursor: "pointer",
-      fontWeight: 600,
-      fontSize: 14,
-    }}
-  >
-    {notification.rsvp ? "Going ✓" : "RSVP"}
-  </button>
-)}
+        {notification.type === "event" && (
+          <button
+            onClick={() => onRsvp(notification)}
+            disabled={notification.rsvp}
+            style={{
+              marginTop: 10,
+              padding: "8px 14px",
+              background: notification.rsvp ? "#16A34A" : "#00550A",
+              color: "white",
+              borderRadius: 6,
+              border: "none",
+              cursor: notification.rsvp ? "default" : "pointer",
+              fontWeight: 600,
+              fontSize: 14,
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 6,
+              opacity: notification.rsvp ? 0.9 : 1,
+            }}
+          >
+            {notification.rsvp ? (
+              <>
+                <span>RSVP&apos;d</span>
+                <span>✓</span>
+              </>
+            ) : (
+              "RSVP"
+            )}
+          </button>
+        )}
       </div>
 
       <div
@@ -128,18 +151,12 @@ const NotificationCard = ({ notification, onToggle, onRsvp }) => {
         role="checkbox"
         aria-checked={notification.checked}
         tabIndex={0}
-        /*onKeyDown={(e) => {
+        onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
-            onToggle(notification.id);
+            onToggle(notification._id);
           }
-        }}*/
-       onKeyDown={(e) => {
-  if (e.key === "Enter" || e.key === " ") {
-    e.preventDefault();
-    onToggle(notification._id);  // ✔ correct
-  }
-}}
+        }}
       >
         {notification.checked && (
           <span style={{ color: "white", fontSize: 16, lineHeight: 1 }}>✓</span>
@@ -149,7 +166,13 @@ const NotificationCard = ({ notification, onToggle, onRsvp }) => {
   );
 };
 
-const NotificationPopup = ({ isOpen, onClose, notifications, onToggle,onRsvp }) => {
+const NotificationPopup = ({
+  isOpen,
+  onClose,
+  notifications,
+  onToggle,
+  onRsvp,
+}) => {
   if (!isOpen) return null;
 
   return (
@@ -297,9 +320,18 @@ const NotificationButton = ({ onClick, notificationCount }) => {
   );
 };
 
-export default function Notification({ isOpen, onClose }) {
+/**
+ * Main Notification wrapper used on HomePage
+ * Props:
+ *  - isOpen: boolean
+ *  - onClose: () => void
+ *  - onGoToEvent: (eventId: string | null) => void   // tells HomePage which event to scroll to
+ */
+export default function Notification({ isOpen, onClose, onGoToEvent }) {
   const [notifications, setNotifications] = React.useState([]);
 
+  // Fetch notifications whenever popup opens,
+  // but preserve local rsvp/checked state across openings.
   React.useEffect(() => {
     if (!isOpen) return;
 
@@ -309,14 +341,28 @@ export default function Notification({ isOpen, onClose }) {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
-      setNotifications(data.notifications || []);
+
+      setNotifications((prev) => {
+        const prevById = new Map(prev.map((n) => [n._id, n]));
+        const fresh = data.notifications || [];
+
+        return fresh.map((n) => {
+          const old = prevById.get(n._id);
+          if (!old) return n;
+          // Preserve previous rsvp/checked flags if present
+          return {
+            ...n,
+            rsvp: old.rsvp ?? n.rsvp,
+            checked: old.checked ?? n.checked,
+          };
+        });
+      });
     }
 
     fetchNotifications();
   }, [isOpen]);
 
   const handleToggle = async (id) => {
-    
     const token = localStorage.getItem("token");
 
     await fetch(`http://localhost:5050/api/notifications/${id}/read`, {
@@ -324,43 +370,59 @@ export default function Notification({ isOpen, onClose }) {
       headers: { Authorization: `Bearer ${token}` },
     });
 
-
     setNotifications((prev) =>
-      prev.map((n) => (n._id === id ? { ...n, checked: true } : n))
+      prev.map((n) =>
+        n._id === id ? { ...n, checked: true } : n
+      )
     );
   };
-  // ⭐ RSVP Function (NOT inside handleToggle)
-const onRsvp = async (notification) => {
-  const token = localStorage.getItem("token");
 
-  const res = await fetch("http://localhost:5050/api/rsvps", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({
-      eventId: notification.eventId,
-    }),
-  });
+  const handleRsvp = async (notification) => {
+    // Don’t double-submit
+    if (notification.rsvp) return;
 
-  const data = await res.json();
-  console.log("RSVP submitted:", data);
+    const token = localStorage.getItem("token");
 
-  setNotifications((prev) =>
-    prev.map((n) =>
-      n._id === notification._id ? { ...n, rsvp: true } : n
-    )
-  );
-};
+    try {
+      await fetch("http://localhost:5050/api/rsvps", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          eventId: notification.eventId,
+        }),
+      });
+    } catch (err) {
+      console.error("Error submitting RSVP:", err);
+    }
+
+    // ✅ Update local state so the button shows "RSVP'd ✓"
+    setNotifications((prev) =>
+      prev.map((n) =>
+        n._id === notification._id ? { ...n, rsvp: true } : n
+      )
+    );
+
+    // ✅ Close popup so the events section is visible
+    if (onClose) {
+      onClose();
+    }
+
+    // ✅ Let HomePage scroll to the matching event card
+    if (onGoToEvent) {
+      onGoToEvent(notification.eventId || null);
+    }
+  };
 
   return (
-  <NotificationPopup
-    isOpen={isOpen}
-    onClose={onClose}
-    notifications={notifications}
-    onToggle={handleToggle}
-    onRsvp={onRsvp}   // ⭐ ADD THIS
-  />
-);
+    <NotificationPopup
+      isOpen={isOpen}
+      onClose={onClose}
+      notifications={notifications}
+      onToggle={handleToggle}
+      onRsvp={handleRsvp}
+    />
+  );
 }
