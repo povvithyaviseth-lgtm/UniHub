@@ -43,6 +43,14 @@ const eventSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    maxCapacity: {
+      type: Number,
+      default: 0, // 0 means no capacity limit
+    },
+    isRsvpClosed: {
+      type: Boolean,
+      default: false, // Flag to manually close RSVPs
+    },
   },
   {
     timestamps: true, // createdAt, updatedAt

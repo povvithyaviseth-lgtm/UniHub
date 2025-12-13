@@ -1,35 +1,42 @@
-// routes/event.route.js
+// backend/routes/rsvp.route.js
 import express from "express";
 import {
-  createEventController,
-  getEventsByClubController,
-  getAllEventsController,
-} from "../controllers/event.controller.js";
-import { auth } from "../middleware/auth.middleware.js";
-import upload from "../middleware/multer.middleware.js";
+  submitRsvpController,         // Handles POST (Create/Update RSVP)
+  getRsvpsByEventIdController,  // Handles GET (Admin list view)
+  updateRsvpStatusController,   // Handles PUT (Admin status change)
+  deleteRsvpController,         // Handles DELETE (Admin or Guest removal)
+} from "../controllers/rsvp.controller.js"; // Note the controller file name change
+
+import { auth } from "../middleware/auth.middleware.js"; // For protected routes
 
 const router = express.Router();
 
+// Middleware for logging route hits
 router.use((req, res, next) => {
-  console.log("➡️ eventsRoutes hit:", req.method, req.originalUrl);
+  console.log("➡️ rsvpRoutes hit:", req.method, req.originalUrl);
   next();
 });
 
-// Create event for a club (protected, with image upload)
-// POST /api/events/:clubId
-router.post(
-  "/:clubId",
-  auth,
-  upload.single("image"), // <input name="image" ... />
-  createEventController
-);
+// --- Public Routes (Used by Guests) ---
 
-// Get all events for a specific club (dashboard)
-// GET /api/events/club/:clubId
-router.get("/club/:clubId", getEventsByClubController);
+// 1. Submit or Update a new RSVP entry
+// POST /api/rsvps
+router.post("/", submitRsvpController);
 
-// Get all events (for home page)
-// GET /api/events
-router.get("/", getAllEventsController);
+
+// --- Protected Routes (Used by Club Owners/Admins) ---
+
+// 2. Get all RSVPs for a specific event (Used by RsvpList.jsx)
+// GET /api/rsvps/event/:eventId
+router.get("/event/:eventId", auth, getRsvpsByEventIdController);
+
+// 3. Update the RSVP status (e.g., changing from 'Pending' to 'Confirmed' by an admin)
+// PUT /api/rsvps/:rsvpId/status
+router.put("/:rsvpId/status", auth, updateRsvpStatusController);
+
+// 4. Delete an RSVP record (Admin or Guest deleting their own RSVP)
+// DELETE /api/rsvps/:rsvpId
+router.delete("/:rsvpId", auth, deleteRsvpController);
+
 
 export default router;

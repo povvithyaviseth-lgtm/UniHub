@@ -1,198 +1,177 @@
-// controllers/event.controller.js
-import Notification from "../models/notification.model.js";
-import Club from "../models/club.model.js";
-import ClubMembership from "../models/membership.model.js";
-import Student from "../models/student.model.js";
-import { sendEmail } from "../utils/email.js";
-
+// backend/controllers/rsvp.controller.js
 import mongoose from "mongoose";
 import {
-  createEventService,
-  getEventsByClubService,
-  getAllEventsService,
-} from "../services/event.service.js";
+  submitRsvpService,
+  getAllRsvpsService,
+  updateRsvpStatusService,
+  deleteRsvpService,
+} from "../services/rsvp.service.js";
 
-// POST /api/events/:clubId
-// Create a new event for a given club
-export const createEventController = async (req, res) => {
+// Models (Needed for potential future notification/event checks)
+import EventModel from "../models/event.model.js"; 
+// import Club from "../models/club.model.js"; // For Admin logic
+
+// --- 1. POST /api/rsvps (Submit/Update RSVP) ---
+
+/**
+ * Handles the creation or update of an RSVP record by a guest/student.
+ * This is typically a PUBLIC route.
+ */
+export const submitRsvpController = async (req, res) => {
   try {
-    console.log("🔥 [EVENT] REQ.BODY:", req.body);
-    console.log("🔥 [EVENT] REQ.FILE:", req.file);
-    console.log("🔥 [EVENT] CONTENT-TYPE:", req.headers["content-type"]);
+    console.log("🔥 [RSVP] SUBMIT REQ.BODY:", req.body);
 
-    const { clubId } = req.params;
-    const ownerId = req.user?.id; // from auth middleware
+    // Fields expected from the client-side RsvpForm
+    const { eventId, name, email, partySize, status } = req.body;
 
-    if (!mongoose.Types.ObjectId.isValid(clubId)) {
-      return res.status(400).json({ message: "Invalid club ID" });
+    if (!eventId || !name || !email || !status) {
+      return res.status(400).json({ message: "Missing required RSVP fields (eventId, name, email, status)." });
     }
 
-    const { title, date, startTime, location, description } = req.body;
-
-    // Decide the image path to store in DB (similar to club image)
-    let image;
-    if (req.file) {
-      // Adjust this path to match your multer destination folder for events
-      image = `/images/event/${req.file.filename}`;
-    } else if (req.body.image) {
-      image = req.body.image;
+    if (!mongoose.Types.ObjectId.isValid(eventId)) {
+      return res.status(400).json({ message: "Invalid event ID format." });
     }
 
-    const event = await createEventService({
-      clubId,
-      ownerId,
-      title,
-      date,
-      startTime,
-      location,
-      description,
-      image,
+    // Call the service layer to handle business logic and persistence
+    const result = await submitRsvpService(eventId, name, email, partySize, status);
+
+    // ------------------------------
+    // NOTE: In a real app, you might add logic here:
+    // 1. Check if capacity has been exceeded.
+    // 2. Send a confirmation email to the guest.
+    // ------------------------------
+
+    const statusCode = result.action === 'created' ? 201 : 200;
+    const message = result.action === 'created' ? 'RSVP submitted successfully.' : 'RSVP updated successfully.';
+
+    return res.status(statusCode).json({
+      success: true,
+      message,
+      rsvp: result.guest,
+      action: result.action
     });
 
-        // ------------------------------
-    // 2️⃣ CREATE NOTIFICATION (new)
-    // ------------------------------
-
-    // Get club name for notification
-   /* const club = await Club.findById(clubId);
-
-    // Format event datetime string
-    const dateTime = `${date || "Date TBA"} ${startTime || ""}`.trim();
-
-    // Create real notification
-    await Notification.create({
-      clubId,
-      createdBy: ownerId,
-      type: "event",
-      title,                        // event title
-      clubName: club?.name || "A Club",
-      dateTime,                     // clean date string
-      location: location || "Location TBA",
-    });*/
-
-    // ------------------------------
-    // ------------------------------
-// 2️⃣ SEND NOTIFICATIONS TO ALL CLUB MEMBERS
-// ------------------------------
-
-// Get club name for notification
-const club = await Club.findById(clubId);
-
-// Format event datetime
-//const dateTime = `${date || "Date TBA"} ${startTime || ""}`.trim();
-const dateTime = date && startTime 
-  ? `${date} ${startTime}` 
-  : date 
-    ? `${date}` 
-    : startTime 
-      ? `${startTime}` 
-      : "Date/Time TBA";
-
-// 1. Find all students who joined this club
-const members = await ClubMembership.find({ club: clubId }).select("student");
-console.log("📘 MEMBERS FOUND:", members);
-
-// 2. Build one notification per student
-const notifications = members.map((m) => ({
-  student: m.student,               // << who receives the notification
-  clubId,
-  createdBy: ownerId,
-  type: "event",
-  title: `New Event: ${title}`,
-  clubName: club?.name || "A Club",
-  dateTime,
-  location: location || "Location TBA",
-  checked: false,
-}));
-console.log("📬 NOTIFICATIONS TO INSERT:", notifications);
-
-// 3. Insert them into DB
-/*if (notifications.length > 0) {
-  await Notification.insertMany(notifications);
-}*/
-if (notifications.length > 0) {
-  try {
-    const inserted = await Notification.insertMany(notifications);
-    console.log("📢 NOTIFICATIONS INSERTED:", inserted);
   } catch (err) {
-    console.error("❌ NOTIFICATION INSERT FAILED:", err);
-  }
-} else {
-  console.log("⚠️ NO MEMBERS — NO NOTIFICATIONS CREATED");
-}
-// 5️⃣ Send email to all club members about the event
-for (const member of members) {
-  const student = await Student.findById(member.student).select("email");
+    console.error("Error submitting RSVP:", err);
+    let status = 500;
+    let message = "Server error processing RSVP.";
 
-  if (student?.email) {
-    try {
-      await sendEmail({
-        to: student.email,
-        subject: `New Event from ${club?.name || "Your Club"}`,
-        text: `A new event has been created!
-
-📅 Event: ${title}
-📍 Location: ${location || "Location TBA"}
-🕒 When: ${dateTime}
-
-📝 Description:
-${description || "No description provided."}
-
-Visit UniHub to view or RSVP to this event.`,
-      });
-
-      console.log(`📧 Event email sent to ${student.email}`);
-
-    } catch (emailErr) {
-      console.error("❌ Error sending event email:", emailErr);
+    if (err.message.includes('duplicate key error')) {
+      status = 409; // Conflict
+      message = 'You have already submitted an RSVP for this event.';
+    } else if (err.message.includes('Event not found') || err.message.includes('RSVP deadline passed')) {
+      status = 403;
+      message = err.message;
     }
-  }
-}
 
-
-    return res.status(201).json({
-      message: "Event created successfully",
-      event,
-    });
-  } catch (err) {
-    console.error("Error creating event:", err);
-    const status = err.statusCode || 500;
-    const message =
-      status !== 500 ? err.message : "Server error creating event";
     return res.status(status).json({ message });
   }
 };
 
-// GET /api/events/club/:clubId
-// Get all events for a specific club (for dashboard)
-export const getEventsByClubController = async (req, res) => {
-  try {
-    const { clubId } = req.params;
 
-    if (!mongoose.Types.ObjectId.isValid(clubId)) {
-      return res.status(400).json({ message: "Invalid club ID" });
+// --- 2. GET /api/rsvps/event/:eventId (Get Rsvp List) ---
+
+/**
+ * Handles retrieving all RSVPs for a given event.
+ * This is a PROTECTED route, intended for the Club Owner/Admin.
+ */
+export const getRsvpsByEventIdController = async (req, res) => {
+  try {
+    const { eventId } = req.params;
+    // const adminId = req.user?.id; // from auth middleware
+
+    if (!mongoose.Types.ObjectId.isValid(eventId)) {
+      return res.status(400).json({ message: "Invalid event ID format." });
     }
 
-    const events = await getEventsByClubService(clubId);
-    return res.status(200).json({ events });
+    // NOTE: Authorization Check Example:
+    /*
+    const event = await EventModel.findById(eventId);
+    if (!event || event.club.toString() !== ownerClubId) { // ownerClubId derived from adminId
+        return res.status(403).json({ message: "Forbidden: You do not manage this event." });
+    }
+    */
+
+    const rsvps = await getAllRsvpsService(eventId);
+
+    return res.status(200).json({
+      success: true,
+      rsvps,
+      count: rsvps.length
+    });
+
   } catch (err) {
-    console.error("Error fetching events for club:", err);
-    return res
-      .status(500)
-      .json({ message: "Server error fetching club events" });
+    console.error("Error fetching RSVPs:", err);
+    return res.status(500).json({ message: "Server error fetching RSVPs." });
   }
 };
 
-// GET /api/events
-// Get all events (for home page)
-export const getAllEventsController = async (req, res) => {
+
+// --- 3. PUT /api/rsvps/:rsvpId/status (Update Status) ---
+
+/**
+ * Handles updating the status of a specific RSVP record.
+ * This is a PROTECTED route, intended for the Club Owner/Admin.
+ */
+export const updateRsvpStatusController = async (req, res) => {
   try {
-    const events = await getAllEventsService();
-    return res.status(200).json({ events });
+    const { rsvpId } = req.params;
+    const { newStatus } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(rsvpId)) {
+      return res.status(400).json({ message: "Invalid RSVP ID format." });
+    }
+    if (!newStatus) {
+      return res.status(400).json({ message: "Missing newStatus field." });
+    }
+    // Authorization check omitted but necessary
+
+    const updatedRsvp = await updateRsvpStatusService(rsvpId, newStatus);
+
+    return res.status(200).json({
+      success: true,
+      message: "RSVP status updated successfully.",
+      rsvp: updatedRsvp,
+    });
   } catch (err) {
-    console.error("Error fetching all events:", err);
-    return res
-      .status(500)
-      .json({ message: "Server error fetching events" });
+    console.error("Error updating RSVP status:", err);
+    let status = 500;
+    if (err.message.includes('RSVP record not found')) {
+      status = 404;
+    }
+    return res.status(status).json({ message: err.message });
+  }
+};
+
+
+// --- 4. DELETE /api/rsvps/:rsvpId (Delete RSVP) ---
+
+/**
+ * Handles the deletion of a specific RSVP record.
+ * This is a PROTECTED route.
+ */
+export const deleteRsvpController = async (req, res) => {
+  try {
+    const { rsvpId } = req.params;
+    
+    if (!mongoose.Types.ObjectId.isValid(rsvpId)) {
+      return res.status(400).json({ message: "Invalid RSVP ID format." });
+    }
+    // Authorization check omitted but necessary (Admin or Guest must own the record)
+
+    const deletedRsvp = await deleteRsvpService(rsvpId);
+
+    return res.status(200).json({
+      success: true,
+      message: "RSVP record deleted successfully.",
+      rsvp: deletedRsvp,
+    });
+  } catch (err) {
+    console.error("Error deleting RSVP:", err);
+    let status = 500;
+    if (err.message.includes('RSVP record not found')) {
+      status = 404;
+    }
+    return res.status(status).json({ message: err.message });
   }
 };
