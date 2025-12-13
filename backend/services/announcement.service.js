@@ -2,7 +2,7 @@ import Announcement from "../models/announcement.model.js";
 
 export const createAnnouncement = async ({ clubId, createdBy, title, body }) => {
   return await Announcement.create({
-    club: clubId,
+     clubId,
     createdBy,
     title,
     body,
