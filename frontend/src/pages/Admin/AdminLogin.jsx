@@ -1,12 +1,6 @@
-// src/pages/Admin/AdminLogin.jsx
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAdminStore } from "../../store/admin.js";
-
-// 🆕 Import the modal wrapper and content
-import PopUpModals from "../../component/PopUpModals.jsx"; 
-import PasswordRecovery from "../../component/PasswordRecovery.jsx"; 
-
 import {
   containerStyle,
   cardWrapper,
@@ -16,7 +10,7 @@ import {
   inputWrapper,
   inputStyle,
   labelStyle,
-  forgotStyle, // We will re-use the style but use a button instead of a Link
+  forgotStyle,
   signInWrapper,
   signInButton,
   footerBg,
@@ -30,9 +24,6 @@ import {
 import "../../index.css";
 
 const AdminLogin = () => {
-  // 🆕 State for the Password Recovery Modal
-  const [isRecoveryOpen, setIsRecoveryOpen] = useState(false);
-
   const {
     credentials,
     setCredentials,
@@ -66,22 +57,6 @@ const AdminLogin = () => {
     } finally {
       setLoading(false);
     }
-  };
-  
-  // 🆕 Function to open the recovery modal
-  const handleForgotPasswordClick = () => {
-    setIsRecoveryOpen(true);
-  };
-  
-  // Helper style to make the button look like the link style
-  const forgotButtonStyle = {
-    ...forgotStyle,
-    background: 'none', // Remove any background button might have
-    border: 'none',
-    padding: 0,
-    margin: 0,
-    cursor: 'pointer',
-    textAlign: 'left',
   };
 
   return (
@@ -118,14 +93,9 @@ const AdminLogin = () => {
           <div style={labelStyle(25, 176)}>Email</div>
           <div style={labelStyle(25, 274)}>Password</div>
 
-          {/* 🔄 Replaced Link with a Button to open the modal */}
-          <button 
-            type="button" 
-            onClick={handleForgotPasswordClick} 
-            style={forgotButtonStyle}
-          >
+          <Link to="/ForgetPassword" style={forgotStyle}>
             Forgot Password?
-          </button>
+          </Link>
 
           <div style={signInWrapper}>
             {error && (
@@ -179,17 +149,6 @@ const AdminLogin = () => {
           </div>
         </div>
       </div>
-      
-      {/* 🆕 PASSWORD RECOVERY POPUP */}
-      <PopUpModals
-        open={isRecoveryOpen}
-        onClose={() => setIsRecoveryOpen(false)}
-        // These base dimensions were set for the PasswordRecovery content
-        baseW={450}
-        baseH={420} 
-      >
-        <PasswordRecovery onClose={() => setIsRecoveryOpen(false)} />
-      </PopUpModals>
     </div>
   );
 };

@@ -20,6 +20,7 @@ import PopUpModals from "../../component/PopUpModals.jsx";
 import ConfirmDialog from "../../component/ConfirmDialog.jsx";
 import Profile from "../../component/StudentComponent/Profile.jsx";
 import EditProfile from "../../component/StudentComponent/EditProfile.jsx";
+import Notification from "../../component/StudentComponent/Notification.jsx";
 
 // 🔐 student auth store
 import { useStudentStore } from "../../store/student";
@@ -601,6 +602,7 @@ const HomePage = () => {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All Clubs");
   const [openClub, setOpenClub] = useState(null);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
 
   // Clubs from backend
   const [clubs, setClubs] = useState([]);
@@ -1028,6 +1030,7 @@ const HomePage = () => {
 
                 {/* Right: bell */}
                 <div
+                onClick={() => setNotificationsOpen(true)}
                   style={{
                     position: "absolute",
                     right: 240,
@@ -1584,7 +1587,10 @@ const HomePage = () => {
             onConfirm={() => confirmActionRef.current?.()}
           />
         </div>
+        
       </PopUpModals>
+      {/* NOTIFICATIONS POPUP */}
+   <Notification />
     </div>
   );
 };

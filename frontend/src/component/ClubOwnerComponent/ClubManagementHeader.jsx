@@ -1,18 +1,17 @@
-// frontend/src/component/ClubOwnerComponent/ClubManagementHeader.jsx
-
 import React from "react";
 
 /**
  * Simple presentational header for the Club Management page.
  *
  * Props:
- * - onBack   (function): called when the "Back" button is clicked
- * - onCreate (function): called when the "Create A New Club" button is clicked
+ * - onBack          (function): called when the "Back" button is clicked
+ * - onCreate        (function): called when the "Create A New Club" button is clicked
+ * - onAnnouncements (function): called when the "Manage Announcements" button is clicked
  *
  * This component is *pure UI* – it does not know about routing or state.
- * The parent decides what "back" and "create" actually do.
+ * The parent decides what "back", "create", and "announcements" actually do.
  */
-export default function ClubManagementHeader({ onBack, onCreate }) {
+export default function ClubManagementHeader({ onBack, onCreate, onAnnouncements }) {
   return (
     <header
       style={{
@@ -38,7 +37,7 @@ export default function ClubManagementHeader({ onBack, onCreate }) {
         </div>
       </div>
 
-      {/* Right side: Back + Create buttons */}
+      {/* Right side: Back + Announcements + Create buttons */}
       <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
         <button
           type="button"
@@ -52,6 +51,21 @@ export default function ClubManagementHeader({ onBack, onCreate }) {
           onClick={onBack}
         >
           Back
+        </button>
+
+        <button
+          type="button"
+          className="btn-primary"
+          style={{
+            width: "100%",
+            minWidth: 220,
+            height: 41,
+            fontSize: 17,
+            background: "rgba(0, 85, 10, 0.56)",
+          }}
+          onClick={onAnnouncements}
+        >
+          Announcements 
         </button>
 
         <button
