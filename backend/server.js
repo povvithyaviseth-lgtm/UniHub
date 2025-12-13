@@ -1,4 +1,3 @@
-// REMOTE BRANCH
 import express from 'express';
 import path from "path";
 import dotenv from 'dotenv';
@@ -10,13 +9,16 @@ import studentRoutes from './routes/student.route.js';
 import adminRoutes from './routes/admin.route.js';
 import membershipRoutes from './routes/membership.route.js';
 import eventsRoutes from './routes/event.route.js';
+import announcementRoutes from './routes/announcement.route.js';
+import notificationRoutes from './routes/notification.route.js';
 
 import cors from 'cors';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-dotenv.config();
+//dotenv.config();
+dotenv.config({ path: path.join(__dirname, '.env') });
 connectDB();
 
 const app = express();
@@ -50,7 +52,8 @@ app.use('/api/admins', adminRoutes);
 app.use('/api/clubs', clubsRoutes);
 app.use('/api/membership', membershipRoutes);
 app.use('/api/events', eventsRoutes);
-
+app.use('/api/announcements', announcementRoutes);
+app.use('/api/notifications', notificationRoutes);
 // 404
 app.use((req, res) => res.status(404).json({ message: 'Route not found' }));
 

@@ -57,7 +57,7 @@ const ClubCard = ({
 
   const handleMoreClick = (e) => {
     e.stopPropagation();
-    if (onMoreClick) onMoreClick(club);
+    if (onMoreClick) onMoreClick(club._id);
     else if (onCardClick) onCardClick(club);
   };
 

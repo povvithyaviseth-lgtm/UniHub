@@ -3,6 +3,7 @@ import AdminLogin from "./pages/Admin/AdminLogin.jsx"
 import StudentLogin from "./pages/Student/StudentLogin.jsx"   
 import HomePage from "./pages/Student/HomePage.jsx"
 import SignUp from "./pages/Student/SignUp.jsx"
+import ManageAnnouncements from "./component/ClubOwnerComponent/ManageAnnouncement.jsx";
 
 import ClubManagement from "./pages/ClubOwner/ClubManagementPage.jsx"
 import ClubDashboard from "./pages/ClubOwner/ClubDashboard.jsx";
@@ -22,6 +23,7 @@ function App() {
       <Route path="/console/clubs/:clubId" element={<ClubDashboard />} />
 
       <Route path="/admin/dashboard" element={<AdminDashboard />} />
+      <Route path="/console/announcements/:clubId" element={<ManageAnnouncements />} />
       
       {/* Add more routes here */}
     </Routes>

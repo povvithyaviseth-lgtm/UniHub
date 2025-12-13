@@ -24,7 +24,9 @@ export default function ClubsGrid({
   loading,
   clubs,
   onCardClick,
+  onMoreClick,
   resolveImageSrc,
+  onAnnouncements,
 }) {
   return (
     <div
@@ -68,6 +70,9 @@ export default function ClubsGrid({
                 imageUrl,
               }}
               onCardClick={() => onCardClick && onCardClick(club)}
+              //onMoreClick={()=> onAnnouncements &&onAnnouncements(club) }
+              //onMoreClick={() => onMoreClick && onMoreClick(club)}
+              onMoreClick={() => onMoreClick && onMoreClick(club._id)}
             />
           );
         })}

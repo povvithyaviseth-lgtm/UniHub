@@ -4,6 +4,7 @@ import Student from '../models/student.model.js';
 
 export const auth = async (req, res, next) => {
   try {
+    console.log("Authorization header received:", req.headers.authorization);
     const authHeader = req.headers.authorization || '';
 
     // Expect: "Authorization: Bearer <token>"

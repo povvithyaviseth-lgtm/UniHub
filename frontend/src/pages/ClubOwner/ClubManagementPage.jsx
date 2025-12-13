@@ -197,6 +197,18 @@ export default function ClubManagement() {
       setTimeout(() => setError(""), 2000);
     }
   };
+  /*const handleAnnouncements = (clubId) => {
+  navigate(`/console/announcements/${clubId}`);
+};*/
+const handleAnnouncements = () => {
+  if (!clubs || clubs.length === 0) {
+    alert("You don't have any clubs yet.");
+    return;
+  }
+
+  const firstClub = clubs[0]; // 👈 automatically use first owned club
+  navigate(`/console/announcements/${firstClub._id}`);
+};
 
   /* ======================================================
      SUCCESS & ERROR BANNERS
@@ -245,9 +257,9 @@ export default function ClubManagement() {
   );
 
   // 🔗 Helper that navigates to a club's dashboard
-  const goToClubDashboard = (club) => {
-    if (!club?._id) return;
-    navigate(`/console/clubs/${club._id}`);
+  const goToClubDashboard = (clubId) => {
+    if (!clubId) return;
+    navigate(`/console/clubs/${clubId}`);
   };
 
   return (
@@ -290,6 +302,7 @@ export default function ClubManagement() {
           <ClubManagementHeader
             onBack={handleGoHome}
             onCreate={handleOpenCreate}
+            onAnnouncements={handleAnnouncements}
           />
 
           {/* Clubs grid */}
@@ -301,6 +314,7 @@ export default function ClubManagement() {
             onCardClick={goToClubDashboard}
             // Clicking the card's "More" button (if ClubsGrid supports it)
             onMoreClick={goToClubDashboard}
+            //onAnnouncements={handleAnnouncements}
           />
         </section>
       </div>

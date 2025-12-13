@@ -28,6 +28,6 @@ const clubMembershipSchema = new Schema(
 // prevent duplicate membership per student+club
 clubMembershipSchema.index({ student: 1, club: 1 }, { unique: true });
 
-const ClubMembership = mongoose.model('ClubMembership', clubMembershipSchema);
+const ClubMembership = mongoose.model('ClubMembership', clubMembershipSchema,"clubMemberships");
 
 export default ClubMembership;
