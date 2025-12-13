@@ -277,64 +277,43 @@ const NotificationButton = ({ onClick, notificationCount }) => {
   );
 };
 
-export default function Notification({}) {
-  const [isPopupOpen, setIsPopupOpen] = React.useState(false);
- const [notifications, setNotifications] = React.useState([]);
+export default function Notification({ isOpen, onClose }) {
+  const [notifications, setNotifications] = React.useState([]);
 
-// Load real notifications from backend
-React.useEffect(() => {
-    
-  async function fetchNotifications() {
+  React.useEffect(() => {
+    if (!isOpen) return;
+
+    async function fetchNotifications() {
+      const token = localStorage.getItem("token");
+      const res = await fetch("http://localhost:5050/api/notifications", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      setNotifications(data.notifications || []);
+    }
+
+    fetchNotifications();
+  }, [isOpen]);
+
+  const handleToggle = async (id) => {
     const token = localStorage.getItem("token");
 
-    const res = await fetch("http://localhost:5050/api/notifications", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+    await fetch(`http://localhost:5050/api/notifications/${id}/read`, {
+      method: "PUT",
+      headers: { Authorization: `Bearer ${token}` },
     });
 
-    const data = await res.json();
-    console.log("Fetched notifications:", data);
-    setNotifications(data.notifications || []);
-  }
+    setNotifications((prev) =>
+      prev.map((n) => (n._id === id ? { ...n, checked: true } : n))
+    );
+  };
 
-  fetchNotifications();
-}, []);
-
-// Mark notification as read
-const handleToggle = async (id) => {
-  const token = localStorage.getItem("token");
-
-  await fetch(`http://localhost:5050/api/notifications/${id}/read`, {
-    method: "PUT",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  // Update UI immediately
-  setNotifications((prev) =>
-    prev.map((n) =>
-      n._id === id ? { ...n, checked: true } : n
-    )
-  );
-};
-
-// Show unread count on bell
-const unreadCount = notifications.filter((n) => !n.checked).length;
-
-return (
-  <div>
-    <NotificationButton
-      onClick={() => setIsPopupOpen(true)}
-      notificationCount={unreadCount}
-    />
+  return (
     <NotificationPopup
-      isOpen={isPopupOpen}
-      onClose={() => setIsPopupOpen(false)}
+      isOpen={isOpen}
+      onClose={onClose}
       notifications={notifications}
       onToggle={handleToggle}
     />
-  </div>
-);
+  );
 }

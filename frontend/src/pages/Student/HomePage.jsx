@@ -603,6 +603,24 @@ const HomePage = () => {
   const [category, setCategory] = useState("All Clubs");
   const [openClub, setOpenClub] = useState(null);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+  useEffect(() => {
+  async function loadUnread() {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    const res = await fetch("http://localhost:5050/api/notifications", {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    const data = await res.json();
+    const list = data.notifications || [];
+
+    setUnreadCount(list.filter(n => !n.checked).length);
+  }
+
+  loadUnread();
+}, []);
 
   // Clubs from backend
   const [clubs, setClubs] = useState([]);
@@ -1030,42 +1048,63 @@ const HomePage = () => {
 
                 {/* Right: bell */}
                 <div
-                onClick={() => setNotificationsOpen(true)}
-                  style={{
-                    position: "absolute",
-                    right: 240,
-                    top: "50%",
-                    transform: "translateY(-50%)",
-                    width: 65,
-                    height: 64,
-                    padding: 5,
-                    background: "#F0F0F0",
-                    borderRadius: 25,
-                    display: "inline-flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                  className="icon-button"
-                  title="Notifications"
-                >
-                  <div
-                    aria-hidden
-                    style={{
-                      width: 40,
-                      height: 40,
-                      backgroundColor: "#00550A",
-                      WebkitMaskImage: `url(${bellIcon})`,
-                      maskImage: `url(${bellIcon})`,
-                      WebkitMaskRepeat: "no-repeat",
-                      maskRepeat: "no-repeat",
-                      WebkitMaskPosition: "center",
-                      maskPosition: "center",
-                      WebkitMaskSize: "contain",
-                      maskSize: "contain",
-                    }}
-                    className="icon-mask"
-                  />
-                </div>
+  onClick={() => setNotificationsOpen(true)}
+  style={{
+    position: "absolute",
+    right: 240,
+    top: "50%",
+    transform: "translateY(-50%)",
+    width: 65,
+    height: 64,
+    padding: 5,
+    background: "#F0F0F0",
+    borderRadius: 25,
+    display: "inline-flex",
+    justifyContent: "center",
+    alignItems: "center",
+    cursor: "pointer",
+  }}
+>
+  {/* Bell Icon */}
+  <div
+    style={{
+      width: 40,
+      height: 40,
+      backgroundColor: "#00550A",
+      WebkitMaskImage: `url(${bellIcon})`,
+      maskImage: `url(${bellIcon})`,
+      WebkitMaskRepeat: "no-repeat",
+      maskRepeat: "no-repeat",
+      WebkitMaskPosition: "center",
+      maskPosition: "center",
+      WebkitMaskSize: "contain",
+      maskSize: "contain",
+    }}
+  />
+
+  {/* 🔴 UNREAD BADGE */}
+  {unreadCount > 0 && (
+    <div
+      style={{
+        position: "absolute",
+        top: -4,
+        right: -4,
+        background: "red",
+        color: "white",
+        width: 20,
+        height: 20,
+        borderRadius: "50%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontSize: 12,
+        fontWeight: "bold",
+      }}
+    >
+      {unreadCount}
+    </div>
+  )}
+</div>
 
                 {/* Right: profile chip */}
                 <button
@@ -1590,7 +1629,10 @@ const HomePage = () => {
         
       </PopUpModals>
       {/* NOTIFICATIONS POPUP */}
-   <Notification />
+<Notification 
+    isOpen={notificationsOpen}
+    onClose={() => setNotificationsOpen(false)}
+/>
     </div>
   );
 };
